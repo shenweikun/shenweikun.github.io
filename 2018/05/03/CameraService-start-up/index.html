@@ -12,6 +12,7 @@
 
     
     <meta name="description" content="Service Manager是系统中一个负责管理所有的服务（如相机，音频）的独立的进程，它的handle是0。">
+<meta name="keywords" content="MTKCamera,framework,hal">
 <meta property="og:type" content="article">
 <meta property="og:title" content="framework篇之1.CameraService啓動">
 <meta property="og:url" content="https://shenweikun.github.io/2018/05/03/CameraService-start-up/index.html">
@@ -19,7 +20,7 @@
 <meta property="og:description" content="Service Manager是系统中一个负责管理所有的服务（如相机，音频）的独立的进程，它的handle是0。">
 <meta property="og:locale" content="zh-CN">
 <meta property="og:image" content="https://shenweikun.github.io/2018/05/03/CameraService-start-up/CameraService.jpg">
-<meta property="og:updated_time" content="2018-05-03T08:22:19.983Z">
+<meta property="og:updated_time" content="2018-05-03T12:46:38.438Z">
 <meta name="twitter:card" content="summary">
 <meta name="twitter:title" content="framework篇之1.CameraService啓動">
 <meta name="twitter:description" content="Service Manager是系统中一个负责管理所有的服务（如相机，音频）的独立的进程，它的handle是0。">
@@ -518,7 +519,7 @@ ImgSensorDrv::impSearchSensor(pfExIdChk pExIdChkCbf)
 
     return sensorDevs;
 }//
-</code></pre><h3 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h3><p><img src="/2018/05/03/CameraService-start-up/CameraService.jpg" alt=""> </p>
+</code></pre><h3 id="總結"><a href="#總結" class="headerlink" title="總結"></a>總結</h3><p>簡而言之，CameraService啓動過程中做了兩件事，<br>1.framework層，注冊CameraService，提供给client随时使用，爲binder通信做準備。<br>2.hal層，遍歷sensor list，讀取sensor id。<br>最後，附一張時序圖結尾。<br><img src="/2018/05/03/CameraService-start-up/CameraService.jpg" alt=""></p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -529,6 +530,11 @@ ImgSensorDrv::impSearchSensor(pfExIdChk pExIdChkCbf)
   <a class="article-category-link" href="/categories/Camera系統源碼分析/">Camera系統源碼分析</a>
 </div>
 
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/MTKCamera/">MTKCamera</a><a href="/tags/framework/">framework</a><a href="/tags/hal/">hal</a>
+  </div>
 
 </div>
 
