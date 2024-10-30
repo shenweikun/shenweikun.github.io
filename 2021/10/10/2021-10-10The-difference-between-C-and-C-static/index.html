@@ -1,0 +1,518 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>C和C++中static的区别 | Weikun&#39;s Notes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="空白">
+    
+
+    
+    <meta name="description" content="在C&#x2F;C++中static有三种用法：1.用來修饰局部变量，形成静态局部函数2.用來修饰全局变量&#x2F;函数3.用來修饰静态数据成员和成员函数前两种是C&#x2F;C++共有的，第三种是C++独有的。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C和C++中static的区别">
+<meta property="og:url" content="https://shenweikun.github.io/2021/10/10/2021-10-10The-difference-between-C-and-C-static/index.html">
+<meta property="og:site_name" content="Weikun&#39;s Notes">
+<meta property="og:description" content="在C&#x2F;C++中static有三种用法：1.用來修饰局部变量，形成静态局部函数2.用來修饰全局变量&#x2F;函数3.用來修饰静态数据成员和成员函数前两种是C&#x2F;C++共有的，第三种是C++独有的。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-10-10T13:25:38.000Z">
+<meta property="article:modified_time" content="2024-10-29T16:38:43.351Z">
+<meta property="article:author" content="空白">
+<meta property="article:tag" content="C&#x2F;C++">
+<meta name="twitter:card" content="summary">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Weikun&#39;s Notes" type="application/atom+xml">
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/%02.css">
+<link rel="stylesheet" href="/.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Weikun&#39;s Notes" title="Weikun&#39;s Notes"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Weikun&#39;s Notes">Weikun&#39;s Notes</a></h1>
+				<h2 class="blog-motto">怀揣代码中的唏嘘，记录生活中的点滴</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:shenweikun.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2021/10/10/2021-10-10The-difference-between-C-and-C-static/" title="C和C++中static的区别" itemprop="url">C和C++中static的区别</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="空白" target="_blank" itemprop="author">空白</a>
+		
+  <p class="article-time">
+    <time datetime="2021-10-10T13:25:38.000Z" itemprop="datePublished"> 发表于 2021-10-10</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E9%A5%B0%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F"><span class="toc-number">1.</span> <span class="toc-text">修饰局部变量</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#auto"><span class="toc-number">1.1.</span> <span class="toc-text">auto</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#static"><span class="toc-number">1.2.</span> <span class="toc-text">static</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E9%A5%B0%E5%85%A8%E5%B1%80%E5%8F%98%E9%87%8F-%E5%87%BD%E6%95%B0"><span class="toc-number">2.</span> <span class="toc-text">修饰全局变量&#x2F;函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E9%A5%B0%E9%9D%99%E6%80%81%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98%E5%92%8C%E6%88%90%E5%91%98%E5%87%BD%E6%95%B0"><span class="toc-number">3.</span> <span class="toc-text">修饰静态数据成员和成员函数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9D%99%E6%80%81%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98"><span class="toc-number">3.1.</span> <span class="toc-text">静态数据成员</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9D%99%E6%80%81%E6%88%90%E5%91%98%E5%87%BD%E6%95%B0"><span class="toc-number">3.2.</span> <span class="toc-text">静态成员函数</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<p>在C/C++中static有三种用法：<br>1.用來修饰局部变量，形成静态局部函数<br>2.用來修饰全局变量/函数<br>3.用來修饰静态数据成员和成员函数<br>前两种是C/C++共有的，第三种是C++独有的。</p>
+<span id="more"></span>
+<hr>
+<h3 id="修饰局部变量"><a href="#修饰局部变量" class="headerlink" title="修饰局部变量"></a>修饰局部变量</h3><p>在介绍静态局部变量之前，先认识一下关键字auto。</p>
+<h4 id="auto"><a href="#auto" class="headerlink" title="auto"></a>auto</h4><p>auto关键字在C/C++中只有一个作用，就是修饰局部变量(不能用于修饰全局变量)。<br>被auto修饰的局部变量又称之为自动局部变量。<br>平时我们定义的局部变量，若没有用static或者register修饰，默认就是auto类型的，例如：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">	<span class="keyword">int</span> i = <span class="number">0</span>; <span class="comment">//等价于 auto int i = 0;</span></span><br><span class="line">	<span class="built_in">printf</span>(<span class="string">&quot;i = %d \n&quot;</span>,i);</span><br><span class="line">    </span><br><span class="line">	<span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>自动局部变量的特点：<br>1.自动局部变量分配在栈上（由于栈内存是脏的，说明在栈上分配的变量，若没有初始化，其值就是随机的）。<br>2.自动局部变量的生命周期和作用域仅限于定义它的函数，函数运行结束，其生命周期也结束。</p>
+<h4 id="static"><a href="#static" class="headerlink" title="static"></a>static</h4><p>static修饰的局部变量称之为静态局部变量，静态局部变量和自动局部变量（auto）本质区别是变量开辟的空间在内存的位置不同。<br>静态局部变量的特点：<br>1.静态局部变量分配在data段或者bss段上。（在程序执行之前BSS段会自动清0，所以未初始化的静态局部变量的值为0）<br>2.静态局部变量的作用域与自动局部变量（auto）相同，都仅限于定义它的函数。<br>3.静态局部变量的生命周期与全局变量相同，在程序整个运行期间都不释放。<br>4.静态局部变量在所处模块在初次运行时进行初始化工作, 且只操作一次，之后操作它都保存着上一次的值，例如：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="keyword">static</span> val = <span class="number">0</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;val = %d&quot;</span>,val);</span><br><span class="line"></span><br><span class="line">    val++;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">test</span>(); <span class="comment">//第一次调用输出“val = 0”</span></span><br><span class="line">    <span class="built_in">test</span>(); <span class="comment">//第二次调用输出“val = 1”</span></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="修饰全局变量-函数"><a href="#修饰全局变量-函数" class="headerlink" title="修饰全局变量/函数"></a>修饰全局变量/函数</h3><p>当我们使用static来修饰全局变量或函数时，全局变量和函数的作用范围就被限定为本文件了，其他文件在链接时无法使用这些变量和函数，这就是内链接。<br>使用static修饰之后，可以有效的避免函数和全局变量的命名冲突问题。例如：<br>a.c文件</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">int</span> val1 = <span class="number">1</span>；</span><br><span class="line"><span class="keyword">static</span> val2 = <span class="number">2</span>；</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> test1（）</span><br><span class="line">&#123;</span><br><span class="line">    ……</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">void</span> test2（）</span><br><span class="line">&#123;</span><br><span class="line">    ……</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>b.c文件</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">extern</span> val1;  <span class="comment">//正确，可以使用a.c文件中的val1</span></span><br><span class="line"><span class="keyword">extern</span> val2;  <span class="comment">//错误,不可以使用a.c文件中的val2，因为被static修饰了</span></span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">void</span> test1（）； <span class="comment">//正确</span></span><br><span class="line"><span class="keyword">extern</span> <span class="keyword">void</span> test2（）； <span class="comment">//错误</span></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;val1 = %d \n&quot;</span>,val1);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h3 id="修饰静态数据成员和成员函数"><a href="#修饰静态数据成员和成员函数" class="headerlink" title="修饰静态数据成员和成员函数"></a>修饰静态数据成员和成员函数</h3><p>静态数据成员和静态成员函数是C++特有的，被static修饰的类成员或成员函数，称为静态数据成员或静态成员函数，C++引入这一概念的目的是为了在类的范围内实现内存共享。</p>
+<h4 id="静态数据成员"><a href="#静态数据成员" class="headerlink" title="静态数据成员"></a>静态数据成员</h4><p>静态数据成员实际上是类域中的全局变量。主要特点如下：</p>
+<ul>
+<li>静态数据成员的定义。举例如下：<br>xxx.h文件<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span>   <span class="title">base</span>&#123;</span>     </span><br><span class="line">     <span class="keyword">private</span>:     </span><br><span class="line">     <span class="keyword">static</span>   <span class="keyword">const</span>   <span class="keyword">int</span>   _i;<span class="comment">//声明，标准c++支持有序类型在类体中初始化,但vc6不支持。     </span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+xxx.c文件<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">const</span>   <span class="keyword">int</span>   base::_i=<span class="number">10</span>;<span class="comment">//定义(初始化)时不受private和protected访问限制.</span></span><br></pre></td></tr></table></figure></li>
+<li>静态数据成员被 类 的所有对象所共享，包括该类派生类的对象。即派生类对象与基类对象共享基类的静态数据成员。举例如下：<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span>   <span class="title">base</span>&#123;</span>     </span><br><span class="line">            <span class="keyword">public</span>   :     </span><br><span class="line">            <span class="keyword">static</span>   <span class="keyword">int</span>   _num;<span class="comment">//声明     </span></span><br><span class="line">&#125;;     </span><br><span class="line"><span class="keyword">int</span>   base::_num=<span class="number">0</span>;<span class="comment">//静态数据成员的真正定义     </span></span><br><span class="line"><span class="class"><span class="keyword">class</span>   <span class="title">derived</span>:</span><span class="keyword">public</span>   base&#123;     </span><br><span class="line">&#125;;     </span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span>     </span></span><br><span class="line"><span class="function"></span>&#123;     </span><br><span class="line">   base   a;     </span><br><span class="line">   derived   b;     </span><br><span class="line">   a._num++;     </span><br><span class="line">   cout&lt;&lt;<span class="string">&quot;base   class   static   data   number   _num   is&quot;</span>&lt;&lt;a._num&lt;&lt;endl;     </span><br><span class="line">   b._num++;     </span><br><span class="line">   cout&lt;&lt;<span class="string">&quot;derived   class   static   data   number   _num   is&quot;</span>&lt;&lt;b._num&lt;&lt;endl;     </span><br><span class="line">&#125;     </span><br><span class="line"><span class="comment">//   结果为1,2;可见派生类与基类共用一个静态数据成员。</span></span><br></pre></td></tr></table></figure></li>
+<li>静态数据成员可以成为成员函数的可选参数，而普通数据成员则不可以。举例如下：<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span>   <span class="title">base</span>&#123;</span>     </span><br><span class="line"><span class="keyword">public</span>   :     </span><br><span class="line">       <span class="keyword">static</span>   <span class="keyword">int</span>   _staticVar;     </span><br><span class="line">       <span class="keyword">int</span>   _var;     </span><br><span class="line">       <span class="function"><span class="keyword">void</span>   <span class="title">foo1</span><span class="params">(<span class="keyword">int</span>   i=_staticVar)</span></span>;<span class="comment">//正确,_staticVar为静态数据成员     </span></span><br><span class="line">       <span class="function"><span class="keyword">void</span>   <span class="title">foo2</span><span class="params">(<span class="keyword">int</span>   i=_var)</span></span>;<span class="comment">//错误,_var为普通数据成员     </span></span><br><span class="line">   &#125;;</span><br></pre></td></tr></table></figure></li>
+<li>静态数据成员的类型可以是所属类的类型，而普通数据成员则不可以。普通数据成员的只能声明为所属类类型的指针或引用。举例如下：<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span>   <span class="title">base</span>&#123;</span>     </span><br><span class="line"><span class="keyword">public</span>   :     </span><br><span class="line">        <span class="keyword">static</span>   base   _object1;<span class="comment">//正确，静态数据成员     </span></span><br><span class="line">        base   _object2;<span class="comment">//错误     </span></span><br><span class="line">        base   *pObject;<span class="comment">//正确，指针     </span></span><br><span class="line">        base   &amp;mObject;<span class="comment">//正确，引用     </span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure></li>
+<li>这个特性，我不知道是属于标准c++中的特性，还是vc6自己的特性。 静态数据成员的值在const成员函数中可以被合法的改变。举例如下：<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span>   <span class="title">base</span>&#123;</span></span><br><span class="line"></span><br><span class="line"><span class="keyword">public</span>:     </span><br><span class="line">        <span class="built_in">base</span>()&#123;_i=<span class="number">0</span>;_val=<span class="number">0</span>;&#125;     </span><br><span class="line">          <span class="keyword">mutable</span>   <span class="keyword">int</span>   _i;     </span><br><span class="line">          <span class="keyword">static</span>   <span class="keyword">int</span>   _staticVal;       </span><br><span class="line">          <span class="keyword">int</span>   _val;     </span><br><span class="line">          <span class="function"><span class="keyword">void</span>   <span class="title">test</span><span class="params">()</span>   <span class="keyword">const</span></span>&#123;<span class="comment">//const   成员函数     </span></span><br><span class="line"></span><br><span class="line">                _i++;<span class="comment">//正确，mutable数据成员     </span></span><br><span class="line">                _staticVal++;<span class="comment">//正确，static数据成员     </span></span><br><span class="line">                _val++;<span class="comment">//错误     </span></span><br><span class="line"></span><br><span class="line">        &#125;     </span><br><span class="line">&#125;;     </span><br><span class="line"><span class="keyword">int</span>   base::_staticVal=<span class="number">0</span>;</span><br></pre></td></tr></table></figure>
+<h4 id="静态成员函数"><a href="#静态成员函数" class="headerlink" title="静态成员函数"></a>静态成员函数</h4>静态成员函数没有什么太多好讲的。</li>
+</ul>
+<p>1.静态成员函数的地址可用普通函数指针储存，而普通成员函数地址需要用类成员函数指针来储存。举例如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span>   <span class="title">base</span>&#123;</span>     </span><br><span class="line">              <span class="function"><span class="keyword">static</span>   <span class="keyword">int</span>   <span class="title">func1</span><span class="params">()</span></span>;     </span><br><span class="line">              <span class="function"><span class="keyword">int</span>   <span class="title">func2</span><span class="params">()</span></span>;     </span><br><span class="line">&#125;;     </span><br><span class="line"></span><br><span class="line"><span class="built_in"><span class="keyword">int</span></span>   (*pf1)()=&amp;base::func1;<span class="comment">//普通的函数指针     </span></span><br><span class="line"><span class="built_in"><span class="keyword">int</span></span>   (base::*pf2)()=&amp;base::func2;<span class="comment">//成员函数指针</span></span><br></pre></td></tr></table></figure>
+<p>2.静态成员函数不可以调用类的非静态成员。因为静态成员函数不含this指针。<br>3.静态成员函数不可以同时声明为 virtual、const、volatile函数。举例如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="class"><span class="keyword">class</span>   <span class="title">base</span>&#123;</span>     </span><br><span class="line">             <span class="function"><span class="keyword">virtual</span>   <span class="keyword">static</span>   <span class="keyword">void</span>   <span class="title">func1</span><span class="params">()</span></span>;<span class="comment">//错误     </span></span><br><span class="line">             <span class="function"><span class="keyword">static</span>   <span class="keyword">void</span>   <span class="title">func2</span><span class="params">()</span>   <span class="keyword">const</span></span>;<span class="comment">//错误     </span></span><br><span class="line">             <span class="function"><span class="keyword">static</span>   <span class="keyword">void</span>   <span class="title">func3</span><span class="params">()</span>   <span class="keyword">volatile</span></span>;<span class="comment">//错误     </span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>最后要说的一点是，静态成员是可以独立访问的，也就是说，无须创建任何对象实例就可以访问。</p>
+<p><a target="_blank" rel="noopener" href="https://blog.csdn.net/xiajun07061225/article/details/6955226">关于静态数据成员和成员函数的说明，引用于此处</a> </p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/C-C/">C/C++</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C-C/">C/C++</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://shenweikun.github.io/2021/10/10/2021-10-10The-difference-between-C-and-C-static/" data-title="C和C++中static的区别 | Weikun&#39;s Notes" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2021/10/17/2021-10-17-CTS-Introduction/" title="Camera CTS 介绍">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Camera CTS 介绍</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2018/03/14/How-to-edit-MarkDown-visually/"  title="如何可视化编辑markdown?">
+ <strong>下一篇：</strong><br/> 
+ <span>如何可视化编辑markdown?
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E9%A5%B0%E5%B1%80%E9%83%A8%E5%8F%98%E9%87%8F"><span class="toc-number">1.</span> <span class="toc-text">修饰局部变量</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#auto"><span class="toc-number">1.1.</span> <span class="toc-text">auto</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#static"><span class="toc-number">1.2.</span> <span class="toc-text">static</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E9%A5%B0%E5%85%A8%E5%B1%80%E5%8F%98%E9%87%8F-%E5%87%BD%E6%95%B0"><span class="toc-number">2.</span> <span class="toc-text">修饰全局变量&#x2F;函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BF%AE%E9%A5%B0%E9%9D%99%E6%80%81%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98%E5%92%8C%E6%88%90%E5%91%98%E5%87%BD%E6%95%B0"><span class="toc-number">3.</span> <span class="toc-text">修饰静态数据成员和成员函数</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9D%99%E6%80%81%E6%95%B0%E6%8D%AE%E6%88%90%E5%91%98"><span class="toc-number">3.1.</span> <span class="toc-text">静态数据成员</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%9D%99%E6%80%81%E6%88%90%E5%91%98%E5%87%BD%E6%95%B0"><span class="toc-number">3.2.</span> <span class="toc-text">静态成员函数</span></a></li></ol></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/0文章汇总/" title="0文章汇总">0文章汇总<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Android系统/" title="Android系统">Android系统<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/C-C/" title="C/C++">C/C++<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Camera基础/" title="Camera基础">Camera基础<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/建站/" title="建站">建站<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数字成像系统/" title="数字成像系统">数字成像系统<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Camera基础/" title="Camera基础">Camera基础<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数字成像系统/" title="数字成像系统">数字成像系统<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C-C/" title="C/C++">C/C++<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/CTS/" title="CTS">CTS<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/测试/" title="测试">测试<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/内存/" title="内存">内存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Android-Camera系统/" title="Android Camera系统">Android Camera系统<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://coderq.com" target="_blank" title="一个面向程序员交流分享的新一代社区">码农圈</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2024 
+		
+		<a href="/about" target="_blank" title="空白">空白</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?f0ae4262694bb7295d78b134eeeae3b7";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

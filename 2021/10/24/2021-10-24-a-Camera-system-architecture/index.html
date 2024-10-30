@@ -1,0 +1,501 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Android Camera架构概述 | Weikun&#39;s Notes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="空白">
+    
+
+    
+    <meta name="description" content="谷歌根据职能的不同将Camera框架一共划分成了五层，分别是App交互层、Camera Service、Camera Provider、Camera Driver以及Camera Hardware。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Android Camera架构概述">
+<meta property="og:url" content="https://shenweikun.github.io/2021/10/24/2021-10-24-a-Camera-system-architecture/index.html">
+<meta property="og:site_name" content="Weikun&#39;s Notes">
+<meta property="og:description" content="谷歌根据职能的不同将Camera框架一共划分成了五层，分别是App交互层、Camera Service、Camera Provider、Camera Driver以及Camera Hardware。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shenweikun.github.io/2021/10/24/2021-10-24-a-Camera-system-architecture/Android-camera-%E6%9E%B6%E6%9E%84.jpg">
+<meta property="article:published_time" content="2021-10-24T09:47:57.000Z">
+<meta property="article:modified_time" content="2024-10-29T16:38:43.365Z">
+<meta property="article:author" content="空白">
+<meta property="article:tag" content="Android Camera系统">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shenweikun.github.io/2021/10/24/2021-10-24-a-Camera-system-architecture/Android-camera-%E6%9E%B6%E6%9E%84.jpg">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Weikun&#39;s Notes" type="application/atom+xml">
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/%02.css">
+<link rel="stylesheet" href="/.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Weikun&#39;s Notes" title="Weikun&#39;s Notes"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Weikun&#39;s Notes">Weikun&#39;s Notes</a></h1>
+				<h2 class="blog-motto">怀揣代码中的唏嘘，记录生活中的点滴</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:shenweikun.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2021/10/24/2021-10-24-a-Camera-system-architecture/" title="Android Camera架构概述" itemprop="url">Android Camera架构概述</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="空白" target="_blank" itemprop="author">空白</a>
+		
+  <p class="article-time">
+    <time datetime="2021-10-24T09:47:57.000Z" itemprop="datePublished"> 发表于 2021-10-24</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#App%E4%BA%A4%E4%BA%92%E5%B1%82"><span class="toc-number">1.</span> <span class="toc-text">App交互层</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Camera-APP"><span class="toc-number">1.1.</span> <span class="toc-text">Camera APP</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Camera-Framework"><span class="toc-number">1.2.</span> <span class="toc-text">Camera Framework</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Camera-Service"><span class="toc-number">2.</span> <span class="toc-text">Camera Service</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Camera-Provider"><span class="toc-number">3.</span> <span class="toc-text">Camera Provider</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Camera-HAL"><span class="toc-number">3.1.</span> <span class="toc-text">Camera HAL</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Camera-Driver"><span class="toc-number">4.</span> <span class="toc-text">Camera Driver</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Camera-Hardware"><span class="toc-number">5.</span> <span class="toc-text">Camera Hardware</span></a></li></ol>
+		
+		</div>
+		
+		<p>谷歌根据职能的不同将Camera框架一共划分成了五层，分别是App交互层、Camera Service、Camera Provider、Camera Driver以及Camera Hardware。</p>
+<span id="more"></span>
+<p>Android系统利用分层思想，将各层的接口定义与实现分离开来，以接口作为各层的脉络连接整体框架，将具体实现的主导权交由各自有具体实现需求的平台厂商或者Android 开发者，这样既做到把控全局，也给予了众多开发者足够大的创作空间，这体现出了一个优秀的开源系统应有的胸怀和远见。<br>其中，谷歌根据职能的不同将Camera框架一共划分成了五层，分别是App交互层、Camera Service、Camera Provider、Camera Driver以及Camera Hardware，下面的Camera的整体架构图很清晰地显示出了其五层架构以及相互的关联接口。<br><img src="Android-camera-%E6%9E%B6%E6%9E%84.jpg"> </p>
+<h4 id="App交互层"><a href="#App交互层" class="headerlink" title="App交互层"></a>App交互层</h4><h5 id="Camera-APP"><a href="#Camera-APP" class="headerlink" title="Camera APP"></a>Camera APP</h5><p>应用层处于整个框架的顶端，承担着于用户直接进行交互的责任，承接来自用户直接或者间接的比如预览/拍照/录像等一系列具体需求，一旦接收到用户相关UI操作，便会通过Camera Api v2标准接口将需求发送至Camera Framework部分，并且等待Camera Framework回传处理结果，其中包括了图像数据以及整体相机系统状态参数，之后将结果以一定方式反馈给用户。<br>Camera APP主要由应用开发者自行开发和维护。</p>
+<h5 id="Camera-Framework"><a href="#Camera-Framework" class="headerlink" title="Camera Framework"></a>Camera Framework</h5><p>Camera Framework主要位于Camera App与Camera Service之间，以jar包的形式运行在App进程中，它封装了Camera Api v2接口的实现细节，暴露接口给App进行调用，进而接收来自App的请求，同时维护着请求在内部流转的业务逻辑，最终通过调用Camera AIDL跨进程接口将请求发送至Camera Service中进行处理，紧接着，等待Camera Service结果的回传，进而将最终结果发送至App。<br>Framework由Google负责开发和维护。</p>
+<h4 id="Camera-Service"><a href="#Camera-Service" class="headerlink" title="Camera Service"></a>Camera Service</h4><p>Camera Service层位于Camera Framework与Camera Provider之间，作为一个独立进程存在于Android系统中，在系统启动初期会运行起来，它封装了Camera AIDL跨进程接口，提供给Framework进行调用，进而接收来自Framework的图像请求，同时内部维护着关于请求在该层的处理逻辑，最终通过调用Camera HIDL跨进程接口将请求再次下发到Camera Provider中，并且等待结果的回传，进而将结果上传至Framework中。<br>Camera Service由Google负责开发和维护。</p>
+<h4 id="Camera-Provider"><a href="#Camera-Provider" class="headerlink" title="Camera Provider"></a>Camera Provider</h4><p>Camera Provider部分一般由一个独立的进程，例如高通叫provider进程，MTK叫camerahalserver进程。对上通过HIDL接口负责与Camera Service的跨进程通信，接收来自Camera Service的图像请求，对下通过标准的HAL3接口下发Camera的实际操作，控制着具体的Camera HAL。</p>
+<h5 id="Camera-HAL"><a href="#Camera-HAL" class="headerlink" title="Camera HAL"></a>Camera HAL</h5><p>Camera HAL为各个ODM/OEM厂商负责开发和维护，是各个厂商对自身硬件的抽象，该部分是各个ODM/OEM厂商对谷歌Camera HAL3接口的实现，以so库的形式被加载至Camera Provider中。<br>现今，高通对此部分的实作是CamX-CHI架构，MTK对此部分的此部分的实作是mtkcam3架构。</p>
+<h4 id="Camera-Driver"><a href="#Camera-Driver" class="headerlink" title="Camera Driver"></a>Camera Driver</h4><p>Camera Driver位于HAL Moudle与硬件层之间，借助Linux内核驱动框架（V4L2），实现对硬件的驱动和控制。HAL Moudle通过标准文件访问接口，从而能将请求顺利下发内核中。其中，I2C用于对Camera硬件的控制，MIPI用于传输图像数据。</p>
+<h4 id="Camera-Hardware"><a href="#Camera-Hardware" class="headerlink" title="Camera Hardware"></a>Camera Hardware</h4><p>相机硬件处在整个相机体系的最底层，是相机系统的物理实现部分，该部分包括镜头、感光器、ISP三个最重要的模块，还有对焦马达、闪光灯、滤光片、光圈等辅助模块。镜头的作用是汇聚光线，利用光的折射性把射入的光线汇聚到感光器上。感光器的作用是负责光电转换，通过内部感光元件将接收到的光信号转换为电子信号进而通过数电转换模块转为数字信号，并最后传给ISP。ISP负责对数字图像进行一些算法处理，如白平衡、降噪、去马赛克等。</p>
+<p>从整体结构上看，Android Camera系统根据职能的不同，有着严格的分层，层与层之间通过标准的接口进行连接。极大的降低了开发的耦合性，保持了各层的相互独立，使得不同的开发者能够专注于实现自己的业务逻辑，互不干扰又可以协同运行。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/%E6%95%B0%E5%AD%97%E6%88%90%E5%83%8F%E7%B3%BB%E7%BB%9F/">数字成像系统</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Android-Camera系统/">Android Camera系统</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://shenweikun.github.io/2021/10/24/2021-10-24-a-Camera-system-architecture/" data-title="Android Camera架构概述 | Weikun&#39;s Notes" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2021/10/24/2021-10-24-BufferQueue/" title="BufferQueue详解">
+  <strong>上一篇：</strong><br/>
+  <span>
+  BufferQueue详解</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2021/10/17/2021-10-17-CTS-Introduction/"  title="Camera CTS 介绍">
+ <strong>下一篇：</strong><br/> 
+ <span>Camera CTS 介绍
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#App%E4%BA%A4%E4%BA%92%E5%B1%82"><span class="toc-number">1.</span> <span class="toc-text">App交互层</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Camera-APP"><span class="toc-number">1.1.</span> <span class="toc-text">Camera APP</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#Camera-Framework"><span class="toc-number">1.2.</span> <span class="toc-text">Camera Framework</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Camera-Service"><span class="toc-number">2.</span> <span class="toc-text">Camera Service</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Camera-Provider"><span class="toc-number">3.</span> <span class="toc-text">Camera Provider</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#Camera-HAL"><span class="toc-number">3.1.</span> <span class="toc-text">Camera HAL</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Camera-Driver"><span class="toc-number">4.</span> <span class="toc-text">Camera Driver</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Camera-Hardware"><span class="toc-number">5.</span> <span class="toc-text">Camera Hardware</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/0文章汇总/" title="0文章汇总">0文章汇总<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Android系统/" title="Android系统">Android系统<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/C-C/" title="C/C++">C/C++<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Camera基础/" title="Camera基础">Camera基础<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/建站/" title="建站">建站<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数字成像系统/" title="数字成像系统">数字成像系统<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Camera基础/" title="Camera基础">Camera基础<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数字成像系统/" title="数字成像系统">数字成像系统<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C-C/" title="C/C++">C/C++<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/CTS/" title="CTS">CTS<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/测试/" title="测试">测试<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/内存/" title="内存">内存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Android-Camera系统/" title="Android Camera系统">Android Camera系统<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://coderq.com" target="_blank" title="一个面向程序员交流分享的新一代社区">码农圈</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2024 
+		
+		<a href="/about" target="_blank" title="空白">空白</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?f0ae4262694bb7295d78b134eeeae3b7";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

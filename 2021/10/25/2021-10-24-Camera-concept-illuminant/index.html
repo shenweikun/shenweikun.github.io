@@ -1,0 +1,498 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Camera概念篇-标准光源 | Weikun&#39;s Notes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="空白">
+    
+
+    
+    <meta name="description" content="标准光源（Standard Light Sources）是指模拟各种环境光线下的人造光源，让生产工厂或实验室非现场也能获得与这些特定环境下的光源基本一致的照明效果。标准光源通常安装在标准光源箱内，主要用于检测物品的颜色偏差，自动白平衡等校准需要用到各类标准光源。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Camera概念篇-标准光源">
+<meta property="og:url" content="https://shenweikun.github.io/2021/10/25/2021-10-24-Camera-concept-illuminant/index.html">
+<meta property="og:site_name" content="Weikun&#39;s Notes">
+<meta property="og:description" content="标准光源（Standard Light Sources）是指模拟各种环境光线下的人造光源，让生产工厂或实验室非现场也能获得与这些特定环境下的光源基本一致的照明效果。标准光源通常安装在标准光源箱内，主要用于检测物品的颜色偏差，自动白平衡等校准需要用到各类标准光源。">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2021-10-24T16:00:06.000Z">
+<meta property="article:modified_time" content="2024-10-29T16:38:43.362Z">
+<meta property="article:author" content="空白">
+<meta property="article:tag" content="Camera基础">
+<meta property="article:tag" content="数字成像系统">
+<meta name="twitter:card" content="summary">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Weikun&#39;s Notes" type="application/atom+xml">
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/%02.css">
+<link rel="stylesheet" href="/.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Weikun&#39;s Notes" title="Weikun&#39;s Notes"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Weikun&#39;s Notes">Weikun&#39;s Notes</a></h1>
+				<h2 class="blog-motto">怀揣代码中的唏嘘，记录生活中的点滴</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:shenweikun.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2021/10/25/2021-10-24-Camera-concept-illuminant/" title="Camera概念篇-标准光源" itemprop="url">Camera概念篇-标准光源</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="空白" target="_blank" itemprop="author">空白</a>
+		
+  <p class="article-time">
+    <time datetime="2021-10-24T16:00:06.000Z" itemprop="datePublished"> 发表于 2021-10-25</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%89%E6%BA%90%E8%89%B2%E6%B8%A9"><span class="toc-number">1.</span> <span class="toc-text">光源色温</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%89%B2%E6%B8%A9%E5%9C%BA%E6%99%AF"><span class="toc-number">2.</span> <span class="toc-text">色温场景</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%8E%E8%89%B2%E6%B8%A9%E5%85%89%E6%BA%90"><span class="toc-number">3.</span> <span class="toc-text">低色温光源</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%AD%E8%89%B2%E6%B8%A9%E5%85%89%E6%BA%90"><span class="toc-number">4.</span> <span class="toc-text">中色温光源</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%AB%98%E8%89%B2%E6%B8%A9%E5%85%89%E6%BA%90"><span class="toc-number">5.</span> <span class="toc-text">高色温光源</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B6%E5%AE%83%E5%85%89%E6%BA%90"><span class="toc-number">6.</span> <span class="toc-text">其它光源</span></a></li></ol>
+		
+		</div>
+		
+		<p>标准光源（Standard Light Sources）是指模拟各种环境光线下的人造光源，让生产工厂或实验室非现场也能获得与这些特定环境下的光源基本一致的照明效果。标准光源通常安装在标准光源箱内，主要用于检测物品的颜色偏差，自动白平衡等校准需要用到各类标准光源。</p>
+<span id="more"></span>
+<h4 id="光源色温"><a href="#光源色温" class="headerlink" title="光源色温"></a>光源色温</h4><p>光源有高、中、低三种色温，具体有D50,D65,D35,D75,A,F,TL84,TL83,965,CWF,U30 HOR（Horizon）,UV等。</p>
+<p>1.低色温（2700K－3500K）：含有较多的红光、橙光。犹如早晨八时左右的太阳光，给人以温暖、温磬的美感。<br>2.中色温（3500K－5000K）：所含的红光、蓝光等光色较均衡，犹如上午八时以后，十时以前的太阳光。给人以温和、舒适的美感。<br>3.高色温（5000K－7000K）：含有较多的蓝光，象上午十时以后，下午二时以前的太阳光。给人以明亮、清晰的美感。<br>注：光源以K（开尔文）为单位，（K数为高越偏蓝调）色温（Color Temperature），单位：开尔文[Kelvin]定义：当光源所发出的颜色与“黑体”在某一温度下辐射的颜色相同时，“黑体”的温度就称为该光源的色温。“黑体”的温度越高，光谱中蓝色的成份则越多，而红色的成份则越少。色温是衡量一种光源“有多么热”或者“有多么冷”的指标，也是表示一种光源“白得程度”、“黄得程度”或者“蓝得程度”的指标。</p>
+<h4 id="色温场景"><a href="#色温场景" class="headerlink" title="色温场景"></a>色温场景</h4><p>1.暖色光：暖色光的色温在3300K以下，暖色光与白炽灯相近，红光成分较多，能给人温暖、健康、舒适的感觉。适用于家庭、住宅、宿舍、宾馆等场所或温度较低的地方。<br>2.冷白色光：又叫中性色，它的色温在3300K~5300K之间，中性色由于光线柔和，使人有愉快、舒适、安详的感觉。适用于商店、医院、办公室、饭店、餐厅、候车室等场所。<br>3.冷色光：又叫日光色，它的色温在5300K以上，光源接近自然光，有明亮的感觉，使人精力集中。适用于办公室、会议室、教室、绘图室、设计室、图书馆的阅览室、展览橱窗等场所。</p>
+<h4 id="低色温光源"><a href="#低色温光源" class="headerlink" title="低色温光源"></a>低色温光源</h4><p>H：色温2300K，模拟水平日光（Horizon）；<br>F：色温2700K，模拟家庭酒店暖色灯光、比色参考光源，夕阳光、黃光源、落日黃，多为英式灯箱使用；<br>A：色温2856K，美式厨窗射灯，功率60W，多为美式灯箱使用；<br>WF：色温2500-3000K，暖荧光灯（Warm Fluorescent），通用室内荧光灯；<br>Inca灯：色温2856K，模拟美式展示厅射灯，特殊钨丝灯；<br>U30：色温3000K，模拟美国暖白商店光源(Warm White Fluorescent)，功率20W；<br>TL83：色温3000K，欧洲标准暖白商店光源 (Warm White )，功率18W；<br>T：色温2600-3200K，钨丝灯（Tungsten）（40W 2600K，100W 2850K）；<br>U35：色温3500K，模拟指定的商店灯光光源；</p>
+<h4 id="中色温光源"><a href="#中色温光源" class="headerlink" title="中色温光源"></a>中色温光源</h4><p>CWF：色温4150K，模拟美国冷白商店光源（Cold White Fluorescent），功率20W；<br>TL84：色温4000K（3750K），模拟欧洲、日本、中国商店灯光；<br>F：同TL84光源，荧光灯（Fluorescent）；</p>
+<h4 id="高色温光源"><a href="#高色温光源" class="headerlink" title="高色温光源"></a>高色温光源</h4><p>D为Daylight，日光，色温5200K;<br>S：色温7000K，阴影，Shade;<br>D50：色温5000K，模拟太阳光；<br>D65：色温6500K，国际标准人工日光(Artificial Daylight)，模拟蓝天日光；<br>D75：色温7500K，模拟北方平均太阳光，同S；<br>DF：同D65，Daylight Fluorescent;<br>DNP：色温5100K，透射式灯箱；</p>
+<h4 id="其它光源"><a href="#其它光源" class="headerlink" title="其它光源"></a>其它光源</h4><p>UV：波长365nm，紫外灯光源(Ultra-Violet)，功率20W</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Camera%E5%9F%BA%E7%A1%80/">Camera基础</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Camera基础/">Camera基础</a><a href="/tags/数字成像系统/">数字成像系统</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://shenweikun.github.io/2021/10/25/2021-10-24-Camera-concept-illuminant/" data-title="Camera概念篇-标准光源 | Weikun&#39;s Notes" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2021/10/25/2021-10-25-Camera-concept-Color-Correction-Matrix/" title="Camera概念篇-色彩校正矩阵">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Camera概念篇-色彩校正矩阵</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2021/10/24/2021-10-24-Camera-concept-sensorIntroduction/"  title="Camera概念篇-Sensor介绍">
+ <strong>下一篇：</strong><br/> 
+ <span>Camera概念篇-Sensor介绍
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%89%E6%BA%90%E8%89%B2%E6%B8%A9"><span class="toc-number">1.</span> <span class="toc-text">光源色温</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E8%89%B2%E6%B8%A9%E5%9C%BA%E6%99%AF"><span class="toc-number">2.</span> <span class="toc-text">色温场景</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%8E%E8%89%B2%E6%B8%A9%E5%85%89%E6%BA%90"><span class="toc-number">3.</span> <span class="toc-text">低色温光源</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%B8%AD%E8%89%B2%E6%B8%A9%E5%85%89%E6%BA%90"><span class="toc-number">4.</span> <span class="toc-text">中色温光源</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E9%AB%98%E8%89%B2%E6%B8%A9%E5%85%89%E6%BA%90"><span class="toc-number">5.</span> <span class="toc-text">高色温光源</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B6%E5%AE%83%E5%85%89%E6%BA%90"><span class="toc-number">6.</span> <span class="toc-text">其它光源</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/0文章汇总/" title="0文章汇总">0文章汇总<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Android系统/" title="Android系统">Android系统<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/C-C/" title="C/C++">C/C++<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Camera基础/" title="Camera基础">Camera基础<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/建站/" title="建站">建站<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数字成像系统/" title="数字成像系统">数字成像系统<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Camera基础/" title="Camera基础">Camera基础<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数字成像系统/" title="数字成像系统">数字成像系统<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C-C/" title="C/C++">C/C++<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/CTS/" title="CTS">CTS<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/测试/" title="测试">测试<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/内存/" title="内存">内存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Android-Camera系统/" title="Android Camera系统">Android Camera系统<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://coderq.com" target="_blank" title="一个面向程序员交流分享的新一代社区">码农圈</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2024 
+		
+		<a href="/about" target="_blank" title="空白">空白</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?f0ae4262694bb7295d78b134eeeae3b7";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>

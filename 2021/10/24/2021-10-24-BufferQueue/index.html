@@ -1,0 +1,611 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>BufferQueue详解 | Weikun&#39;s Notes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="空白">
+    
+
+    
+    <meta name="description" content="BufferQueue是Android 中所有图形处理操作的核心，是图像buffer流转重要中转站。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="BufferQueue详解">
+<meta property="og:url" content="https://shenweikun.github.io/2021/10/24/2021-10-24-BufferQueue/index.html">
+<meta property="og:site_name" content="Weikun&#39;s Notes">
+<meta property="og:description" content="BufferQueue是Android 中所有图形处理操作的核心，是图像buffer流转重要中转站。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shenweikun.github.io/2021/10/24/2021-10-24-BufferQueue/bufferqueue%E9%80%9A%E4%BF%A1%E7%AE%80%E5%9B%BE.png">
+<meta property="og:image" content="https://shenweikun.github.io/2021/10/24/2021-10-24-BufferQueue/%E7%94%9F%E4%BA%A7%E8%80%85%E6%B6%88%E8%B4%B9%E8%80%851.png">
+<meta property="og:image" content="https://shenweikun.github.io/2021/10/24/2021-10-24-BufferQueue/%E7%94%9F%E4%BA%A7%E8%80%85%E6%B6%88%E8%B4%B9%E8%80%852.png">
+<meta property="og:image" content="https://shenweikun.github.io/2021/10/24/2021-10-24-BufferQueue/All-Slots.png">
+<meta property="og:image" content="https://shenweikun.github.io/2021/10/24/2021-10-24-BufferQueue/buffer%E6%B5%81%E8%BD%AC.png">
+<meta property="og:image" content="https://shenweikun.github.io/2021/10/24/2021-10-24-BufferQueue/buffer%E6%B5%81%E8%BD%AC2.png">
+<meta property="og:image" content="https://shenweikun.github.io/2021/10/24/2021-10-24-BufferQueue/bufferqueue%E4%BD%BF%E7%94%A8%E6%A8%A1%E5%9E%8B1.png">
+<meta property="og:image" content="https://shenweikun.github.io/2021/10/24/2021-10-24-BufferQueue/bufferqueue%E4%BD%BF%E7%94%A8%E6%A8%A1%E5%9E%8B2.png">
+<meta property="og:image" content="https://shenweikun.github.io/2021/10/24/2021-10-24-BufferQueue/ImageReader.png">
+<meta property="og:image" content="https://shenweikun.github.io/2021/10/24/2021-10-24-BufferQueue/imageWriter.png">
+<meta property="og:image" content="https://shenweikun.github.io/2021/10/24/2021-10-24-BufferQueue/attachandqueue.png">
+<meta property="og:image" content="https://shenweikun.github.io/2021/10/24/2021-10-24-BufferQueue/bufferqueue%E6%80%BB%E7%BB%93.png">
+<meta property="article:published_time" content="2021-10-24T13:07:36.000Z">
+<meta property="article:modified_time" content="2024-10-29T16:38:43.352Z">
+<meta property="article:author" content="空白">
+<meta property="article:tag" content="Camera基础">
+<meta property="article:tag" content="内存">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shenweikun.github.io/2021/10/24/2021-10-24-BufferQueue/bufferqueue%E9%80%9A%E4%BF%A1%E7%AE%80%E5%9B%BE.png">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Weikun&#39;s Notes" type="application/atom+xml">
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/%02.css">
+<link rel="stylesheet" href="/.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Weikun&#39;s Notes" title="Weikun&#39;s Notes"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Weikun&#39;s Notes">Weikun&#39;s Notes</a></h1>
+				<h2 class="blog-motto">怀揣代码中的唏嘘，记录生活中的点滴</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:shenweikun.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2021/10/24/2021-10-24-BufferQueue/" title="BufferQueue详解" itemprop="url">BufferQueue详解</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="空白" target="_blank" itemprop="author">空白</a>
+		
+  <p class="article-time">
+    <time datetime="2021-10-24T13:07:36.000Z" itemprop="datePublished"> 发表于 2021-10-24</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#BufferQueue-%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">BufferQueue 简介</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#BufferQueue%E4%B8%8ECamera%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">2.</span> <span class="toc-text">BufferQueue与Camera的关系</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%94%9F%E4%BA%A7%E8%80%85%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B"><span class="toc-number">3.</span> <span class="toc-text">生产者消费者模型</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-%E7%94%9F%E4%BA%A7%E8%80%85%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="toc-number">3.1.</span> <span class="toc-text">1.生产者消费者模型基本原理</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-%E7%94%9F%E4%BA%A7%E8%80%85%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B%E7%9A%84%E7%BB%84%E6%88%90"><span class="toc-number">3.2.</span> <span class="toc-text">2.生产者消费者模型的组成</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#BufferQueue%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="toc-number">4.</span> <span class="toc-text">BufferQueue基本原理</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-BufferQueue%E7%9A%84%E7%94%9F%E4%BA%A7%E6%B6%88%E8%B4%B9%E6%A1%86%E6%9E%B6"><span class="toc-number">4.1.</span> <span class="toc-text">1.BufferQueue的生产消费框架</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-BufferQueueCore%E6%A6%82%E8%BF%B0"><span class="toc-number">4.2.</span> <span class="toc-text">2.BufferQueueCore概述</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-BufferSlot%E5%92%8CBufferItem%E8%AF%A6%E8%A7%A3"><span class="toc-number">4.3.</span> <span class="toc-text">3.BufferSlot和BufferItem详解</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-BufferCount%E8%AF%A6%E8%A7%A3"><span class="toc-number">4.4.</span> <span class="toc-text">4.BufferCount详解</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#BufferQueue%E4%B8%AD%E7%9A%84%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E6%B6%88%E8%B4%B9%E8%80%85%E8%AF%A6%E8%A7%A3"><span class="toc-number">5.</span> <span class="toc-text">BufferQueue中的生产者和消费者详解</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-BufferQueue%E4%B8%AD%E7%9A%84%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E6%B6%88%E8%B4%B9%E8%80%85%E6%A6%82%E8%BF%B0"><span class="toc-number">5.1.</span> <span class="toc-text">1.BufferQueue中的生产者和消费者概述</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-BufferQueueConsumer%E5%85%B3%E9%94%AE%E6%B5%81%E7%A8%8B%E5%88%86%E6%9E%90"><span class="toc-number">5.2.</span> <span class="toc-text">2.BufferQueueConsumer关键流程分析</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#1-acquirebuffer%E7%9A%84%E6%B5%81%E7%A8%8B"><span class="toc-number">5.2.1.</span> <span class="toc-text">(1). acquirebuffer的流程</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#2-releasebuffer%E7%9A%84%E6%B5%81%E7%A8%8B"><span class="toc-number">5.2.2.</span> <span class="toc-text">(2). releasebuffer的流程</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-BufferQueueProducer%E5%85%B3%E9%94%AE%E6%B5%81%E7%A8%8B%E5%88%86%E6%9E%90"><span class="toc-number">5.3.</span> <span class="toc-text">3.BufferQueueProducer关键流程分析</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#1-dequeuebuffer%E7%9A%84%E6%B5%81%E7%A8%8B"><span class="toc-number">5.3.1.</span> <span class="toc-text">(1). dequeuebuffer的流程</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#2-attachbuffer%E7%9A%84%E6%B5%81%E7%A8%8B"><span class="toc-number">5.3.2.</span> <span class="toc-text">(2). attachbuffer的流程</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#3-queuebuffer%E7%9A%84%E6%B5%81%E7%A8%8B"><span class="toc-number">5.3.3.</span> <span class="toc-text">(3). queuebuffer的流程</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#4-detachBuffer%E7%9A%84%E6%B5%81%E7%A8%8B"><span class="toc-number">5.3.4.</span> <span class="toc-text">(4). detachBuffer的流程</span></a></li></ol></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#BufferQueue%E7%9A%84%E5%AE%8C%E6%95%B4%E7%94%9F%E4%BA%A7%E6%B6%88%E8%B4%B9%E4%BD%93%E7%B3%BB"><span class="toc-number">6.</span> <span class="toc-text">BufferQueue的完整生产消费体系</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-BufferQueue%E7%9A%84%E7%94%9F%E4%BA%A7%E6%B6%88%E8%B4%B9%E5%92%8CBufferSlot%E7%8A%B6%E6%80%81%E5%85%B3%E7%B3%BB"><span class="toc-number">6.1.</span> <span class="toc-text">1.BufferQueue的生产消费和BufferSlot状态关系</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-BufferQueue%E7%9A%84%E5%B0%81%E8%A3%85%E5%85%B3%E7%B3%BB"><span class="toc-number">6.2.</span> <span class="toc-text">2.BufferQueue的封装关系</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-BufferQueue%E7%9A%84%E4%BD%BF%E7%94%A8%E6%A8%A1%E5%9E%8B"><span class="toc-number">6.3.</span> <span class="toc-text">3.BufferQueue的使用模型</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#BufferQueue%E5%9C%A8java%E5%B1%82%E7%9A%84%E5%BA%94%E7%94%A8"><span class="toc-number">7.</span> <span class="toc-text">BufferQueue在java层的应用</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-ImageReader%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B3%E7%B3%BB"><span class="toc-number">7.1.</span> <span class="toc-text">1.ImageReader消费者关系</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#1-ImageReader%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-number">7.1.1.</span> <span class="toc-text">(1). ImageReader基本概念</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#2-ImageReader%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-number">7.1.2.</span> <span class="toc-text">(2). ImageReader的初始化</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#3-ImageReader%E7%9A%84acquirebuffer"><span class="toc-number">7.1.3.</span> <span class="toc-text">(3). ImageReader的acquirebuffer</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#4-ImageReader%E7%9A%84release"><span class="toc-number">7.1.4.</span> <span class="toc-text">(4). ImageReader的release</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-imageWriter%E7%9A%84%E7%94%9F%E4%BA%A7%E8%80%85%E5%85%B3%E7%B3%BB"><span class="toc-number">7.2.</span> <span class="toc-text">2.imageWriter的生产者关系</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#1-ImageWriter%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-number">7.2.1.</span> <span class="toc-text">(1). ImageWriter基本概念</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#2-ImageWriter%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-number">7.2.2.</span> <span class="toc-text">(2). ImageWriter的初始化</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#3-ImageWriter%E7%9A%84dequeue"><span class="toc-number">7.2.3.</span> <span class="toc-text">(3). ImageWriter的dequeue</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#4-ImageWriter%E7%9A%84queue"><span class="toc-number">7.2.4.</span> <span class="toc-text">(4). ImageWriter的queue</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#5-ImageWriter%E7%9A%84attachandqueue"><span class="toc-number">7.2.5.</span> <span class="toc-text">(5).ImageWriter的attachandqueue</span></a></li></ol></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">8.</span> <span class="toc-text">总结</span></a></li></ol>
+		
+		</div>
+		
+		<p>BufferQueue是Android 中所有图形处理操作的核心，是图像buffer流转重要中转站。</p>
+<span id="more"></span>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">相关源码：frameworks/native/libs/gui/</span><br><span class="line">在线阅读：http://aospxref.com/android-11.0.0_r21/xref/frameworks/native/libs/gui/</span><br></pre></td></tr></table></figure>
+<h4 id="BufferQueue-简介"><a href="#BufferQueue-简介" class="headerlink" title="BufferQueue 简介"></a>BufferQueue 简介</h4><p>几乎所有在Android系统中移动图形数据缓冲区的内容都依赖于BufferQueue，比如显示、编码等。<br>BufferQueue是典型的生产者、消费者模型，通信过程如下所示：<br><img src="bufferqueue%E9%80%9A%E4%BF%A1%E7%AE%80%E5%9B%BE.png"><br>运行流程简单如下：<br>1.Dequeue buffer：图形生产者先向BufferQueue申请GraphicBuffer<br>2.queue buffer：填充完GraphicBuffer后，将GraphicBuffer移交给BufferQueue<br>3.BufferQueue会通知图形消费者有新的图形数据可以使用<br>4.acquire buffer：图形消费者就可以从BufferQueue取出GraphicBuffer<br>5.release buffer：使用完之后放回到BufferQueue以便循环使用。<br>一般图形生产者和消费者是在不同进程中，BufferQueue采用了binder和共享内存机制，因此可以高效地在进程间传递图形数据。</p>
+<h4 id="BufferQueue与Camera的关系"><a href="#BufferQueue与Camera的关系" class="headerlink" title="BufferQueue与Camera的关系"></a>BufferQueue与Camera的关系</h4><p>在实际Camera开发过程中，经常会与surface，ImageReader，ImageWriter等打交道。当Camera APP向Framework发送一个request，请求一帧图像数据时，就是通过surface/ImageReader来接收图像数据的，这期间buffer的流转就是通过BufferQueue来实现的。实际上Surface，ImageReader，ImageWriter是对BufferQueue的生产者消费者的封装，其核心实现还是BufferQueue。<br>而BufferQueue是一个生产者消费者模型又是GraphicBuffer管理者，它和显示系统以及Camera流媒体紧密关系着。所以要了解Camera数据如何流转的，绕不开BufferQueue，要了解BufferQueue 就要先了解生产者消费者模型。<br>下面就从生产者消费者模型开始，深入浅出的讲解一下BufferQueue。</p>
+<h4 id="生产者消费者模型"><a href="#生产者消费者模型" class="headerlink" title="生产者消费者模型"></a>生产者消费者模型</h4><h5 id="1-生产者消费者模型基本原理"><a href="#1-生产者消费者模型基本原理" class="headerlink" title="1.生产者消费者模型基本原理"></a>1.生产者消费者模型基本原理</h5><p>在生产者消费者模型中，存在生产者和消费者两种角色，它们通过内存缓冲区进行通信，生产者生产消费者需要的数据，消费者获取生产者生产的数据进行消费。<br>如果没有生产者消费者模型，那么生产者和消费者是直接调用关系，生产速度的和消费速度相互拖累，必须在消费完成之后才能进行下一次生产，如下图：<br><img src="%E7%94%9F%E4%BA%A7%E8%80%85%E6%B6%88%E8%B4%B9%E8%80%851.png"><br>有了生产者和消费者模型之后，生产者生产的数据存到缓冲队列，消费者从队列中取数据去消费，互不影响，互不拖累，耦合性低。如下图:<br><img src="%E7%94%9F%E4%BA%A7%E8%80%85%E6%B6%88%E8%B4%B9%E8%80%852.png"></p>
+<h5 id="2-生产者消费者模型的组成"><a href="#2-生产者消费者模型的组成" class="headerlink" title="2.生产者消费者模型的组成"></a>2.生产者消费者模型的组成</h5><p>总结起来生产者消费者模型由一个场所，和两个角色组成：<br>. 一个场所：数据缓冲区，实现内存共享和轮转。<br>. 两个角色： 生产者(生产线程)生产数据，消费者(消费线程)消费数据。也可以是进程间使用。<br>生产者和消费着之间又需要遵循三种关系和四个基本的原则：<br>. 三个关系：生产者和生产者互斥关系，消费者和消费者互斥关系，生产者和消费者互斥同步关系。<br>. 四个原则：生产者生产的时候消费者不能消费，消费者消费的时候生产者不能生产，缓冲区空时消费者不能消费，缓冲区满时生产者不能生产。</p>
+<p>以上就可以很清晰，简单明了的解释了生产者消费者模型。那么BufferQueue是什么，怎么应用生产者-消费者模型思想的，下面详细说明。</p>
+<h4 id="BufferQueue基本原理"><a href="#BufferQueue基本原理" class="headerlink" title="BufferQueue基本原理"></a>BufferQueue基本原理</h4><h5 id="1-BufferQueue的生产消费框架"><a href="#1-BufferQueue的生产消费框架" class="headerlink" title="1.BufferQueue的生产消费框架"></a>1.BufferQueue的生产消费框架</h5><p>BufferQueue的核心逻辑是生产者消费者逻辑，在BufferQueue这个生产者消费者框架中， BufferQueuecore可以理解为数据缓冲区的管理者，代码逻辑在BufferQueue.cpp和BufferQueuecore.cpp中。<br>它的原始消费者是BufferQueueConsumer，它的原始生产者是BufferQueueProducer。</p>
+<p>那么BufferQueue.cpp 和BufferQueuecore.cpp是什么样的关系呢，可以理解为BufferQueue是创建者，BufferQueuecore是由BufferQueue调用createBufferQueue创建的。</p>
+<p>总的来讲 BufferQueue.cpp 主要定义了createBufferQueue接口和ProxyConsumerListener的onFrameAvailable等通知接口。<br>使用的时候，封装的消费者调用createBufferQueue创建BufferQueuecore，然后根据创建好的BufferQueuecore，去创建原始生产者消费者BufferQueueConsumer和BufferQueueProducer。</p>
+<p>而消费者BufferQueueConsumer在调用connect的时候把ConsumerListener相关的回调接口注册进BufferQueue供ProxyConsumerListener回调使用。</p>
+<p>生产者BufferQueueProducer也有一个connect接口，生产者的connect接口会注册IProducerListener到BufferQueuecore中，在消费者使用完GraphicBuffer释放的时候通过这个Listener通知生产者。</p>
+<p>同时这个IProducerListener会注册Binder死亡通知函数，在死亡的时候回调BufferQueueProducer的binderDied，取消连接。</p>
+<p>至此由BufferQueue BufferQueuecore，BufferQueueConsumer， BufferQueueProducer，组成的核心的生产者消费者模型就建立起来了。</p>
+<p>这里说的是封装的消费者去创建BufferQueuecore有两点需要解释一下:<br>一个是消费者的封装关系，这个后面会详细说明。<br>另外一个就是为什么是消费者创建BufferQueuecore，而不是生产者去创建呢。<br>其实也是可以放到生产者中创建的，但是主要由于两点原因，正常会放在消费者中去创建：<br>1.出于消费者准备好消费了在去生产的思想考虑。<br>2.以消费者端作为核心端去管理，在消费者端创建方便统一管理。</p>
+<h5 id="2-BufferQueueCore概述"><a href="#2-BufferQueueCore概述" class="headerlink" title="2.BufferQueueCore概述"></a>2.BufferQueueCore概述</h5><p>从BufferQueue的生产消费框架建立过程看，BufferQueueCore是核心缓冲区管理者，是由BufferQueue创建的，那么BufferQueueCore具体管理哪些事呢。<br>代码上看主要包含了下面这些关键参数。<br>可以大概划分一下：<br>1.slots相关，用于关联数据核心GraphicBuffer。(包括mSlots mQueue mFreeSlots mfreeBuffers mUnusedSlots,mActiveBuffers )，<br>2.listener相关，用于通知和回调(包括mConsumerListener mLinkedToDeath mConnectedProducerListener)，<br>3.Buffercount相关，用于定BufferQuue中的Buffer数量。(包括mMaxBufferCount mMaxAcquiredBufferCount mMaxDequeuedBufferCount)，<br>4.一些设置项(包括 mConsumerName mDefaultWidth mDefaultHeight mDefaultBufferFormat mDefaultBufferDataSpace)<br>设置相关主要是name 宽高信息，format信息，dataspace信息等,下面会分章节重点讲一下Slots BufferCount和 Listener。</p>
+<h5 id="3-BufferSlot和BufferItem详解"><a href="#3-BufferSlot和BufferItem详解" class="headerlink" title="3.BufferSlot和BufferItem详解"></a>3.BufferSlot和BufferItem详解</h5><p>BufferQueueCore中管理着数据缓冲区，而数据的核心GraphicBuffer关联在BufferSlot中。<br>从源码中分析BufferSlot 和 GraphicBuffer的关联关系：<br>BufferQueueCore.h定义了:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//frameworks/native/libs/gui/include/gui/BufferQueueCore.h</span></span><br><span class="line">BufferQueueDefs::SlotsType mSlots;</span><br></pre></td></tr></table></figure>
+<p>SlotsType的定义如下:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//frameworks/native/libs/gui/include/gui/BufferQueueDefs.h</span></span><br><span class="line">  <span class="keyword">namespace</span> android &#123;</span><br><span class="line">      <span class="class"><span class="keyword">class</span> <span class="title">BufferQueueCore</span>;</span></span><br><span class="line">  </span><br><span class="line">      <span class="keyword">namespace</span> BufferQueueDefs &#123;</span><br><span class="line">          <span class="keyword">typedef</span> BufferSlot SlotsType[NUM_BUFFER_SLOTS];</span><br><span class="line">      &#125; <span class="comment">// namespace BufferQueueDefs</span></span><br><span class="line">  &#125; <span class="comment">// namespace android</span></span><br></pre></td></tr></table></figure>
+<p>由此可以看出mSlots实际上是一个BufferSlot的数组。<br>BufferSolt中定义了一个GraphicBuffer的強指针用于关联mGraphicBuffer。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//frameworks/native/libs/gui/include/gui/BufferSlot.h</span></span><br><span class="line">truct BufferSlot &#123;</span><br><span class="line">    sp&lt;GraphicBuffer&gt; mGraphicBuffer;</span><br><span class="line"> ...</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>这样BufferSlot 和 GraphicBuffer 就关联上了。</p>
+<p>BufferQueue框架中，消费者和生产者对缓冲区数据操作的单元核心就是一个BufferSlot，也就是说所有取GraphicBuffer，放GraphicBuffer的操作都是针对BufferSlot来完成的。</p>
+<p>具体的BufferSlot是怎么取和放的呢。可以看到BufferQueueCore 中还定义了 Fifo mQueue;</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//frameworks/native/libs/gui/include/gui/BufferQueueCore.h</span></span><br><span class="line"></span><br><span class="line">      <span class="keyword">typedef</span> Vector&lt;BufferItem&gt; Fifo;</span><br><span class="line">      </span><br><span class="line">     <span class="comment">// mQueue is a FIFO of queued buffers used in synchronous mode.</span></span><br><span class="line">      Fifo mQueue;</span><br></pre></td></tr></table></figure>
+<p>字面上看，定义了一个先进先出的对列，那么这个队列里存放的是什么呢。<br>可以看到这样的定义typedef Vector Fifo; 也就是说Fifo是的向量集，里面存的是BufferItem。而 BufferItem中又定义了mslots的索引值:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//frameworks/base/libs/hostgraphics/gui/BufferItem.h</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BufferItem</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> mSlot;</span><br><span class="line">...</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>这样就可以和BufferSlot关联上了。</p>
+<p>总结一下可以简单理解成生产者从mQueue上获取BufferItem从而找到了对应的BufferSlot，并对它完成一系列的操作之后，放回到mQueue中供消费者使用，消费者也是从mQueue上获取BufferItem从而找到对应的BufferSlot来消费，消费完成之后放回mQueue。不过需要注意实际上不是真正的把BufferSlot取出放回mQueue，而是mSlots索引值的传递过程。</p>
+<p>BufferQueueCore 中定义的mSlots是BufferSlot数组，默认数组长度为NUM_BUFFER_SLOTS =64</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">/frameworks/native/libs/ui/include/ui/BufferQueueDefs.h</span><br><span class="line"><span class="keyword">static</span> <span class="keyword">constexpr</span> <span class="keyword">int</span> NUM_BUFFER_SLOTS = <span class="number">64</span>;</span><br></pre></td></tr></table></figure>
+<p>但是实际使用的时候64个Slots不一定全用，这里就引入了一个mUnusedSlots，mUnusedSlots只的是不被使用的BufferSlot集合，那么可用的BufferSlot 就是NUM_BUFFER_SLOTS - num(mUnusedSlots) 这么多个。</p>
+<p>在这些可用的BufferSlot中，又会根据BufferSlot当前的状态即BufferState做区分。分为FREE状态下的BufferSlot和非FREE状态下的BufferSlot，非FREE状态下的BufferSlot集合在mActiveBuffers中。<br>FREE状态下的BufferSlot又会根据有没有和GraphicBuffer关联做区分。没有GraphicBuffer与之相关联的BufferSlot集合在mFreeSlots中，有GraphicBuffer与之关联的BufferSlot 集合在mFreeBuffers中。</p>
+<p>在BufferQueueProducer和BufferQueueConsumer的生产消费的过程中，mslots中的BufferSlot会动态的在 mFreeSlots mFreeBuffers mActiveBuffers mUnusedSlots之间进行流转。</p>
+<p>需要注意的是mSlots 是个数据结构数组，但是mFreeSlots mFreeBuffers mActiveBuffers mUnusedSlots 都不是结构数组，都是mSlots的 index值的集合(也就是mSlots的下标的集合)。</p>
+<p>刚刚提到的BufferSlot会根据当前的状态即BufferState做区分为FREE状态的slot和非Free状态的slot。这个BufferState 就是BufferSlot流转过程中的状态。主要包含FREE DEQUEUED QUEUED ACQUIRED 四种状态。</p>
+<p>FREE：FREE状态下的BufferSlot指的是可以被生产者dequeue或attach出来使用的BufferSlot，以及消费者消费完毕release或者detach的BufferSlot。<br>DEQUEUED：DEQUEUED状态的BufferSlot 是已经被生产者dequeue或attach出来供生产使用的BufferSlot。<br>QUEUED：QUEUED状态的BufferSlot 是生产者生产完成放回队列供消费者使用的BufferSlot。<br>ACQUIRED ：消费者从 BufferQueue获取准备消费的BufferSlot。</p>
+<p>BufferState 用isFree isDequeued isQueued isAcquired 接口来判断状态，用attachProducer，detachProducer，dequeue，queue，cancel，freeQueued，acquire，release等接口来完成状态转换。</p>
+<p>可以用下图形象的描述一下mFreeSlots mFreeBuffers mActiveBuffers mUnusedSlots 之间的关系。其中 TotalSlots 最大支持NUM_BUFFER_SLOTS = 64个，调用getMaxBufferCountLocked 获取的是可用的BufferSlot数量后面会详细介绍。<br><img src="All-Slots.png"></p>
+<h5 id="4-BufferCount详解"><a href="#4-BufferCount详解" class="headerlink" title="4.BufferCount详解"></a>4.BufferCount详解</h5><p>BufferSlot中介绍中讲到getMaxBufferCountLocked，可以获取可用的BufferSlot数量maxbuffercount，那么这个可用的数量是哪里来的呢。</p>
+<p>消费者BufferQueueConsumer 提供了setMaxBufferCount接口来设置可用的BufferSlot数量maxbuffercount，默认是数量是NUM_BUFFER_SLOTS=64。</p>
+<p>同时消费者BufferQueueConsumer还提供了setMaxAcquiredBufferCount 接口来设置mMaxAcquiredBufferCount，</p>
+<p>mMaxAcquiredBufferCount 是指一次 同时能被消费者使用的最大BufferCount。</p>
+<p>另外，生产者还提供了一个setMaxDequeuedBufferCount接口来设置mMaxDequeuedBufferCount，</p>
+<p>mMaxDequeuedBufferCount是指一次同时能被生产者用来生产的最大BufferCount</p>
+<p>设定完成之后BufferQueueCore 中就会有 maxBufferCount个mlots， NUM_BUFFER_SLOTS- maxBufferCount个mUnusedSlots</p>
+<p>maxBufferCount，mMaxDequeuedBufferCount ，mMaxAcquiredBufferCount三者之间的关系如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">maxbuffercount = mMaxDequeuedBufferCount + mMaxAcquiredBufferCount</span><br></pre></td></tr></table></figure>
+<h4 id="BufferQueue中的生产者和消费者详解"><a href="#BufferQueue中的生产者和消费者详解" class="headerlink" title="BufferQueue中的生产者和消费者详解"></a>BufferQueue中的生产者和消费者详解</h4><h5 id="1-BufferQueue中的生产者和消费者概述"><a href="#1-BufferQueue中的生产者和消费者概述" class="headerlink" title="1.BufferQueue中的生产者和消费者概述"></a>1.BufferQueue中的生产者和消费者概述</h5><p>上面讲了BufferQueue创建了BufferQueueCore，然后根据BufferQueueCore创建了消费者BufferQueueConsumer和生产者BufferQueueProducer，并详细介绍了数据缓存管理区BufferQueueCore，下面重点介绍一下消费者BufferQueueConsumer和生产者BufferQueueProducer。<br>先介绍一下BufferQueueConsumer和BufferQueueProducer的继承关系和关键方法，然后针对关键函数展开介绍一下BufferQueueConsumer和BufferQueueProducer的工作原理，和流转过程。</p>
+<p>BufferQueueConsumer 和 BufferQueueProducer 分别对应文件BufferQueueConsumer.cpp 和 BufferQueueProducer.cpp 和 BufferQueueCore.cpp 在同级目录都在/frameworks/native/libs/gui目录下。</p>
+<p>下面是这两个类的继承关系和重要函数：<br><em><strong>生产者继承关系:</strong></em></p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//frameworks/native/libs/gui/include/gui/BufferQueueProducer.h</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">BufferQueueProducer</span> :</span> <span class="keyword">public</span> BnGraphicBufferProducer &#123;</span><br><span class="line">...</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">BnGraphicBufferProducer: IGraphicBufferProducer</span><br></pre></td></tr></table></figure>
+<p>可以看到BufferQueueProducer继承了BnGraphicBufferProducer而BnGraphicBufferProducer又继承了IGraphicBufferProducer，来完成主要的BufferSlot的流转操作，也提供了远程代理接口，实现跨进程binder调用。<br>同时BufferQueueProducer还继承了DeathRecipient 用来处理Binder死亡通知。</p>
+<p><em><strong>生产者关键方法:</strong></em><br>requestBuffer 获取对应BufferSlot的GraphicBuffer地址。<br>setMaxDequeuedBufferCount 设置最大同时可以dequeue出来的的BufferSlot数量。<br>dequeueBuffer 从FREE状态下的BufferSlots中队列中获取空闲的BufferSlot做生产使用，优先从mFreeBuffers中获取，如果没有则从mFreeSlots中获取。<br>attachBuffer 绑定已经分配好的GraphicBuffer到FREE状态下的BufferSlot中，优先从mFreeSlots中查找BufferSlot，如果没有则从mFreeBuffers中查找并绑定。<br>queueBuffer 生产者把生产好的BufferSlot放到队列中供消费者使用。<br>detachBuffer 把attachBuffer了GraphicBuffer的 Active状态下的BufferSlot的放到mFreeBuffers之后直接取消GraphicBuffer的绑定。<br>detachNextBuffer 把需要释放的BufferSlot中的GraphicBuffer指针赋值到outBuffer输出之后，把BufferSlot的放到mFreeBuffers并解绑定GraphicBuffer。<br>cancelBuffer 把BufferSlot放回到mfreeBuffers中，不会释放graphicbuffer。<br>connect 生产者通过该接口把IProducerListener注册到BufferQueueCore中供消费者回调，同时建立了Binder死亡通知通路。<br>disconnect断开BufferQueueProducer和BufferQueueCore之间建立的链接关系。</p>
+<p><em><strong>消费者继承关系:</strong></em><br>(BufferQueueConsumer.cpp) BufferQueueConsumer:BnGraphicBufferConsumer<br>BnGraphicBufferConsumer:IGraphicBufferConsumer<br>可以看到BufferQueueConsumer的实现结构和BufferQueueProducer很相似继承了BnGraphicBufferConsumer 而BnGraphicBufferConsumer又最终继承了IGraphicBufferConsumer，来完成主要的BufferSlot的流转操作，也提供了远程代理接口，实现跨进程binder调用。</p>
+<p><em><strong>消费者关键方法:</strong></em><br>acquireBuffer 获取QUEUE状态下的BufferSlot进行消费。<br>releaseBuffer消费完成之后把BufferSlot放回mFreeBuffers队列中。<br>attachBuffer 把消费者的GraphicBuffer绑定到BufferSlot上使用。<br>detachBuffer把消费者的GraphicBuffer从BufferSlot上解绑。<br>setMaxBufferCount 设置最大可用BufferSlot数量。<br>setMaxAcquiredBufferCount 设置最大同时可以acquire的BufferSlot数量。<br>connect 建立消费者和BufferQueueCore之间的链接，注册IConsumerListener回调。<br>disconnect 销毁消费者和BufferQueue之间的链接。</p>
+<h5 id="2-BufferQueueConsumer关键流程分析"><a href="#2-BufferQueueConsumer关键流程分析" class="headerlink" title="2.BufferQueueConsumer关键流程分析"></a>2.BufferQueueConsumer关键流程分析</h5><h6 id="1-acquirebuffer的流程"><a href="#1-acquirebuffer的流程" class="headerlink" title="(1). acquirebuffer的流程"></a>(1). acquirebuffer的流程</h6><p>主要流程是首先判断AcquireBuffers是否已经超过最大一次能够Acquire的数量，mQueue是否为空，然后从mQueue中获取第一个迭代器赋值给outBuffer输出，同时把mBufferState状态改为Acquired 并从mQueue中移除</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">status_t</span> <span class="title">BufferQueueConsumer::acquireBuffer</span><span class="params">(BufferItem* outBuffer,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">nsecs_t</span> expectedPresent, <span class="keyword">uint64_t</span> maxFrameNumber)</span> </span>&#123;</span><br><span class="line">    ...</span><br><span class="line">    &#123;</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">        <span class="comment">//判断AcquireBuffers是否已经超过最大一次能够Acquire的数量。</span></span><br><span class="line">        <span class="keyword">if</span> (numAcquiredBuffers &gt;= mCore-&gt;mMaxAcquiredBufferCount + <span class="number">1</span>) &#123;</span><br><span class="line">            <span class="keyword">return</span> INVALID_OPERATION;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">        <span class="comment">//判断mQueue队列是否为空</span></span><br><span class="line">        <span class="keyword">if</span> (mCore-&gt;mQueue.<span class="built_in">empty</span>() &amp;&amp; !sharedBufferAvailable) &#123;</span><br><span class="line">            <span class="keyword">return</span> NO_BUFFER_AVAILABLE;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="comment">//从mQueue的第一个迭代器付给front</span></span><br><span class="line">        BufferQueueCore::<span class="function">Fifo::iterator <span class="title">front</span><span class="params">(mCore-&gt;mQueue.begin())</span></span>;</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line">        <span class="keyword">if</span> (sharedBufferAvailable &amp;&amp; mCore-&gt;mQueue.<span class="built_in">empty</span>()) &#123;<span class="comment">//共享buffer的处理逻辑</span></span><br><span class="line">          ...</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;<span class="comment">//正常非共享模式下的逻辑</span></span><br><span class="line">            slot = front-&gt;mSlot;    <span class="comment">//从front获取对应的slot，front是一个BufferItem指针</span></span><br><span class="line">            *outBuffer = *front;    <span class="comment">//把front指向的BufferItem赋值给outBuffer</span></span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="keyword">if</span> (!outBuffer-&gt;mIsStale) &#123;</span><br><span class="line">            mSlots[slot].mAcquireCalled = <span class="literal">true</span>;</span><br><span class="line">            <span class="keyword">if</span> (mCore-&gt;mQueue.<span class="built_in">empty</span>()) &#123;</span><br><span class="line">                mSlots[slot].mBufferState.<span class="built_in">acquireNotInQueue</span>();</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                mSlots[slot].mBufferState.<span class="built_in">acquire</span>();     <span class="comment">//把BufferState修改成acquired状态</span></span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        mCore-&gt;mQueue.<span class="built_in">erase</span>(front);       <span class="comment">//把acquired slot 对应的BufferItem从mQueue中移除。</span></span><br><span class="line"> </span><br><span class="line">        mCore-&gt;mDequeueCondition.<span class="built_in">notify_all</span>();</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> NO_ERROR;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h6 id="2-releasebuffer的流程"><a href="#2-releasebuffer的流程" class="headerlink" title="(2). releasebuffer的流程"></a>(2). releasebuffer的流程</h6><p>releasebuffer主要流程是先做slot frameNumber 以及 BufferState有效性检查，修改mBufferState状态成FREE状态。然后把对应的slot从mActiveBuffers中移除并放回mFreeBuffers的过程。<br>这个过程中不做GraphicBuffer和BufferSlot的解绑定操作，也就是说GraphicBuffer不会被释放。详细流程如下面的代码。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">status_t</span> <span class="title">BufferQueueConsumer::releaseBuffer</span><span class="params">(<span class="keyword">int</span> slot, <span class="keyword">uint64_t</span> frameNumber,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> sp&lt;Fence&gt;&amp; releaseFence, EGLDisplay eglDisplay,</span></span></span><br><span class="line"><span class="params"><span class="function">        EGLSyncKHR eglFence)</span> </span>&#123;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">//slot的合法性判断。</span></span><br><span class="line">    <span class="keyword">if</span> (slot &lt; <span class="number">0</span> || slot &gt;= BufferQueueDefs::NUM_BUFFER_SLOTS ||</span><br><span class="line">            releaseFence == <span class="literal">nullptr</span>) &#123;</span><br><span class="line">        <span class="built_in">BQ_LOGE</span>(<span class="string">&quot;releaseBuffer: slot %d out of range or fence %p NULL&quot;</span>, slot,</span><br><span class="line">                releaseFence.<span class="built_in">get</span>());</span><br><span class="line">        <span class="keyword">return</span> BAD_VALUE;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    sp&lt;IProducerListener&gt; listener;</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="comment">//判断frameNumber是否有效，如果做过reallocated frameNumber将会改变。</span></span><br><span class="line">        <span class="keyword">if</span> (frameNumber != mSlots[slot].mFrameNumber &amp;&amp;</span><br><span class="line">                !mSlots[slot].mBufferState.<span class="built_in">isShared</span>()) &#123;</span><br><span class="line">            <span class="keyword">return</span> STALE_BUFFER_SLOT;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="comment">//判断BufferState是否是Acquired状态</span></span><br><span class="line">        <span class="keyword">if</span> (!mSlots[slot].mBufferState.<span class="built_in">isAcquired</span>()) &#123;</span><br><span class="line">            <span class="keyword">return</span> BAD_VALUE;</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        mSlots[slot].mBufferState.<span class="built_in">release</span>();   <span class="comment">//调用mBufferState.release()将acqiure状态释放。</span></span><br><span class="line"> </span><br><span class="line">        <span class="keyword">if</span> (!mSlots[slot].mBufferState.<span class="built_in">isShared</span>()) &#123;</span><br><span class="line">            mCore-&gt;mActiveBuffers.<span class="built_in">erase</span>(slot);   <span class="comment">//将slot从mActiveBuffers中移除</span></span><br><span class="line">            mCore-&gt;mFreeBuffers.<span class="built_in">push_back</span>(slot); <span class="comment">//将slot放入到mFreeBuffers队列中</span></span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        listener = mCore-&gt;mConnectedProducerListener;  <span class="comment">//获取ProducerListener</span></span><br><span class="line"> </span><br><span class="line">        mCore-&gt;mDequeueCondition.<span class="built_in">notify_all</span>();</span><br><span class="line"> </span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (listener != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">        listener-&gt;<span class="built_in">onBufferReleased</span>();  <span class="comment">//调用Producer的onBufferReleased回调通知Producer完成释放。</span></span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> NO_ERROR;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h5 id="3-BufferQueueProducer关键流程分析"><a href="#3-BufferQueueProducer关键流程分析" class="headerlink" title="3.BufferQueueProducer关键流程分析"></a>3.BufferQueueProducer关键流程分析</h5><h6 id="1-dequeuebuffer的流程"><a href="#1-dequeuebuffer的流程" class="headerlink" title="(1). dequeuebuffer的流程"></a>(1). dequeuebuffer的流程</h6><p>dequeuebuffer是生产者端从BufferQueueCore上获取一个GraphicBuffer进行生产的过程，生产者BufferQueueProducer 会在去获取一个FREE状态的的BufferSlot。<br>同时把mBufferState状态修改成Dequeue状态，把BufferSlot放到mActiveBuffers中管理。也由此可见GraphicBuffer是在这里实际创建的。<br>下面是dequeueBuffer的具体流程：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">status_t</span> <span class="title">BufferQueueProducer::dequeueBuffer</span><span class="params">(<span class="keyword">int</span>* outSlot, sp&lt;android::Fence&gt;* outFence,</span></span></span><br><span class="line"><span class="params"><span class="function">                                            <span class="keyword">uint32_t</span> width, <span class="keyword">uint32_t</span> height, PixelFormat format,</span></span></span><br><span class="line"><span class="params"><span class="function">                                            <span class="keyword">uint64_t</span> usage, <span class="keyword">uint64_t</span>* outBufferAge,</span></span></span><br><span class="line"><span class="params"><span class="function">                                            FrameEventHistoryDelta* outTimestamps)</span> </span>&#123;</span><br><span class="line">    </span><br><span class="line">        <span class="keyword">int</span> found = BufferItem::INVALID_BUFFER_SLOT;</span><br><span class="line">        <span class="comment">//调用waitForFreeSlotThenRelock 找到可以dequeue的 FREE状态下的BufferSlot</span></span><br><span class="line">        <span class="keyword">while</span> (found == BufferItem::INVALID_BUFFER_SLOT) &#123;</span><br><span class="line">            <span class="keyword">status_t</span> status = <span class="built_in">waitForFreeSlotThenRelock</span>(FreeSlotCaller::Dequeue, lock, &amp;found);</span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="function"><span class="keyword">const</span> sp&lt;GraphicBuffer&gt;&amp; <span class="title">buffer</span><span class="params">(mSlots[found].mGraphicBuffer)</span></span>; <span class="comment">//把获取到的mGraphicBuffer地址赋值给buffer。</span></span><br><span class="line"> </span><br><span class="line">        <span class="keyword">if</span> (mCore-&gt;mSharedBufferSlot != found) &#123;</span><br><span class="line">            mCore-&gt;mActiveBuffers.<span class="built_in">insert</span>(found);   <span class="comment">//把找到的slot放到mActiveBuffers中管理</span></span><br><span class="line">        &#125;</span><br><span class="line">        *outSlot = found;  <span class="comment">//赋值给outSlot输出</span></span><br><span class="line"> </span><br><span class="line">        mSlots[found].mBufferState.<span class="built_in">dequeue</span>();  <span class="comment">//修改BufferState 状态成dequeue状态。</span></span><br><span class="line"> </span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> returnFlags;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>FREE状态的BufferSlot又包含了mFreeSlots和mFreebuffers两组slots，dequeue的时候会先从mFreebuffers查找如果有可用的就使用，如果没有就从mFreeSlots获取BufferSlot并分配GraphicBuffer。<br>这个过程在waitForFreeSlotThenRelock中实现<br>下面是waitForFreeSlotThenRelock的流程：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">status_t</span> <span class="title">BufferQueueProducer::waitForFreeSlotThenRelock</span><span class="params">(FreeSlotCaller caller,</span></span></span><br><span class="line"><span class="params"><span class="function">        std::unique_lock&lt;std::mutex&gt;&amp; lock, <span class="keyword">int</span>* found)</span> <span class="keyword">const</span> </span>&#123;</span><br><span class="line">    <span class="keyword">auto</span> callerString = (caller == FreeSlotCaller::Dequeue) ?</span><br><span class="line">            <span class="string">&quot;dequeueBuffer&quot;</span> : <span class="string">&quot;attachBuffer&quot;</span>;</span><br><span class="line">    <span class="keyword">bool</span> tryAgain = <span class="literal">true</span>;</span><br><span class="line">    <span class="keyword">while</span> (tryAgain) &#123;</span><br><span class="line"> </span><br><span class="line">            <span class="keyword">if</span> ()&#123;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                <span class="keyword">if</span> (caller == FreeSlotCaller::Dequeue) &#123;   <span class="comment">//Dequeuebuffer调用这段代码，先调用getFreeBufferLocked从mFreeBuffers中获取，如果找到了就返回。</span></span><br><span class="line">                    <span class="comment">// If we&#x27;re calling this from dequeue, prefer free buffers</span></span><br><span class="line">                    <span class="keyword">int</span> slot = <span class="built_in">getFreeBufferLocked</span>();</span><br><span class="line">                    <span class="keyword">if</span> (slot != BufferQueueCore::INVALID_BUFFER_SLOT) &#123;</span><br><span class="line">                        *found = slot;</span><br><span class="line">                    &#125; <span class="keyword">else</span> <span class="keyword">if</span> (mCore-&gt;mAllowAllocation) &#123;      <span class="comment">// 如果没找到，在调用getFreeSlotLocked从mFreeSlots中获取。</span></span><br><span class="line">                        *found = <span class="built_in">getFreeSlotLocked</span>();</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                    <span class="comment">// If we&#x27;re calling this from attach, prefer free slots</span></span><br><span class="line">                    <span class="keyword">int</span> slot = <span class="built_in">getFreeSlotLocked</span>();         <span class="comment">//attachbuffer调用这段代码，优先先调用getFreeSlotLocked从mFreeSlots中获取，如果找到了就返回。</span></span><br><span class="line">                    <span class="keyword">if</span> (slot != BufferQueueCore::INVALID_BUFFER_SLOT) &#123;</span><br><span class="line">                        *found = slot;</span><br><span class="line">                    &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                        *found = <span class="built_in">getFreeBufferLocked</span>();    如果没找到，在调用getFreeBufferLocked从mFreeBuffers中获取。</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> NO_ERROR;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h6 id="2-attachbuffer的流程"><a href="#2-attachbuffer的流程" class="headerlink" title="(2). attachbuffer的流程"></a>(2). attachbuffer的流程</h6><p>正如上面的waitForFreeSlotThenRelock流程，attachBuffer也是从FREE状态的slots上获取BufferSlot，但是和dequeueBuffer不同attachBuffer是优先从mfreeslots上获取，如果mfreeslots没有，在从mfreebuffers上获取。<br>waitForFreeSlotThenRelock获取到BufferSlot之后，再把已有的申请好的GraphicBuffer绑定到这个BufferSlot上。同时把mBufferState状态修改成Dequeued状态。把BufferSlot放到mActiveBuffers中管理。<br>具体流程如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">status_t</span> <span class="title">BufferQueueProducer::attachBuffer</span><span class="params">(<span class="keyword">int</span>* outSlot,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> sp&lt;android::GraphicBuffer&gt;&amp; buffer)</span> </span>&#123;</span><br><span class="line"> </span><br><span class="line">    <span class="comment">//调用waitForFreeSlotThenRelock 找到可以FREE状态下的BufferSlot</span></span><br><span class="line">    <span class="keyword">status_t</span> status = <span class="built_in">waitForFreeSlotThenRelock</span>(FreeSlotCaller::Attach, lock, &amp;found);</span><br><span class="line">  </span><br><span class="line">    *outSlot = found; <span class="comment">//把找到的slot赋值给outSlot</span></span><br><span class="line"> </span><br><span class="line">    mSlots[*outSlot].mGraphicBuffer = buffer;  <span class="comment">//把准备好的buffer关联到slot的mGraphicBuffer上</span></span><br><span class="line">    mSlots[*outSlot].mBufferState.<span class="built_in">attachProducer</span>(); <span class="comment">// 修改BufferState成Dequued状态</span></span><br><span class="line">  </span><br><span class="line">    mCore-&gt;mActiveBuffers.<span class="built_in">insert</span>(found);            <span class="comment">// 把slot放到mActiveBuffers中管理。</span></span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> returnFlags;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h6 id="3-queuebuffer的流程"><a href="#3-queuebuffer的流程" class="headerlink" title="(3). queuebuffer的流程"></a>(3). queuebuffer的流程</h6><p>queuebuffer是生产者完成对GraphicBuffer的处理之后调用queuebuffer把GraphicBuffer放回mQueue的操作，同时把mBufferState修改成QUEUE状态。<br>具体queuebuffer流程如下：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">status_t</span> <span class="title">BufferQueueProducer::queueBuffer</span><span class="params">(<span class="keyword">int</span> slot,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> QueueBufferInput &amp;input, QueueBufferOutput *output)</span> </span>&#123;</span><br><span class="line"> </span><br><span class="line">    sp&lt;IConsumerListener&gt; frameAvailableListener;</span><br><span class="line">    sp&lt;IConsumerListener&gt; frameReplacedListener;</span><br><span class="line"> </span><br><span class="line">    BufferItem item;</span><br><span class="line">    &#123; <span class="comment">// Autolock scope</span></span><br><span class="line">  </span><br><span class="line">        mSlots[slot].mBufferState.<span class="built_in">queue</span>();  <span class="comment">//修改mBufferState状态为QUEUE状态。</span></span><br><span class="line"> </span><br><span class="line">        <span class="comment">//增加mFrameCounter</span></span><br><span class="line">        ++mCore-&gt;mFrameCounter;</span><br><span class="line">        currentFrameNumber = mCore-&gt;mFrameCounter;</span><br><span class="line">        mSlots[slot].mFrameNumber = currentFrameNumber;</span><br><span class="line"> </span><br><span class="line">        <span class="comment">//给BufferItem赋值</span></span><br><span class="line">        item.mGraphicBuffer = mSlots[slot].mGraphicBuffer;</span><br><span class="line">        item.mSlot = slot;</span><br><span class="line"> </span><br><span class="line">        output-&gt;bufferReplaced = <span class="literal">false</span>;</span><br><span class="line">        <span class="keyword">if</span> (mCore-&gt;mQueue.<span class="built_in">empty</span>()) &#123; <span class="comment">//如果mQueue为空，就直接把BufferItem push到mQueue尾部。</span></span><br><span class="line">            mCore-&gt;mQueue.<span class="built_in">push_back</span>(item);</span><br><span class="line">            frameAvailableListener = mCore-&gt;mConsumerListener;</span><br><span class="line">        &#125; <span class="keyword">else</span> &#123;  <span class="comment">//如mQueue不为空，需要判断一下last BufferItem是否被替换，如果可以替换就替换，如果不可以替换就直接把BufferItem放到mQueue尾部。</span></span><br><span class="line">            <span class="keyword">const</span> BufferItem&amp; last = mCore-&gt;mQueue.<span class="built_in">itemAt</span>(</span><br><span class="line">                    mCore-&gt;mQueue.<span class="built_in">size</span>() - <span class="number">1</span>);</span><br><span class="line">            <span class="keyword">if</span> (last.mIsDroppable) &#123;</span><br><span class="line"> </span><br><span class="line">                <span class="keyword">if</span> (!last.mIsStale) &#123;</span><br><span class="line">                    mSlots[last.mSlot].mBufferState.<span class="built_in">freeQueued</span>();</span><br><span class="line"> </span><br><span class="line">                    <span class="comment">// Don&#x27;t put the shared buffer on the free list.</span></span><br><span class="line">                    <span class="keyword">if</span> (!mSlots[last.mSlot].mBufferState.<span class="built_in">isShared</span>()) &#123;</span><br><span class="line">                        mCore-&gt;mActiveBuffers.<span class="built_in">erase</span>(last.mSlot);</span><br><span class="line">                        mCore-&gt;mFreeBuffers.<span class="built_in">push_back</span>(last.mSlot);</span><br><span class="line">                        output-&gt;bufferReplaced = <span class="literal">true</span>;</span><br><span class="line">                    &#125;</span><br><span class="line">                &#125;</span><br><span class="line"> </span><br><span class="line">                mCore-&gt;mQueue.<span class="built_in">editItemAt</span>(mCore-&gt;mQueue.<span class="built_in">size</span>() - <span class="number">1</span>) = item;</span><br><span class="line">                frameReplacedListener = mCore-&gt;mConsumerListener;</span><br><span class="line">            &#125; <span class="keyword">else</span> &#123;</span><br><span class="line">                mCore-&gt;mQueue.<span class="built_in">push_back</span>(item);</span><br><span class="line">                frameAvailableListener = mCore-&gt;mConsumerListener;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">if</span> (frameAvailableListener != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">            frameAvailableListener-&gt;<span class="built_in">onFrameAvailable</span>(item);   <span class="comment">//调用消费者的onFrameAvailable通知消费者，有queue状态的BufferSlot可以使用。</span></span><br><span class="line">        &#125; <span class="keyword">else</span> <span class="keyword">if</span> (frameReplacedListener != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">            frameReplacedListener-&gt;<span class="built_in">onFrameReplaced</span>(item);     <span class="comment">//调用消费者的onFrameReplaced通知消费者，有queue状态的BufferSlot可以被替换。</span></span><br><span class="line">        &#125;</span><br><span class="line">    &#125; <span class="comment">// Autolock scope</span></span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> NO_ERROR;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h6 id="4-detachBuffer的流程"><a href="#4-detachBuffer的流程" class="headerlink" title="(4). detachBuffer的流程"></a>(4). detachBuffer的流程</h6><p>detachBuffer主要是对应生产者端的attachbuffer操作，将attachbuffer之后的BufferSlot，放回到mFreeSlots中，并解除对GraphicBuffer的绑定，并通知消费者Buffer释放。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">status_t</span> <span class="title">BufferQueueProducer::detachBuffer</span><span class="params">(<span class="keyword">int</span> slot)</span> </span>&#123;</span><br><span class="line"> </span><br><span class="line">    sp&lt;IConsumerListener&gt; listener;</span><br><span class="line">    </span><br><span class="line">        mSlots[slot].mBufferState.<span class="built_in">detachProducer</span>();  <span class="comment">//修改BufferState的Dequeued状态成FREE状态</span></span><br><span class="line">        mCore-&gt;mActiveBuffers.<span class="built_in">erase</span>(slot);           <span class="comment">//把slot从mActiveBuffers中移除</span></span><br><span class="line">        mCore-&gt;mFreeSlots.<span class="built_in">insert</span>(slot);              <span class="comment">//把slot加到mFreeSlots中。</span></span><br><span class="line">        mCore-&gt;<span class="built_in">clearBufferSlotLocked</span>(slot);          <span class="comment">//清除slot和Graphicbuffer的绑定关系。</span></span><br><span class="line">        mCore-&gt;mDequeueCondition.<span class="built_in">notify_all</span>();</span><br><span class="line">        listener = mCore-&gt;mConsumerListener;   <span class="comment">//把消费者回调的listener赋值给listener</span></span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">if</span> (listener != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">        listener-&gt;<span class="built_in">onBuffersReleased</span>();<span class="comment">//调用消费者的listener接口通知消费者Buffer释放</span></span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> NO_ERROR;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h4 id="BufferQueue的完整生产消费体系"><a href="#BufferQueue的完整生产消费体系" class="headerlink" title="BufferQueue的完整生产消费体系"></a>BufferQueue的完整生产消费体系</h4><h5 id="1-BufferQueue的生产消费和BufferSlot状态关系"><a href="#1-BufferQueue的生产消费和BufferSlot状态关系" class="headerlink" title="1.BufferQueue的生产消费和BufferSlot状态关系"></a>1.BufferQueue的生产消费和BufferSlot状态关系</h5><p>上面分别详细介绍了BufferQueueCore BufferSlot BufferState BufferQueueConsumer BufferQueueProducer，也涉及到了部分流转关系。<br>这一节将用图表和文字说明详细的介绍一下 BufferQueueConsumer BufferQueueProducer 和 BufferSlot BufferState 之间的流转关系。</p>
+<p>BufferSlot 包含了FREE DEQUEUED QUEUED ACQUIRED 这几种BufferState对应基本操作方法dequeue/queue/acquire/release的关系如下：</p>
+<p>首先初始状态下，所有可用BufferSlot全是FREE状态，在mFreeSlots中管理。</p>
+<p>BufferQueueProducer 发出dequeueBuffer请求会优先在mFreeSlots找的一个FREE状态的BufferSlot，后面在做dequeueBuffer的时候优先从mFreeBuffers中获取，发现没有对应的GraphicBuffer，就去申请，申请完成之后把GraphicBuffer与Slot绑定，然后把BufferSlot状态修改程Dequeue状态交由生产者生产。</p>
+<p>生产完成之后，BufferQueueProducer 调用queueBuffer，把 BufferSlot放入队列mQueue中供消费者使用，并把BufferSlot的状态设置成QUEUE状态，并调用消费者的onFrameAvailable回调通知消费者，有可消费的BufferSlot可以消费。</p>
+<p>消费者接到通知之后，调用acquireBuffer到mQueue队列中取出BufferSlot消费，并将BufferSlot状态修改程Acquired状态。消费完成之后调用releaseBuffer把BufferSlot放到mFreeBuffers中管理，这时不回去解绑GraphicBuffer和BufferSlot,所以GraphicBuffer不会被释放。</p>
+<p>同时把BufferSlot状态设置为FREE状态，并调用BufferQueueProducer的回调函数通知生产者BufferSlot释放。这样就完成了一次流转。对应下图:<br><img src="buffer%E6%B5%81%E8%BD%AC.png"></p>
+<p>BufferQueue的生产消费关系还有另外一种使用方法。下面是这种操作方法attachbuffer/detachbuffer/cancelbuffer和状态的关系图：<br><img src="buffer%E6%B5%81%E8%BD%AC2.png"><br>同样首先初始状态下，所有可用BufferSlot全是FREE状态，在mFreeSlots中管理。<br>BufferQueueProducer调用attachBuffer 首先优先从mFreeSlots中FREE状态BufferSlot，如果mFreeSlots中没有在从mFreeBuffers中获取，然后把已经分配好的GraphicBuffer关联到该BufferSlot上。<br>并将BufferSlot状态修改成DEQUEUED 这里和dequeueBuffer方式不同，dequeueBuffer是BufferQueueCore负责申请管理GraphicBuffer，而attachBuffer是把申请好的GraphicBuffer关联到BufferQueueCore上。<br>然后BufferQueueProducer 调用queueBuffer，把 BufferSlot放入队列mQueue中供消费者使用，并把BufferSlot的状态设置成QUEUE状态，并调用消费者的onFrameAvailable回调通知消费者消费。<br>消费者接到通知之后，调用acquireBuffer到mQueue队列中取出BufferSlot消费，并将BufferSlot状态修改程Acquired状态。消费完成之后调用releaseBuffer把BufferSlot放到mFreeBuffers中管理，并调用BufferQueueProducer的回调函数通知生产者调用detachBuffer释放GrphicBuffer。这里也可以调用消费者的dettachBuffer完成释放。</p>
+<h5 id="2-BufferQueue的封装关系"><a href="#2-BufferQueue的封装关系" class="headerlink" title="2.BufferQueue的封装关系"></a>2.BufferQueue的封装关系</h5><p>BufferQueue的代码在/frameworks/native/libs/gui中，主要有BufferQueue.cpp BufferQueueCore.cpp BufferQueueProducer.cpp BufferQueueConsumer.cpp 这几个文件前面已经详细介绍过了，BufferQueue框架中的核心实现文件。</p>
+<p>IConsumerListener.cpp IProducerListener.cpp 是生产者消费者相关的回调接口文件。<br>IGraphicBufferProducer.cpp IGraphicBufferConsumer.cpp 为BufferQueueProducer 和BufferQueueConsumer 提供接口，实现跨进程访问。</p>
+<p>BufferItemConsumer.cpp CpuConsumer.cpp GLConsumer.cpp 等都继承ConsumerBase.cpp 来完成对BufferQueueConsumer的封装。</p>
+<p>Surface.cpp SurfaceComposerClient.cpp SurfaceControl.cpp surface相关的文件是对BufferQueueProducer的封装。</p>
+<p>我们正常使用的时候实际上是接触不到BufferQueue的，都是使用的层层封装之后的类，由此可以总结出：<br>BufferQueue的消费者是层层封装的，核心实现是BufferQueueConsumer。<br>BufferItemConsumer是对BufferQueueConsumer的封装，ImageReader又是对BufferItemConsumer的封装，BufferQueueConsumer BufferItemConsumer ImageReader都是消费者。</p>
+<p>BufferQueue的生产者也是层层封装的，核心实现是BufferQueueProducer。<br>Surface 是对BufferQueueProducer的封装，ImageWriter又是对Surface的封装。BufferQueueProducer，Surface ，BufferQueueProducer 都是生产者。<br>每次封装都是有目的，都是为了实现某种特殊的功能。</p>
+<h5 id="3-BufferQueue的使用模型"><a href="#3-BufferQueue的使用模型" class="headerlink" title="3.BufferQueue的使用模型"></a>3.BufferQueue的使用模型</h5><p>BufferQueue 有两种使用方式：<br>一种是生产者dequeue buffer用来生产，生产完成之后调用queueBuffer把GraphicBuffer放回BufferQueue并通过回调通知消费者使用，消费者调用acquireBuffer 获取GraphicBuffer进行消费，消费完成之后调用releaseBuffer 把GraphicBuffer放回BufferQueue，并通知生产者detachBuffer。<br><img src="bufferqueue%E4%BD%BF%E7%94%A8%E6%A8%A1%E5%9E%8B1.png"></p>
+<p>另一种是生产者调用attachBuffer，获取BufferQueue上的一个freeSlot，并将已经分配好的GraphicBuffer与之连接，然后调用queueBuffer放回到BufferQueue上，并通知消费者消费，消费者调用acquireBuffer获取GraphicBuffer进行消费，消费完成之后调用releaseBuffer 把GraphicBuffer放回BufferQueue，并通知生产者detachBuffer。消费完成之后，消费者也可以调用detachBuffer进行释放GraphicBuffer。<br><img src="bufferqueue%E4%BD%BF%E7%94%A8%E6%A8%A1%E5%9E%8B2.png"></p>
+<h4 id="BufferQueue在java层的应用"><a href="#BufferQueue在java层的应用" class="headerlink" title="BufferQueue在java层的应用"></a>BufferQueue在java层的应用</h4><h5 id="1-ImageReader消费者关系"><a href="#1-ImageReader消费者关系" class="headerlink" title="1.ImageReader消费者关系"></a>1.ImageReader消费者关系</h5><h6 id="1-ImageReader基本概念"><a href="#1-ImageReader基本概念" class="headerlink" title="(1). ImageReader基本概念"></a>(1). ImageReader基本概念</h6><p>ImageReader是消费者，消费者承担创建BufferQueue的责任。所以在ImageReader初始化的时候创建了BufferQueue以及最原始的生产者BufferQueueProducer和消费者BufferItemConsumer。Camera APP获取FrameWork的拍照数据一般就是通过ImageReader来获取的。</p>
+<p>ImageReader工作的时候调用acquireNextImage 经过层层调用获取到BufferQueue中的GraphicBuffer来使用，并将状态改成aquired状态。使用完成之后调用releaseBuffer接口放回到mFreeBuffers队列中并通知生产者释放GraphicBuffer。</p>
+<h6 id="2-ImageReader的初始化"><a href="#2-ImageReader的初始化" class="headerlink" title="(2). ImageReader的初始化"></a>(2). ImageReader的初始化</h6><p>ImageReader的初始化是调用nativeInit来完成的，nativeinit调用JNI接口ImageReader_init来实现，<br>在ImageReader_init中会调用BufferQueue::createBufferQueue(&amp;gbProducer, &amp;gbConsumer);创建最原始的生产者消费者和BufferQueueCore，之后会讲原始消费者封装到BufferItemConsumer中，然后调用bufferConsumer→setFrameAvailableListener(ctx);把JNIImageReaderContext实现的回调注册到ConsumerBase中去。生产完成之后发现有可以消费的Buffer，会先触发ConsumerBase::onFrameAvailable,在ConsumerBase::onFrameAvailable中会调用setFrameAvailableListener设置下来的回调，通知ImageReader进行消费。<br>然后会调用ctx-&gt;setProducer(gbProducer);保存原始生产者，供后面获取并封装使用。</p>
+<h6 id="3-ImageReader的acquirebuffer"><a href="#3-ImageReader的acquirebuffer" class="headerlink" title="(3). ImageReader的acquirebuffer"></a>(3). ImageReader的acquirebuffer</h6><p>ImageReader的acquireBuffer主要根据mFormat创建SurfaceImage，然后用这个SurfaceImage做为参数继续调用acquireNextSurfaceImage完成acquire操作，<br>acquireNextSurfaceImage调用nativeImageSetup进而调用JNI接口ImageReader_imageSetup完成acquire操作，之后把SurfaceImage存储到mAcquiredImages中保存，在Release的时候释放。<br>ImageReader_imageSetup 中首先调用getBufferConsumer获取BufferItemConsumer，然后获取BufferItem，接着调用bufferConsumer-&gt;acquireBuffer(buffer, 0);继续完成acquireBuffer操作。<br>并把获取到的BufferItem通过Image_setBufferItem接口设置到image的mNativeBuffer属性中去<br>acquireBuffer调用ConsumerBase::acquireBufferLocked来完成item的填充，然后用mSlots[item-&gt;mSlot].mGraphicBuffer给item→mGraphicBuffer赋值。<br>acquireBufferLocked则又是调用mConsumer-&gt;acquireBuffer完成的，acquireBuffer流程上面已经分析过了，负责获取对应的BufferItem输出。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br></pre></td><td class="code"><pre><span class="line">frameworks/base/media/java/android/media/ImageReader.<span class="function">java</span></span><br><span class="line"><span class="function"><span class="keyword">public</span> Image <span class="title">acquireNextImage</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        SurfaceImage si = <span class="keyword">new</span> <span class="built_in">SurfaceImage</span>(mFormat); <span class="comment">//创建一个SurfaceImage</span></span><br><span class="line">        <span class="keyword">int</span> status = <span class="built_in">acquireNextSurfaceImage</span>(si);   <span class="comment">//调用acquireNextSurfaceImage继续acquire操作</span></span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">private</span> <span class="keyword">int</span> <span class="title">acquireNextSurfaceImage</span><span class="params">(SurfaceImage si)</span> </span>&#123;</span><br><span class="line">        <span class="built_in">synchronized</span> (mCloseLock) &#123;</span><br><span class="line">            <span class="keyword">if</span> (mIsReaderValid) &#123;</span><br><span class="line">                status = <span class="built_in">nativeImageSetup</span>(si);</span><br><span class="line">            &#125;</span><br><span class="line"> </span><br><span class="line">            <span class="keyword">if</span> (status == ACQUIRE_SUCCESS) &#123;</span><br><span class="line">                mAcquiredImages.<span class="built_in">add</span>(si);</span><br><span class="line">            &#125;</span><br><span class="line">            <span class="keyword">return</span> status;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line">frameworks/base/media/jni/android_media_ImageReader.<span class="function">cpp</span></span><br><span class="line"><span class="function"><span class="keyword">static</span> jint <span class="title">ImageReader_imageSetup</span><span class="params">(JNIEnv* env, jobject thiz, jobject image)</span> </span>&#123;</span><br><span class="line"> </span><br><span class="line">    JNIImageReaderContext* ctx = <span class="built_in">ImageReader_getContext</span>(env, thiz);</span><br><span class="line"> </span><br><span class="line">    BufferItemConsumer* bufferConsumer = ctx-&gt;<span class="built_in">getBufferConsumer</span>();</span><br><span class="line">    BufferItem* buffer = ctx-&gt;<span class="built_in">getBufferItem</span>();</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">status_t</span> res = bufferConsumer-&gt;<span class="built_in">acquireBuffer</span>(buffer, <span class="number">0</span>);</span><br><span class="line"> </span><br><span class="line">    <span class="built_in">Image_setBufferItem</span>(env, image, buffer);</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> ACQUIRE_SUCCESS;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line"><span class="function"><span class="keyword">static</span> <span class="keyword">void</span> <span class="title">Image_setBufferItem</span><span class="params">(JNIEnv* env, jobject thiz,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">const</span> BufferItem* buffer)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    env-&gt;<span class="built_in">SetLongField</span>(thiz, gSurfaceImageClassInfo.mNativeBuffer, <span class="keyword">reinterpret_cast</span>&lt;jlong&gt;(buffer));</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">frameworks/native/libs/gui/BufferItemConsumer.<span class="function">cpp</span></span><br><span class="line"><span class="function"><span class="keyword">status_t</span> <span class="title">BufferItemConsumer::acquireBuffer</span><span class="params">(BufferItem *item,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">nsecs_t</span> presentWhen, <span class="keyword">bool</span> waitForFence)</span> </span>&#123;</span><br><span class="line"> </span><br><span class="line">    err = <span class="built_in">acquireBufferLocked</span>(item, presentWhen);</span><br><span class="line"> </span><br><span class="line">    item-&gt;mGraphicBuffer = mSlots[item-&gt;mSlot].mGraphicBuffer;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> OK;</span><br><span class="line">&#125;</span><br><span class="line"> </span><br><span class="line">frameworks/native/libs/gui/ConsumerBase.<span class="function">cpp</span></span><br><span class="line"><span class="function"><span class="keyword">status_t</span> <span class="title">ConsumerBase::acquireBufferLocked</span><span class="params">(BufferItem *item,</span></span></span><br><span class="line"><span class="params"><span class="function">        <span class="keyword">nsecs_t</span> presentWhen, <span class="keyword">uint64_t</span> maxFrameNumber)</span> </span>&#123;</span><br><span class="line">   </span><br><span class="line">    <span class="keyword">status_t</span> err = mConsumer-&gt;<span class="built_in">acquireBuffer</span>(item, presentWhen, maxFrameNumber);  <span class="comment">//调用acquireBuffer完成acquireBuffer操作</span></span><br><span class="line">    <span class="keyword">if</span> (item-&gt;mGraphicBuffer != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">        <span class="keyword">if</span> (mSlots[item-&gt;mSlot].mGraphicBuffer != <span class="literal">nullptr</span>) &#123;</span><br><span class="line">            <span class="built_in">freeBufferLocked</span>(item-&gt;mSlot);</span><br><span class="line">        &#125;</span><br><span class="line">        mSlots[item-&gt;mSlot].mGraphicBuffer = item-&gt;mGraphicBuffer;      <span class="comment">//如果item-&gt;mGraphicBuffer不为空，就用item-&gt;mGraphicBuffer覆盖mSlots[item-&gt;mSlot].mGraphicBuffer</span></span><br><span class="line">    &#125;</span><br><span class="line"> </span><br><span class="line">    <span class="keyword">return</span> OK;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<h6 id="4-ImageReader的release"><a href="#4-ImageReader的release" class="headerlink" title="(4). ImageReader的release"></a>(4). ImageReader的release</h6><p>使用graphicbuffer完成之后的释放需要注意一下：</p>
+<p>消费者的最原始的buffer释放流程(BufferItemConsumer中的流程)应该是使用完成之后先调用releasebuffer将mlots 置位成FREE状态，link到mFreeBuffers中，<br>此时GraphicBuffer还是link在mSlots中，但是处于可用状态。在这个时候需要调用discardFreeBuffers来解除GraphicBuffer和mSlots link关系，<br>然后把mSlots标志成mFreeSlots状态完成释放。但是实际释放过程没有这么简单，ImageReader封装了releaseBuffer接口成releaseImage，但是这个接口是私有的，不能被公开调用。<br>ImageReader还封装了一个close接口，close接口完成了release操作，但是同时也清理掉了ImageReader消费者本身。</p>
+<p>那么如何去释放呢，发现ImageReader的创建的SurfaceImage可以通过acquireNextImage获取，而SurfaceImage中有close方法，这个方法调用了 releaseImage完成SurfaceImage自身的释放。<br>到此为止看起来，该release的都release了，在调用一下discardFreeBuffers就能解决战斗，其实并没有。在生产者进程中Surface自身还维护了一个BufferSlot mSlots[NUM_BUFFER_SLOTS]，<br>attachBuffer的时候 GraphicBuffer link上，在收到消费者onBufferReleased回调之后调用detachNextBuffer取消关联。<br>但是实际上 mFormat ！= HAL_PIXEL_FORMAT_IMPLEMENTATION_DEFINED 的时候是走不到detachNextBuffer的所以还是不能即时释放。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">JNIImageWriterContext::onBufferReleased</span><span class="params">()</span> </span>&#123;</span><br><span class="line">        <span class="comment">// Detach the buffer every time when a buffer consumption is done,</span></span><br><span class="line">        <span class="comment">// need let this callback give a BufferItem, then only detach if it was attached to this</span></span><br><span class="line">        <span class="comment">// Writer. Do the detach unconditionally for opaque format now. see b/19977520</span></span><br><span class="line">        <span class="keyword">if</span> (mFormat == HAL_PIXEL_FORMAT_IMPLEMENTATION_DEFINED) &#123;</span><br><span class="line">            mProducer-&gt;<span class="built_in">detachNextBuffer</span>(&amp;buffer, &amp;fence);</span><br><span class="line">        &#125;</span><br><span class="line">        env-&gt;<span class="built_in">CallStaticVoidMethod</span>(mClazz, gImageWriterClassInfo.postEventFromNative, mWeakThiz);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>下面是ImageReader的初始化,acquirebuffer,releasebuffer的操作流程图：<br><img src="ImageReader.png"></p>
+<h5 id="2-imageWriter的生产者关系"><a href="#2-imageWriter的生产者关系" class="headerlink" title="2.imageWriter的生产者关系"></a>2.imageWriter的生产者关系</h5><h6 id="1-ImageWriter基本概念"><a href="#1-ImageWriter基本概念" class="headerlink" title="(1). ImageWriter基本概念"></a>(1). ImageWriter基本概念</h6><p>ImageWriter是生产者，根据消费者的创建的原始生产者封装并创建自己，然后link到消费者进程。<br>然后通过dequeueInputImage最终调用BufferQueueProducer:dequeueBuffer拿到GraphicBuffer进行处理。<br>处理完成之后调用queueInputImage 最终调用BufferQueueProducer:queueBuffer 把 buffer放回队列供消费者使用。</p>
+<h6 id="2-ImageWriter的初始化"><a href="#2-ImageWriter的初始化" class="headerlink" title="(2). ImageWriter的初始化"></a>(2). ImageWriter的初始化</h6><p>与ImageReader类似，ImageWiter也是调用nativeInit来完成创建工作，nativeInit会调用JNI接口ImageWriter_init，在ImageWriter_init中首先通过surface-&gt;getIGraphicBufferProducer调用获取原始的Producer<br>然后调用new Surface进行封装，然后调用ctx-&gt;setProducer(producer)保存封装好的生产者，封装完成之后调用 producer-&gt;connect链接BufferQueueCOre并注册回调。</p>
+<h6 id="3-ImageWriter的dequeue"><a href="#3-ImageWriter的dequeue" class="headerlink" title="(3). ImageWriter的dequeue"></a>(3). ImageWriter的dequeue</h6><p>ImageWriter提供dequeueInputImage接口来完成dequeue操作，dequeueInputImage主要通过nativeDequeueInputImage来实现，获取image之后会放到到mDequeuedImages保存。<br>nativeDequeueInputImage调用JNI接口ImageWriter_dequeueImage实现，ImageWriter_dequeueImage的主要操作是 通过ctx→getProducer()获取Surface，之后用获取到的Surface调用Surface的dequeueBuffer完成dequeue操作。<br>Surface的dequeueBuffer函数则是调用BufferQueueProducer的dequeueBuffer函数最终实现。</p>
+<h6 id="4-ImageWriter的queue"><a href="#4-ImageWriter的queue" class="headerlink" title="(4). ImageWriter的queue"></a>(4). ImageWriter的queue</h6><p>dequeBuffer主要就是调用nativeQueueInputImage来完成，nativeQueueInputImage调用JNI接口ImageWriter_queueImage来实现，在ImageWriter_queueImage中通过ctx→getProducer获取生产者<br>然后根据获取到的生产者继续调用anw-&gt;queueBuffer完成queueBuffer的操作，最终调用BufferQueuProducer的queueBuffer函数完成queue操作。</p>
+<p>下面是imagewriter 初始化，dequebuffer，queuebuffer的详细的操作流程图：<br><img src="imageWriter.png"></p>
+<h6 id="5-ImageWriter的attachandqueue"><a href="#5-ImageWriter的attachandqueue" class="headerlink" title="(5).ImageWriter的attachandqueue"></a>(5).ImageWriter的attachandqueue</h6><p>如果这个imageBuffer是不属于ImageWriter自己的，就会走attach流程，attach之后调用queue放到BufferQueue中供消费者使用。<br>具体的是先调用ownedByMe判断是否属于自己的，如果不是则先找到之前的Owner,然后调用detachImage断开和之前owner的关系。在然后就是调用attachAndQueueInputImage完成attach和queue操作。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br></pre></td><td class="code"><pre><span class="line"><span class="function"><span class="keyword">public</span> <span class="keyword">void</span> <span class="title">queueInputImage</span><span class="params">(Image image)</span> </span>&#123;</span><br><span class="line">        boolean ownedByMe = <span class="built_in">isImageOwnedByMe</span>(image);</span><br><span class="line"> </span><br><span class="line">        <span class="comment">// For images from other components, need to detach first, then attach.</span></span><br><span class="line">        <span class="keyword">if</span> (!ownedByMe) &#123;</span><br><span class="line">            ImageReader prevOwner = (ImageReader) image.<span class="built_in">getOwner</span>();       <span class="comment">//获取之前的owner</span></span><br><span class="line">            prevOwner.<span class="built_in">detachImage</span>(image);            <span class="comment">//调用detachImage释放和之前owner的关联。</span></span><br><span class="line">            <span class="built_in">attachAndQueueInputImage</span>(image);       <span class="comment">//调用attachAndQueueInputImage完成attach和queue操作。</span></span><br><span class="line">            image.<span class="built_in">close</span>();                        <span class="comment">//关闭image</span></span><br><span class="line">            <span class="keyword">return</span>;                                 <span class="comment">//直接返回</span></span><br><span class="line">        &#125;</span><br><span class="line"> </span><br><span class="line">        <span class="built_in">nativeQueueInputImage</span>(mNativeContext, image, image.<span class="built_in">getTimestamp</span>(), crop.left, crop.top,</span><br><span class="line">                crop.right, crop.bottom, image.<span class="built_in">getTransform</span>(), image.<span class="built_in">getScalingMode</span>());         <span class="comment">//如果ownedByMe则调用这里做queue操作。</span></span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+<p>具体attach流程如下图：<br><img src="attachandqueue.png"></p>
+<h4 id="总结"><a href="#总结" class="headerlink" title="总结"></a>总结</h4><p>综上介绍了消费者模型，BufferQueue的缓存区管理以及关键概念BufferSlot BufferState BufferItem BufferQueue。<br>然后介绍了生产者消费者BufferQueueProducer和 BufferQueueConsumer 的关键方法dequeue/queue/acquire/release。<br>再之后然后介绍了将生产者消费者的生产消费关系和BufferQueue完整的串起来，状态变化，接口回调，Buffer流转。<br>最后介绍了实际应用中BufferQueue的封装层imagereader，imagewriter。<br>BufferQueue的生产消费关系终结如下图，消费者和生产者层层封装，消费者可以跨进程也可以不跨进程，一般不跨。<br>生产者可以跨进程也可以不跨进程一般是跨进程的。<br><img src="bufferqueue%E6%80%BB%E7%BB%93.png"></p>
+<p>————————————————</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">参考链接：https://blog.csdn.net/rabbyheathy/article/details/103748551</span><br></pre></td></tr></table></figure>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/Android%E7%B3%BB%E7%BB%9F/">Android系统</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Camera基础/">Camera基础</a><a href="/tags/内存/">内存</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://shenweikun.github.io/2021/10/24/2021-10-24-BufferQueue/" data-title="BufferQueue详解 | Weikun&#39;s Notes" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2021/10/24/2021-10-24-Camera-concept-sensorIntroduction/" title="Camera概念篇-Sensor介绍">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Camera概念篇-Sensor介绍</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2021/10/24/2021-10-24-a-Camera-system-architecture/"  title="Android Camera架构概述">
+ <strong>下一篇：</strong><br/> 
+ <span>Android Camera架构概述
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#BufferQueue-%E7%AE%80%E4%BB%8B"><span class="toc-number">1.</span> <span class="toc-text">BufferQueue 简介</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#BufferQueue%E4%B8%8ECamera%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">2.</span> <span class="toc-text">BufferQueue与Camera的关系</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E7%94%9F%E4%BA%A7%E8%80%85%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B"><span class="toc-number">3.</span> <span class="toc-text">生产者消费者模型</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-%E7%94%9F%E4%BA%A7%E8%80%85%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="toc-number">3.1.</span> <span class="toc-text">1.生产者消费者模型基本原理</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-%E7%94%9F%E4%BA%A7%E8%80%85%E6%B6%88%E8%B4%B9%E8%80%85%E6%A8%A1%E5%9E%8B%E7%9A%84%E7%BB%84%E6%88%90"><span class="toc-number">3.2.</span> <span class="toc-text">2.生产者消费者模型的组成</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#BufferQueue%E5%9F%BA%E6%9C%AC%E5%8E%9F%E7%90%86"><span class="toc-number">4.</span> <span class="toc-text">BufferQueue基本原理</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-BufferQueue%E7%9A%84%E7%94%9F%E4%BA%A7%E6%B6%88%E8%B4%B9%E6%A1%86%E6%9E%B6"><span class="toc-number">4.1.</span> <span class="toc-text">1.BufferQueue的生产消费框架</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-BufferQueueCore%E6%A6%82%E8%BF%B0"><span class="toc-number">4.2.</span> <span class="toc-text">2.BufferQueueCore概述</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-BufferSlot%E5%92%8CBufferItem%E8%AF%A6%E8%A7%A3"><span class="toc-number">4.3.</span> <span class="toc-text">3.BufferSlot和BufferItem详解</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#4-BufferCount%E8%AF%A6%E8%A7%A3"><span class="toc-number">4.4.</span> <span class="toc-text">4.BufferCount详解</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#BufferQueue%E4%B8%AD%E7%9A%84%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E6%B6%88%E8%B4%B9%E8%80%85%E8%AF%A6%E8%A7%A3"><span class="toc-number">5.</span> <span class="toc-text">BufferQueue中的生产者和消费者详解</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-BufferQueue%E4%B8%AD%E7%9A%84%E7%94%9F%E4%BA%A7%E8%80%85%E5%92%8C%E6%B6%88%E8%B4%B9%E8%80%85%E6%A6%82%E8%BF%B0"><span class="toc-number">5.1.</span> <span class="toc-text">1.BufferQueue中的生产者和消费者概述</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-BufferQueueConsumer%E5%85%B3%E9%94%AE%E6%B5%81%E7%A8%8B%E5%88%86%E6%9E%90"><span class="toc-number">5.2.</span> <span class="toc-text">2.BufferQueueConsumer关键流程分析</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#1-acquirebuffer%E7%9A%84%E6%B5%81%E7%A8%8B"><span class="toc-number">5.2.1.</span> <span class="toc-text">(1). acquirebuffer的流程</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#2-releasebuffer%E7%9A%84%E6%B5%81%E7%A8%8B"><span class="toc-number">5.2.2.</span> <span class="toc-text">(2). releasebuffer的流程</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-BufferQueueProducer%E5%85%B3%E9%94%AE%E6%B5%81%E7%A8%8B%E5%88%86%E6%9E%90"><span class="toc-number">5.3.</span> <span class="toc-text">3.BufferQueueProducer关键流程分析</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#1-dequeuebuffer%E7%9A%84%E6%B5%81%E7%A8%8B"><span class="toc-number">5.3.1.</span> <span class="toc-text">(1). dequeuebuffer的流程</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#2-attachbuffer%E7%9A%84%E6%B5%81%E7%A8%8B"><span class="toc-number">5.3.2.</span> <span class="toc-text">(2). attachbuffer的流程</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#3-queuebuffer%E7%9A%84%E6%B5%81%E7%A8%8B"><span class="toc-number">5.3.3.</span> <span class="toc-text">(3). queuebuffer的流程</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#4-detachBuffer%E7%9A%84%E6%B5%81%E7%A8%8B"><span class="toc-number">5.3.4.</span> <span class="toc-text">(4). detachBuffer的流程</span></a></li></ol></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#BufferQueue%E7%9A%84%E5%AE%8C%E6%95%B4%E7%94%9F%E4%BA%A7%E6%B6%88%E8%B4%B9%E4%BD%93%E7%B3%BB"><span class="toc-number">6.</span> <span class="toc-text">BufferQueue的完整生产消费体系</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-BufferQueue%E7%9A%84%E7%94%9F%E4%BA%A7%E6%B6%88%E8%B4%B9%E5%92%8CBufferSlot%E7%8A%B6%E6%80%81%E5%85%B3%E7%B3%BB"><span class="toc-number">6.1.</span> <span class="toc-text">1.BufferQueue的生产消费和BufferSlot状态关系</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-BufferQueue%E7%9A%84%E5%B0%81%E8%A3%85%E5%85%B3%E7%B3%BB"><span class="toc-number">6.2.</span> <span class="toc-text">2.BufferQueue的封装关系</span></a></li><li class="toc-item toc-level-5"><a class="toc-link" href="#3-BufferQueue%E7%9A%84%E4%BD%BF%E7%94%A8%E6%A8%A1%E5%9E%8B"><span class="toc-number">6.3.</span> <span class="toc-text">3.BufferQueue的使用模型</span></a></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#BufferQueue%E5%9C%A8java%E5%B1%82%E7%9A%84%E5%BA%94%E7%94%A8"><span class="toc-number">7.</span> <span class="toc-text">BufferQueue在java层的应用</span></a><ol class="toc-child"><li class="toc-item toc-level-5"><a class="toc-link" href="#1-ImageReader%E6%B6%88%E8%B4%B9%E8%80%85%E5%85%B3%E7%B3%BB"><span class="toc-number">7.1.</span> <span class="toc-text">1.ImageReader消费者关系</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#1-ImageReader%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-number">7.1.1.</span> <span class="toc-text">(1). ImageReader基本概念</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#2-ImageReader%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-number">7.1.2.</span> <span class="toc-text">(2). ImageReader的初始化</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#3-ImageReader%E7%9A%84acquirebuffer"><span class="toc-number">7.1.3.</span> <span class="toc-text">(3). ImageReader的acquirebuffer</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#4-ImageReader%E7%9A%84release"><span class="toc-number">7.1.4.</span> <span class="toc-text">(4). ImageReader的release</span></a></li></ol></li><li class="toc-item toc-level-5"><a class="toc-link" href="#2-imageWriter%E7%9A%84%E7%94%9F%E4%BA%A7%E8%80%85%E5%85%B3%E7%B3%BB"><span class="toc-number">7.2.</span> <span class="toc-text">2.imageWriter的生产者关系</span></a><ol class="toc-child"><li class="toc-item toc-level-6"><a class="toc-link" href="#1-ImageWriter%E5%9F%BA%E6%9C%AC%E6%A6%82%E5%BF%B5"><span class="toc-number">7.2.1.</span> <span class="toc-text">(1). ImageWriter基本概念</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#2-ImageWriter%E7%9A%84%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-number">7.2.2.</span> <span class="toc-text">(2). ImageWriter的初始化</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#3-ImageWriter%E7%9A%84dequeue"><span class="toc-number">7.2.3.</span> <span class="toc-text">(3). ImageWriter的dequeue</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#4-ImageWriter%E7%9A%84queue"><span class="toc-number">7.2.4.</span> <span class="toc-text">(4). ImageWriter的queue</span></a></li><li class="toc-item toc-level-6"><a class="toc-link" href="#5-ImageWriter%E7%9A%84attachandqueue"><span class="toc-number">7.2.5.</span> <span class="toc-text">(5).ImageWriter的attachandqueue</span></a></li></ol></li></ol></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E6%80%BB%E7%BB%93"><span class="toc-number">8.</span> <span class="toc-text">总结</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/0文章汇总/" title="0文章汇总">0文章汇总<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Android系统/" title="Android系统">Android系统<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/C-C/" title="C/C++">C/C++<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/Camera基础/" title="Camera基础">Camera基础<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/建站/" title="建站">建站<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/数字成像系统/" title="数字成像系统">数字成像系统<sup>1</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Camera基础/" title="Camera基础">Camera基础<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/数字成像系统/" title="数字成像系统">数字成像系统<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C-C/" title="C/C++">C/C++<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/CTS/" title="CTS">CTS<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/测试/" title="测试">测试<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/内存/" title="内存">内存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Android-Camera系统/" title="Android Camera系统">Android Camera系统<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://coderq.com" target="_blank" title="一个面向程序员交流分享的新一代社区">码农圈</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2024 
+		
+		<a href="/about" target="_blank" title="空白">空白</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?f0ae4262694bb7295d78b134eeeae3b7";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+</html>
