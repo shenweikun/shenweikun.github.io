@@ -1,0 +1,517 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>C++基础之二-C++和面向对象 | Weikun&#39;s Notes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="空白">
+    
+
+    
+    <meta name="description" content="从高处看面向对象面向对象是一种编程思想(1)面向对象并不是C++特有的，所有编程语言都可以面向对象(2)面向对象语言就是设计语言特性时充分考虑并且原生支持面向对象特征的那些编程语言(3)面向对象之于编程，就好像比喻修辞法之于写作(4)面向对象只是编程语言语法层面的东西，不影响最终生成的二进制程序，也不关CPU的事 面向对象并不是一个单一概念(1)面向对象三大特征：封装、继承、多态(2)面向对象还">
+<meta property="og:type" content="article">
+<meta property="og:title" content="C++基础之二-C++和面向对象">
+<meta property="og:url" content="https://shenweikun.github.io/2024/11/17/2024-11-17-CPP-Basics-C-and-ObjectOrientation/index.html">
+<meta property="og:site_name" content="Weikun&#39;s Notes">
+<meta property="og:description" content="从高处看面向对象面向对象是一种编程思想(1)面向对象并不是C++特有的，所有编程语言都可以面向对象(2)面向对象语言就是设计语言特性时充分考虑并且原生支持面向对象特征的那些编程语言(3)面向对象之于编程，就好像比喻修辞法之于写作(4)面向对象只是编程语言语法层面的东西，不影响最终生成的二进制程序，也不关CPU的事 面向对象并不是一个单一概念(1)面向对象三大特征：封装、继承、多态(2)面向对象还">
+<meta property="og:locale" content="zh_CN">
+<meta property="article:published_time" content="2024-11-16T17:07:50.000Z">
+<meta property="article:modified_time" content="2024-11-17T18:05:47.059Z">
+<meta property="article:author" content="空白">
+<meta property="article:tag" content="C&#x2F;C++">
+<meta name="twitter:card" content="summary">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Weikun&#39;s Notes" type="application/atom+xml">
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/%02.css">
+<link rel="stylesheet" href="/.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Weikun&#39;s Notes" title="Weikun&#39;s Notes"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Weikun&#39;s Notes">Weikun&#39;s Notes</a></h1>
+				<h2 class="blog-motto">怀揣代码中的唏嘘，记录生活中的点滴</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:shenweikun.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="n" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2024/11/17/2024-11-17-CPP-Basics-C-and-ObjectOrientation/" title="C++基础之二-C++和面向对象" itemprop="url">C++基础之二-C++和面向对象</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="空白" target="_blank" itemprop="author">空白</a>
+		
+  <p class="article-time">
+    <time datetime="2024-11-16T17:07:50.000Z" itemprop="datePublished"> 发表于 2024-11-17</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E%E9%AB%98%E5%A4%84%E7%9C%8B%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1"><span class="toc-number">1.</span> <span class="toc-text">从高处看面向对象</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E6%98%AF%E4%B8%80%E7%A7%8D%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3"><span class="toc-number">1.1.</span> <span class="toc-text">面向对象是一种编程思想</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%B9%B6%E4%B8%8D%E6%98%AF%E4%B8%80%E4%B8%AA%E5%8D%95%E4%B8%80%E6%A6%82%E5%BF%B5"><span class="toc-number">1.2.</span> <span class="toc-text">面向对象并不是一个单一概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8B%93%E5%B1%95%E5%88%86%E6%9E%90%E5%92%8C%E6%80%BB%E7%BB%93"><span class="toc-number">1.3.</span> <span class="toc-text">拓展分析和总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C-%E7%9A%84%E5%B0%81%E8%A3%85%E5%92%8C%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90"><span class="toc-number">2.</span> <span class="toc-text">C++的封装和访问权限</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B8%E5%9E%8B%E7%9A%84C-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BC%96%E7%A8%8B"><span class="toc-number">2.1.</span> <span class="toc-text">典型的C++面向对象编程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E7%9A%84%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%92%8C%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0"><span class="toc-number">2.2.</span> <span class="toc-text">C++的构造函数和析构函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8%E6%9E%84%E9%80%A0%E5%92%8C%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0%E4%B8%AD%E4%BD%BF%E7%94%A8%E5%8A%A8%E6%80%81%E5%86%85%E5%AD%98"><span class="toc-number">2.3.</span> <span class="toc-text">在构造和析构函数中使用动态内存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E4%B8%8E%E7%B1%BB%E7%9A%84%E6%88%90%E5%91%98%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-number">2.4.</span> <span class="toc-text">构造函数与类的成员初始化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8B%B7%E8%B4%9D%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E7%9A%84%E5%BC%95%E5%85%A5"><span class="toc-number">2.5.</span> <span class="toc-text">拷贝构造函数的引入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90%E9%97%AE%E9%A2%98"><span class="toc-number">2.6.</span> <span class="toc-text">什么是访问权限问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E8%AE%BE%E8%AE%A1%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90"><span class="toc-number">2.7.</span> <span class="toc-text">C++为什么要设计访问权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90%E5%B8%A6%E6%9D%A5%E7%9A%84%E4%B8%80%E4%BA%9B%E6%96%B0%E7%BC%96%E7%A8%8B%E7%90%86%E5%BF%B5"><span class="toc-number">2.8.</span> <span class="toc-text">访问权限带来的一些新编程理念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#struct%E5%92%8Cclass%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">2.9.</span> <span class="toc-text">struct和class的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#const%E5%92%8Cmutable%E6%98%AF%E5%B9%B2%E5%98%9B%E7%9A%84"><span class="toc-number">2.10.</span> <span class="toc-text">const和mutable是干嘛的</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C-%E7%9A%84%E7%BB%A7%E6%89%BF%E5%92%8C%E5%A4%9A%E6%80%81%E7%89%B9%E6%80%A7"><span class="toc-number">3.</span> <span class="toc-text">C++的继承和多态特性</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C-%E7%9A%84%E8%BF%90%E7%AE%97%E7%AC%A6%E9%87%8D%E8%BD%BD"><span class="toc-number">4.</span> <span class="toc-text">C++的运算符重载</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C-%E7%9A%84%E9%9D%99%E6%80%81%E7%B1%BB%E5%92%8C%E9%9D%99%E6%80%81%E6%88%90%E5%91%98"><span class="toc-number">5.</span> <span class="toc-text">C++的静态类和静态成员</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C-%E7%9A%84%E5%8F%8B%E5%85%83%E5%87%BD%E6%95%B0%E5%92%8C%E5%8F%8B%E5%85%83%E7%B1%BB"><span class="toc-number">6.</span> <span class="toc-text">C++的友元函数和友元类</span></a></li></ol>
+		
+		</div>
+		
+		<span id="more"></span>
+<h2 id="从高处看面向对象"><a href="#从高处看面向对象" class="headerlink" title="从高处看面向对象"></a>从高处看面向对象</h2><h3 id="面向对象是一种编程思想"><a href="#面向对象是一种编程思想" class="headerlink" title="面向对象是一种编程思想"></a>面向对象是一种编程思想</h3><p>(1)<strong>面向对象并不是C++特有的，所有编程语言都可以面向对象</strong><br>(2)面向对象语言就是设计语言特性时充分考虑并且原生支持面向对象特征的那些编程语言<br>(3)<strong>面向对象之于编程，就好像比喻修辞法之于写作</strong><br>(4)面向对象只是编程语言语法层面的东西，不影响最终生成的二进制程序，也不关CPU的事</p>
+<h3 id="面向对象并不是一个单一概念"><a href="#面向对象并不是一个单一概念" class="headerlink" title="面向对象并不是一个单一概念"></a>面向对象并不是一个单一概念</h3><p>(1)面向对象三大特征：<strong>封装、继承、多态</strong><br>(2)面向对象还会延伸出很多细节，而不同编程语言会选择不同的应对方法<br>(3)C++的语法细节很多，而Java的语法细节少，但都是面向对象的<br>(4)面向对象是设计模式的基础，凡事从简单到复杂其实学起来顺理成章</p>
+<h3 id="拓展分析和总结"><a href="#拓展分析和总结" class="headerlink" title="拓展分析和总结"></a>拓展分析和总结</h3><p>1、Linux中面向对象编程、华为LiteOS中面向对象编程、STM32 HAL库中面向对象编程<br>  - 使用C语言，借助结构体和函数指针来实现面向对象的思想。</p>
+<p>2、总结<br>(1)面向对象是针对面向过程说的，编程时关注对象由“过程”转为“对象”<br>(2)面向对象的外部表象就是一种组织代码，写程序的方式<br>(3)<strong>面向对象的本质是一种封装数据和看待问题的更高层次的视角</strong><br>(4)<strong>面向对象是应对越来越复杂问题，是处理越来越庞大程序的更有效的方法</strong><br>(5)语言由非面向对象升级到面向对象是自然而然的成长，和人一样</p>
+<h2 id="C-的封装和访问权限"><a href="#C-的封装和访问权限" class="headerlink" title="C++的封装和访问权限"></a>C++的封装和访问权限</h2><h3 id="典型的C-面向对象编程"><a href="#典型的C-面向对象编程" class="headerlink" title="典型的C++面向对象编程"></a>典型的C++面向对象编程</h3><p>1、C++面向对象式编程总结<br>(1)整个工作分为2大块：一个是建模和编写类库，一个是使用类库来编写主程序完成任务。<br>(2)有些人只负责建模和编写类库 。<br>(3)有些人直接调用现成类库来编写自己的主任务程序，譬如使用opencv分析一张图片中有没有电动车<br>(4)难度上不确定，2个都可能很难或者很简单。</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//person.hpp文件</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> __PERSON_H__</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> __PERSON_H__</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">namespace</span> MAN</span><br><span class="line">&#123;</span><br><span class="line">        <span class="class"><span class="keyword">class</span> <span class="title">person</span></span></span><br><span class="line"><span class="class">        &#123;</span></span><br><span class="line">        <span class="keyword">public</span>:</span><br><span class="line">                <span class="comment">//属性</span></span><br><span class="line">                string name;</span><br><span class="line">                <span class="keyword">int</span> age;</span><br><span class="line">                <span class="keyword">int</span> male;<span class="comment">//1表示男，0表示女</span></span><br><span class="line">                <span class="comment">//方法        </span></span><br><span class="line">                <span class="function"><span class="keyword">void</span> <span class="title">work</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br><span class="line">                <span class="function"><span class="keyword">void</span> <span class="title">eat</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br><span class="line">                <span class="function"><span class="keyword">void</span> <span class="title">sleep</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br><span class="line"></span><br><span class="line">        <span class="keyword">private</span>:        </span><br><span class="line">        &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//person.cpp文件</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;person.hpp&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> MAN::person::<span class="built_in">work</span>(<span class="keyword">void</span>)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>-&gt;male) </span><br><span class="line">        &#123;</span><br><span class="line">                cout &lt;&lt; <span class="string">&quot;working is coding&quot;</span> &lt;&lt; endl;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">                cout &lt;&lt; <span class="string">&quot;shopping&quot;</span> &lt;&lt; endl;        </span><br><span class="line">        &#125;        </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> MAN::person::<span class="built_in">eat</span>(<span class="keyword">void</span>)</span><br><span class="line">&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;eating food and fruits.&quot;</span> &lt;&lt; endl;        </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> MAN::person::<span class="built_in">sleep</span>(<span class="keyword">void</span>)</span><br><span class="line">&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;sleeping.age = &quot;</span> &lt;&lt; age &lt;&lt; endl;        </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//main.cpp</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;person.hpp&quot;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> MAN;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        person zhangsan;</span><br><span class="line">        </span><br><span class="line">        zhangsan.name = <span class="string">&quot;zhangzheng&quot;</span>;</span><br><span class="line">        zhangsan.age = <span class="number">22</span>;</span><br><span class="line">        zhangsan.male = <span class="number">1</span>;</span><br><span class="line">        </span><br><span class="line">        zhangsan.<span class="built_in">eat</span>();</span><br><span class="line">        zhangsan.<span class="built_in">work</span>();</span><br><span class="line">        zhangsan.<span class="built_in">sleep</span>();</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;        </span><br></pre></td></tr></table></figure>
+
+<p>2、C++学习的三重境界<br>(1)学习C++第一重境界就是语法层面，先学会如何利用C++来建模、来编程，学习语法时先别解决难度大问题。<br>(2)学习C++第二重境界是解决问题层面，学习如果理解并调用现成类库来编写主程序解决问题。<br>(3)学习C++第三重境界是编写类库和sample给别人用，需要基础好且有一定架构思维。</p>
+<h3 id="C-的构造函数和析构函数"><a href="#C-的构造函数和析构函数" class="headerlink" title="C++的构造函数和析构函数"></a>C++的构造函数和析构函数</h3><p>1、什么是构造函数<br>(1)constructor，字面意思是用来构造对象的函数；destructor，字面意思是用来析构对象的函数<br>(2)可以理解为语言自带的一种hook函数（回调函数）<br>  回调函数就是一个被作为参数传递的函数。回调函数就是一个通过函数指针调用的函数。如果你把函数的指针（地址）作为参数传递给另一个函数，当这个指针被用来调用其所指向的函数时，我们就说这是回调函数。<br>(3)<strong>当对象产生时构造函数会自动被调用，一般用于初始化class的属性、分配class内部需要的动态内存</strong><br>(4)<strong>对象消亡时析构函数会自动被调用，一般用于回收constructor中分配的动态内存，避免内存丢失</strong></p>
+<p>2、构造和析构一般用法<br><strong>(1)不写时C++会自动提供默认的构造和析构，也可以显式提供默认构造和析构函数<br>(2)构造和析构函数不需要返回值类型，构造函数可以带参或不带参，析构函数不带参<br>(3)构造函数可以重载（overload），析构函数不需要重载</strong></p>
+<p>3、为什么需要构造函数和析构函数<br>(1)构造函数可以看作是<strong>对象的初始化式</strong>，注意对比对象和变量的初始化区别<br>(2)<strong>构造函数可以为对象完成动态内存申请，同时在析构函数中再释放，形成动态内存的完整使用循环。</strong><br>(3)<strong>C语言中struct无构造函数概念，所以struct中需要用到动态内存时必须在定义struct变量后再次单独申请和释放，而这些操作都需要程序员手工完成</strong><br>(4)C++ class的构造和析构特性，是C++支持面向对象编程的一大语言特性。 </p>
+<h3 id="在构造和析构函数中使用动态内存"><a href="#在构造和析构函数中使用动态内存" class="headerlink" title="在构造和析构函数中使用动态内存"></a>在构造和析构函数中使用动态内存</h3><p>1、析构函数的使用<br>(1)<strong>析构函数在对象对销毁时自动调用</strong>，一般有2种情况<br>(2)<strong>用new分配的对象，用delete显式析构,才会调用析构函数</strong><br>(3)<strong>分配在栈上的对象（例如局部变量），当栈释放时自动析构</strong><br>(4)普通情况下析构函数都是空的，因为不必做什么特别的事情</p>
+<p>2、在class中使用动态内存变量<br>(1)什么情况下用动态内存？<br>  - 需要大块内存，且需要按需灵活的申请和释放，用栈怕爆、用全局怕浪费等<br>(2)在class person中增加一个int *指针，用于指向一个int类型元素的内存空间<br>(3)在构造函数中分配动态内存<br>(4)在析构函数中回收动态内存<br>(5)将动态内存从int变量升级到int数组变量<br>(6)实战中C++常用的动态内存往往是容器vector那些，之后的文章会讲到</p>
+<p>3、用valgrind工具查看内存泄漏<br>(1)valgrind工具介绍：参考：<a target="_blank" rel="noopener" href="https://blog.csdn.net/u012662731/article/details/78652651">https://blog.csdn.net/u012662731/article/details/78652651</a><br>(2)安装：sudo apt-get install valgrind（ubuntu16.04 X64）<br>(3)编译程序：主要是添加-g参数便于调试时有行号 g++ person.cpp main.cpp -g -o apptest<br>(4)使用：valgrind –tool=memcheck –leak-check=full –show-reachable=yes –trace-children=yes ./可执行程序名</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//person.hpp文件</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> __PERSON_H_</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> __PERSON_H_</span></span><br><span class="line"><span class="comment">//要学会使用条件宏从而避免重复包含，否则会出现一些奇怪的错误，如</span></span><br><span class="line"><span class="comment">//person()的重载不支持，会报错，只能有一个person函数</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">namespace</span> MAN&#123;</span><br><span class="line">        </span><br><span class="line">        <span class="class"><span class="keyword">class</span> <span class="title">person</span>;</span><span class="comment">//声明这个类</span></span><br><span class="line">        <span class="class"><span class="keyword">class</span> <span class="title">person</span></span></span><br><span class="line"><span class="class">        &#123;</span>                </span><br><span class="line">        <span class="keyword">public</span>:</span><br><span class="line">                <span class="comment">//属性</span></span><br><span class="line">                string name;</span><br><span class="line">                <span class="keyword">int</span> age;</span><br><span class="line">                <span class="keyword">int</span> male;<span class="comment">//0表示女，1表示男</span></span><br><span class="line">                </span><br><span class="line">                <span class="comment">//构造与析构函数</span></span><br><span class="line">                <span class="built_in">person</span>();<span class="comment">//默认构造函数        </span></span><br><span class="line">                <span class="built_in">person</span>(string name);<span class="comment">//自定义构造函数</span></span><br><span class="line">                ~<span class="built_in">person</span>();<span class="comment">//默认析构函数</span></span><br><span class="line">                </span><br><span class="line">                <span class="comment">//方法</span></span><br><span class="line">                <span class="function"><span class="keyword">void</span> <span class="title">eat</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br><span class="line">                <span class="function"><span class="keyword">void</span> <span class="title">sleep</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br><span class="line">                <span class="function"><span class="keyword">void</span> <span class="title">work</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">private</span>:        </span><br><span class="line">                </span><br><span class="line">        &#125;;   </span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//person.cpp</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;person.hpp&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="keyword">void</span> MAN::person::<span class="built_in">eat</span>(<span class="keyword">void</span>)</span><br><span class="line">&#123;</span><br><span class="line">        cout &lt;&lt; name &lt;&lt; <span class="string">&quot;eat&quot;</span> &lt;&lt; endl;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">void</span> MAN::person::<span class="built_in">sleep</span>(<span class="keyword">void</span>)</span><br><span class="line">&#123;        </span><br><span class="line">        cout &lt;&lt; name &lt;&lt; <span class="string">&quot;sleeping&quot;</span> &lt;&lt; endl;</span><br><span class="line">&#125;</span><br><span class="line"><span class="keyword">void</span> MAN::person::<span class="built_in">work</span>(<span class="keyword">void</span>)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>-&gt;male)</span><br><span class="line">        &#123;                </span><br><span class="line">                cout &lt;&lt; name &lt;&lt; <span class="string">&quot;coding&quot;</span> &lt;&lt; endl;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">                cout &lt;&lt; name &lt;&lt; <span class="string">&quot;shopping&quot;</span> &lt;&lt; endl;                </span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line">MAN::person::<span class="built_in">person</span>()</span><br><span class="line">&#123;</span><br><span class="line">        <span class="comment">//默认构造函数是空的</span></span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;构造函数&quot;</span> &lt;&lt; endl;</span><br><span class="line">&#125;</span><br><span class="line">MAN::person::<span class="built_in">person</span>(string name)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">this</span>-&gt;name = name;<span class="comment">//构造对象后同时对对象的属性初始化</span></span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;构造函数&quot;</span> &lt;&lt; endl;</span><br><span class="line">&#125;</span><br><span class="line">MAN::person::~<span class="built_in">person</span>()</span><br><span class="line">&#123;</span><br><span class="line">        <span class="comment">//默认析构函数也是空的</span></span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;析构函数&quot;</span> &lt;&lt; endl;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main.cpp 文件</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;person.hpp&quot;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> MAN;</span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        string s1 = <span class="string">&quot;linux&quot;</span>;</span><br><span class="line">        <span class="comment">//person *pPerson = new person;</span></span><br><span class="line">        person *pPerson = <span class="keyword">new</span> <span class="built_in">person</span>(s1);</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//pPerson-&gt;name = &quot;zhangsan&quot;;</span></span><br><span class="line">        pPerson-&gt;age = <span class="number">23</span>;</span><br><span class="line">        pPerson-&gt;male = <span class="number">1</span>;</span><br><span class="line">        </span><br><span class="line">        pPerson-&gt;<span class="built_in">eat</span>();</span><br><span class="line">        pPerson-&gt;<span class="built_in">work</span>();</span><br><span class="line">        pPerson-&gt;<span class="built_in">sleep</span>();</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="构造函数与类的成员初始化"><a href="#构造函数与类的成员初始化" class="headerlink" title="构造函数与类的成员初始化"></a>构造函数与类的成员初始化</h3><p>1、构造函数一大功能就是初始化成员变量<br>(1)<strong>默认构造函数不带参，无初始化功能</strong><br>(2)若无其他构造函数，则默认构造函数可以省略。但若有个其他构造函数但还想使用默认构造函数，则默认构造函数不能省，必须写上。<br>(3)栈上分配对象时，若使用默认构造函数，则对象变量后面不加空的()，若用带参构造才需要加”(初始化参数)”</p>
+<p>2、C++的成员初始化列表</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br></pre></td><td class="code"><pre><span class="line">Person::<span class="built_in">Person</span>(string my_name, <span class="keyword">int</span> my_age, <span class="keyword">bool</span> my_male):<span class="built_in">name</span>(my_name),</span><br><span class="line">                                                         <span class="built_in">age</span>(my_age),</span><br><span class="line">                                                         <span class="built_in">male</span>(my_male)</span><br><span class="line">&#123;<span class="comment">//使用构造函数的参数给属性赋值</span></span><br><span class="line">                </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">CExample</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="keyword">int</span> a;</span><br><span class="line">    <span class="keyword">float</span> b;</span><br><span class="line">    <span class="comment">// example 1,构造函数初始化列表</span></span><br><span class="line">    <span class="built_in">CExample</span>(): <span class="built_in">a</span>(<span class="number">0</span>),<span class="built_in">b</span>(<span class="number">8.8</span>)</span><br><span class="line">    &#123;&#125;</span><br><span class="line">    </span><br><span class="line">    <span class="comment">// example 2,构造函数内部赋值</span></span><br><span class="line">    <span class="built_in">CExample</span>()</span><br><span class="line">    &#123;</span><br><span class="line">        a=<span class="number">0</span>;</span><br><span class="line">        b=<span class="number">8.8</span>;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>上面的例子中两个构造函数的结果是一样的。上面的构造函数（使用初始化列表的构造函数）显式的初始化类的成员；而没使用初始化列表的构造函数是对类的成员赋值，并没有进行显式的初始化<br><strong>(1)一般用于带参构造函数中，用来给属性传参赋值<br>(2)成员初始化列表和构造函数之间用冒号间隔，多个列表项之间用逗号间隔<br>(3)初始化列表可以替代构造函数内的赋值语句，达到同样效果</strong></p>
+<p>3、构造函数使用参数默认值<br><strong>(1)class声明时可以给函数形参赋值一个默认值，实际调用时若不传参就使用默认值<br>(2)方法实现时形参可以不写默认值，但是实际是按照声明时的默认值规则的<br>(3)有默认值情况，要注意实际调用不能有重载歧义，否则编译不能通过</strong><br>要注意这样一种歧义情况：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">person</span>()&#123;&#125;;</span><br><span class="line"><span class="built_in">person</span>(string myname = <span class="string">&quot;linux&quot;</span>, <span class="keyword">int</span> myage = <span class="number">10</span>, <span class="keyword">bool</span> male = <span class="literal">true</span>);</span><br></pre></td></tr></table></figure>
+<p>这样去创建对象时:person pPerson;无法判断你是使用的无参数构造函数还是使用有了参数的并且设定了默认值的构造函数。</p>
+<p>还有一种情况也会出现歧义：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">person</span>(string myname, <span class="keyword">int</span> myage);</span><br><span class="line"><span class="built_in">person</span>(string myname, <span class="keyword">int</span> myage, <span class="keyword">bool</span> male = <span class="literal">true</span>);</span><br></pre></td></tr></table></figure>
+<p>因为第二个的最后一个形参有默认参数可以不传参，所以就会造成重载上的歧义。<br>函数重载不考虑参数的默认值，只看参数多个形参情况下，<strong>若有一个形参有默认参数，则其之后的形参也必须有默认参数，其之前的可以不必有。否则会报错。</strong><br>(4)所有参数都带默认值的构造函数，1个可以顶多个构造函数（举例说明）,通过传的参数个数和默认参数的结合实现多种情况:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"><span class="built_in">person</span>(string myname = <span class="string">&quot;linux&quot;</span>, <span class="keyword">int</span> myage = <span class="number">10</span>, <span class="keyword">bool</span> male = <span class="literal">true</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">person</span>(s1)</span><br><span class="line"><span class="built_in">person</span>(string myname, <span class="keyword">int</span> myage = <span class="number">10</span>, <span class="keyword">bool</span> male = <span class="literal">true</span>);</span><br><span class="line"></span><br><span class="line"><span class="built_in">person</span>(s1, <span class="number">23</span>)</span><br><span class="line"><span class="built_in">person</span>(string myname, <span class="keyword">int</span> myage, <span class="keyword">bool</span> male = <span class="literal">true</span>);</span><br></pre></td></tr></table></figure>
+
+<h3 id="拷贝构造函数的引入"><a href="#拷贝构造函数的引入" class="headerlink" title="拷贝构造函数的引入"></a>拷贝构造函数的引入</h3><p>1、用对象来初始化对象<br>(1)<strong>简单变量</strong>定义时，可以直接初始化，<strong>也可以用另一个同类型变量来初始化</strong>（间接初始化）。举例说明:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line"><span class="keyword">int</span> a = <span class="number">10</span>;<span class="comment">//直接初始化</span></span><br><span class="line"><span class="keyword">int</span> b = a;<span class="comment">//间接初始化</span></span><br></pre></td></tr></table></figure>
+
+<p>(2)用class来定义对象时，可以直接初始化，也可以用另一个对象来初始化。举例说明:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line"><span class="function">Person <span class="title">p1</span><span class="params">(“linux”, <span class="number">100</span>, <span class="number">0</span>)</span></span>;<span class="comment">//直接初始化，调用构造函数初始化</span></span><br><span class="line"><span class="function">Person <span class="title">p2</span><span class="params">(p1)</span></span>;  <span class="comment">//间接初始化，调用拷贝构造函数初始化</span></span><br><span class="line">Person p2 = p1; <span class="comment">//间接初始化，调用拷贝构造函数初始化</span></span><br></pre></td></tr></table></figure>
+
+<p>2、为什么可以<br>(1)变量的直接初始化，是变量在被分配内存之后直接用初始化值去填充赋值完成初始化<br>(2)变量用另一个变量来初始化，是给变量分配了内存后执行了一个内存复制操作来完成的初始化<br>(3)<strong>对象的直接初始化，是对象在分配内存之后调用了相应constructor来完成的初始化</strong><br>(4)<strong>对象用另一个对象来初始化，是对象在分配之后调用了相应的copy constructor来完成初始化</strong></p>
+<p>3、拷贝构造函数<br>(1)拷贝构造函数是构造函数的一种，符合构造函数的一般性规则<br>(2)<strong>拷贝构造函数的引入是为了让对象在初始化时能够像简单变量一样的被直接用”=”来赋值</strong><br>(3)<strong>拷贝构造函数不需要重载，他的参数列表固定为const classname&amp; xx</strong><br>    &amp;表示引用<br>(4)拷贝构造函数很合适用初始化列表来实现<br>默认提供的拷贝函数会自动去完成拷贝，而我们自己写的拷贝函数需要自己去进行拷贝。 </p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//person.hpp文件</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> __PERSON_H_</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> __PERSON_H_</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">namespace</span> MAN</span><br><span class="line">&#123;</span><br><span class="line">        <span class="comment">//声明这个类</span></span><br><span class="line">        <span class="class"><span class="keyword">class</span> <span class="title">person</span></span></span><br><span class="line"><span class="class">        &#123;</span></span><br><span class="line">                <span class="comment">//访问权限</span></span><br><span class="line">                <span class="keyword">public</span>:</span><br><span class="line">                        <span class="comment">//属性</span></span><br><span class="line">                        string name;</span><br><span class="line">                        <span class="keyword">int</span> age;</span><br><span class="line">                        <span class="keyword">bool</span> male;</span><br><span class="line">                        </span><br><span class="line">                        <span class="comment">//构造与析构函数</span></span><br><span class="line">                        <span class="built_in">person</span>(string myname, <span class="keyword">int</span> myage, <span class="keyword">bool</span> mymale);</span><br><span class="line">                        <span class="built_in">person</span>(<span class="keyword">const</span> person&amp; pn);  <span class="comment">// 拷贝构造函数</span></span><br><span class="line">                        ~<span class="built_in">person</span>();</span><br><span class="line">                        <span class="keyword">int</span> *p;</span><br><span class="line">                        <span class="keyword">int</span> *p1;</span><br><span class="line">                        </span><br><span class="line">                        <span class="comment">//方法</span></span><br><span class="line">                        <span class="function"><span class="keyword">void</span> <span class="title">eat</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br><span class="line">                        <span class="function"><span class="keyword">void</span> <span class="title">work</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br><span class="line">                        <span class="function"><span class="keyword">void</span> <span class="title">sleep</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br><span class="line">                        <span class="function"><span class="keyword">void</span> <span class="title">print</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br><span class="line">                        </span><br><span class="line">                <span class="keyword">private</span>:        </span><br><span class="line">        &#125;;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br><span class="line">68</span><br><span class="line">69</span><br><span class="line">70</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//person.cpp</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;person.hpp&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> MAN;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">person::eat</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        cout &lt;&lt; name &lt;&lt; <span class="string">&quot;eat&quot;</span> &lt;&lt; endl;        </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">person::work</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="keyword">if</span> (<span class="keyword">this</span>-&gt;male)</span><br><span class="line">        &#123;</span><br><span class="line">                cout &lt;&lt; <span class="keyword">this</span>-&gt;name &lt;&lt; <span class="string">&quot; coding&quot;</span> &lt;&lt; endl;</span><br><span class="line">        &#125;</span><br><span class="line">        <span class="keyword">else</span></span><br><span class="line">        &#123;</span><br><span class="line">                cout &lt;&lt; <span class="keyword">this</span>-&gt;name &lt;&lt; <span class="string">&quot; shopping&quot;</span> &lt;&lt; endl;</span><br><span class="line">        &#125;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">person::sleep</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="keyword">this</span>-&gt;name &lt;&lt; <span class="string">&quot;sleep&quot;</span> &lt;&lt; endl;                </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 打印出对象中所有成员的值</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">person::print</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;name = &quot;</span> &lt;&lt; name &lt;&lt; endl;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;age = &quot;</span> &lt;&lt; age &lt;&lt; endl;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;male = &quot;</span> &lt;&lt; male &lt;&lt; endl;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;p = &quot;</span> &lt;&lt; p &lt;&lt; <span class="string">&quot; p size:&quot;</span> &lt;&lt; <span class="built_in"><span class="keyword">sizeof</span></span>(p) &lt;&lt;endl;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;*p1 = &quot;</span> &lt;&lt; *p1 &lt;&lt; endl;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;-----------&quot;</span> &lt;&lt; endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">person::<span class="built_in">person</span>(string myname, <span class="keyword">int</span> myage, <span class="keyword">bool</span> mymale):<span class="built_in">name</span>(myname),<span class="built_in">age</span>(myage),<span class="built_in">male</span>(mymale)</span><br><span class="line"><span class="comment">//MAN::person::person(string myname, int myage, bool mymale)</span></span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">this</span>-&gt;p = <span class="keyword">new</span> <span class="keyword">int</span>[<span class="number">100</span>];</span><br><span class="line">        <span class="keyword">this</span>-&gt;p1 = <span class="keyword">new</span> <span class="built_in"><span class="keyword">int</span></span>(<span class="number">5</span>);</span><br><span class="line"></span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;userdefined constructor&quot;</span> &lt;&lt; endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">//拷贝构造函数</span></span><br><span class="line">person::<span class="built_in">person</span>(<span class="keyword">const</span> person&amp; pn):<span class="built_in">name</span>(pn.name),<span class="built_in">age</span>(pn.age),<span class="built_in">male</span>(pn.male)</span><br><span class="line">&#123;</span><br><span class="line">        <span class="comment">/*</span></span><br><span class="line"><span class="comment">        //使用初始化成员列表和以下方法的效果相同，已使用初始化列表，这里可以屏蔽</span></span><br><span class="line"><span class="comment">        this-&gt;name = pn.name;</span></span><br><span class="line"><span class="comment">        this-&gt;age = pn.age;</span></span><br><span class="line"><span class="comment">        this-&gt;male = pn.male;</span></span><br><span class="line"><span class="comment">        */</span></span><br><span class="line">        <span class="keyword">this</span>-&gt;p = <span class="keyword">new</span> <span class="built_in"><span class="keyword">int</span></span>(<span class="built_in"><span class="keyword">sizeof</span></span>(pn.p));</span><br><span class="line">        <span class="keyword">this</span>-&gt;p1 = <span class="keyword">new</span> <span class="built_in"><span class="keyword">int</span></span>(*pn.p1); </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line">person::~<span class="built_in">person</span>()</span><br><span class="line">&#123;</span><br><span class="line">        <span class="keyword">delete</span>[] <span class="keyword">this</span>-&gt;p;</span><br><span class="line">        <span class="keyword">delete</span> <span class="keyword">this</span>-&gt;p1;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;userdefined destructor&quot;</span> &lt;&lt; endl;</span><br><span class="line">        </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">// main.cpp</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;person.hpp&quot;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> MAN;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="comment">//方式一：直接初始化</span></span><br><span class="line">        <span class="function">person <span class="title">p1</span><span class="params">(<span class="string">&quot;astyon&quot;</span>, <span class="number">35</span>, <span class="literal">true</span>)</span></span>;</span><br><span class="line">        </span><br><span class="line">        <span class="comment">//方式二：用另一个对象来初始化新定义的对象</span></span><br><span class="line">        <span class="comment">//person p2=p1;  // OK </span></span><br><span class="line">        <span class="function">person <span class="title">p2</span><span class="params">(p1)</span></span>;   <span class="comment">// OK</span></span><br><span class="line">        </span><br><span class="line">        p1.<span class="built_in">print</span>();</span><br><span class="line">        p2.<span class="built_in">print</span>();</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="什么是访问权限问题"><a href="#什么是访问权限问题" class="headerlink" title="什么是访问权限问题"></a>什么是访问权限问题</h3><p>1、public访问权限是全局的</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">(<span class="number">1</span>)<span class="keyword">public</span>的成员变量，在类的成员方法中可以直接访问</span><br><span class="line"></span><br><span class="line">(<span class="number">2</span>)<span class="keyword">public</span>的成员变量，在任何外部代码中可以通过类的对象来直接访问</span><br><span class="line"></span><br><span class="line">(<span class="number">3</span>)<span class="keyword">public</span>的成员方法，在类内其他成员方法中可以直接调用</span><br><span class="line"></span><br><span class="line">(<span class="number">4</span>)<span class="keyword">public</span>的成员方法，在任何外部代码中可以通过类的对象来直接访问</span><br><span class="line"></span><br><span class="line">(<span class="number">5</span>)<span class="keyword">public</span>就是完全不设防</span><br></pre></td></tr></table></figure>
+
+<p>2、private访问权限</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br></pre></td><td class="code"><pre><span class="line">(<span class="number">1</span>)<span class="keyword">private</span>的成员变量，在类的成员方法中可以直接访问</span><br><span class="line"></span><br><span class="line">(<span class="number">2</span>)<span class="keyword">private</span>的成员变量，在任何外部代码中不可以通过对象来直接访问</span><br><span class="line"></span><br><span class="line">(<span class="number">3</span>)<span class="keyword">private</span>的成员方法，在类内其他成员方法中可以直接调用</span><br><span class="line"></span><br><span class="line">(<span class="number">4</span>)<span class="keyword">private</span>的成员方法，在任何外部代码中不可以通过对象来直接访问</span><br><span class="line"></span><br><span class="line">(<span class="number">5</span>)<span class="keyword">private</span>就是对内不设防，对外完全设防的</span><br></pre></td></tr></table></figure>
+
+<p>3、更多关于访问权限问题的问题</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">(<span class="number">1</span>)<span class="keyword">protected</span>是第三种访问权限修饰符，如果有必要还可以有第<span class="number">4</span>种甚至更多</span><br><span class="line"></span><br><span class="line">(<span class="number">2</span>)访问权限叠加类的继承、<span class="keyword">static</span>、<span class="keyword">friend</span>等特性后才更加显出复杂性和威力</span><br><span class="line"></span><br><span class="line">(<span class="number">3</span>)暂时只先引入这个概念，掌握基本用法和规则即可，后面逐步去深入</span><br><span class="line"></span><br><span class="line">(<span class="number">4</span>)<span class="keyword">protected</span>: 可以被该类中的函数、子类的函数、以及其友元函数访问,但不能被该类的对象访问</span><br></pre></td></tr></table></figure>
+
+<h3 id="C-为什么要设计访问权限"><a href="#C-为什么要设计访问权限" class="headerlink" title="C++为什么要设计访问权限"></a>C++为什么要设计访问权限</h3><p>1、访问权限作用1：保护内部资源</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(<span class="number">1</span>)<span class="keyword">private</span>的成员是<span class="class"><span class="keyword">class</span>内部使用，外部没必要直接访问（读取或赋值），所以干脆在语法上让你看不见</span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">(2)访问权限的保护是一种语法层面的保护，而非硬件上限制访问，硬件做不了这么细致</span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">(3)最终目的也是为了整个程序更安全</span></span><br></pre></td></tr></table></figure>
+
+<p>2、访问权限作用2：隐藏外部无需关心的细节</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(<span class="number">1</span>)将<span class="class"><span class="keyword">class</span>内部使用而外部绝不会用到的成员变量隐藏起来，以免干扰外部或者不小心被外部修改了</span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">(2)隐藏细节可以降低使用类库的人的难度，调用时只看到对我有用的东西</span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">(3)这个隐藏其实是把<span class="keyword">class</span>的作者和使用者专业分工，是很有必要的</span></span><br></pre></td></tr></table></figure>
+
+<p>3、这就是面向对象的封装特性</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">(<span class="number">1</span>)封装特性的体现之一就是抽象，抽象的一层意思就是隐藏掉不必要的细节</span><br><span class="line"></span><br><span class="line">(<span class="number">2</span>)封装特性的体现之一就是组织和保护，便于整个整体和外部更合理的交流</span><br></pre></td></tr></table></figure>
+
+<h3 id="访问权限带来的一些新编程理念"><a href="#访问权限带来的一些新编程理念" class="headerlink" title="访问权限带来的一些新编程理念"></a>访问权限带来的一些新编程理念</h3><p>1、只读或只写变量</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">(<span class="number">1</span>)问题：你的<span class="class"><span class="keyword">class</span>中需要一个变量，但是希望外部只能读不能写，怎么实现？</span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">(2)分析：硬件、<span class="title">OS</span>、编程语言都未提供这样的<span class="title">RO</span>或<span class="title">WO</span>的机制，只能间接实现了</span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">(3)解决方案：利用访问权限，将成员变量设计为<span class="title">private</span>，然后再通过封装成员方法来实现</span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">(4)如果只提供<span class="title">read</span>方法那就是只读成员，如果只提供<span class="title">write</span>方法那就是只写成员</span></span><br><span class="line"><span class="class"><span class="title">eg</span>:</span>上方的<span class="keyword">private</span>.<span class="built_in">cpp</span></span><br><span class="line"></span><br><span class="line">(<span class="number">5</span>)这样的成员经常被称为属性（property），C#等高级编程语言中就源生支撑这种新编程思想</span><br></pre></td></tr></table></figure>
+
+<p>2、复杂程序架构化</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">(<span class="number">1</span>)简单程序规模小，参与人少，靠人本身的逻辑能力就能保证实现和质量</span><br><span class="line"></span><br><span class="line">(<span class="number">2</span>)复杂程序规模大参与人多，协作成本高，水平良莠不齐，必须靠架构式设计才能保证实现和质量</span><br><span class="line"></span><br><span class="line">(<span class="number">3</span>)架构化设计中权限管控的思想很重要，每一层的访问权限和主要关注点都不同</span><br></pre></td></tr></table></figure>
+
+<p>3、为什么C语言不需要这些</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">(<span class="number">1</span>)C主要做裸机开发和OS内核开发，都是独立一体化程序，不隔离，所以不需要也没法管控权限</span><br><span class="line"></span><br><span class="line">(<span class="number">2</span>)C程序一般规模小，不需要管控权限</span><br><span class="line"></span><br><span class="line">(<span class="number">3</span>)C程序强调性能，而权限管控一定程度会牺牲性能(存储、运行速度等)。凡事都有两面性。</span><br><span class="line"></span><br><span class="line">(<span class="number">4</span>)越是高级语言，编程越偏业务逻辑，就越需要权限管控和架构思想这些。</span><br></pre></td></tr></table></figure>
+
+<h3 id="struct和class的区别"><a href="#struct和class的区别" class="headerlink" title="struct和class的区别"></a>struct和class的区别</h3><p>1、C和C++中struct的区别</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br></pre></td><td class="code"><pre><span class="line">(<span class="number">1</span>)C中不支持成员函数（只能通过函数指针成员变量间接支持），而C++源生支持。</span><br><span class="line"></span><br><span class="line">(<span class="number">2</span>)C中不支持<span class="keyword">static</span>成员，而C++中支持。后面会详细讲，C++ <span class="keyword">static</span> <span class="class"><span class="keyword">class</span>是一个大知识点</span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">(3)访问权限，<span class="title">C</span>中默认<span class="title">public</span>，<span class="title">C</span>++中默认<span class="title">public</span>，但是可以显式指定<span class="title">public</span>/<span class="title">private</span>/<span class="title">protected</span>三者之一</span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">(4)继承特性上，<span class="title">C</span>中不支持（只能通过结构体包含来间接实现），而<span class="title">C</span>++源生支持，且</span></span><br><span class="line"><span class="class"><span class="keyword">struct</span>和<span class="keyword">class</span>可以互相继承</span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">(5)初始化方面，<span class="title">C</span>中靠初始化式（<span class="title">gcc</span>扩展了初始化语法），而<span class="title">C</span>++靠构造函数所以初始化更</span></span><br><span class="line"><span class="class">自由可定制化</span></span><br></pre></td></tr></table></figure>
+
+<p>2、C++中struct和class的区别</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">(<span class="number">1</span>)默认成员权限，<span class="class"><span class="keyword">struct</span>默认<span class="title">public</span>，<span class="keyword">class</span>默认<span class="title">private</span></span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">(2)继承关系的权限管控，<span class="keyword">struct</span>默认<span class="title">public</span>，<span class="keyword">class</span>默认<span class="title">private</span></span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">(3)<span class="keyword">struct</span>和<span class="keyword">class</span>交叉继承时，默认的权限管控取决于子类而不是基类</span></span><br><span class="line"><span class="class"></span></span><br><span class="line"><span class="class">(4)模板相关使用都用<span class="keyword">class</span>，而不用<span class="keyword">struct</span>了</span></span><br></pre></td></tr></table></figure>
+
+<p>3、总结<br>(1)C++中struct和class差别不大，大多数情况下都可以直接替换使用而不出错<br>(2)C++中struct其实有点“人格分裂”，他既要兼容C中struct，又要像C++的class当struct有了一个构造函数，他C的初始化方式就不能用了。<br>(3)结论：<strong>除非是只需要打包几个变量数据就用C方式的struct，否则如果需要面向对象式编程就用class</strong></p>
+<h3 id="const和mutable是干嘛的"><a href="#const和mutable是干嘛的" class="headerlink" title="const和mutable是干嘛的"></a>const和mutable是干嘛的</h3><p>1、const可以实现常函数<br>(1)<strong>常函数，就是class的成员函数承诺在函数内部不会修改class的任何成员变量，注意是任何一个</strong><br>(2)思考：C++为什么设计常函数？<br>  为了class的设计者和使用者更好的协作，避免错误的使用类库c++规定，使用函数的参数是一个const类型的引用，则该引用包括的所有成员方法必须是常方法，即常函数 </p>
+<p>2、mutable可以局部打破const常函数<br>(1)<strong>const常函数承诺在函数内不会修改class的任何一个成员变量</strong><br>(2)<strong>但是有时候个别成员变量，就是需要在const的常函数中也能修改</strong>（注意只是个别，其他大部分是不需要修改的）<br>(3)怎么办？<br>2个解法：<strong>要么去掉const，要么使用mutable局部打洞</strong> </p>
+<p>(4)const、mutable使用演示</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//person.hpp</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">ifndef</span> __PERSON_H_</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> __PERSON_H_</span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string&gt;</span></span></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"><span class="keyword">namespace</span> MAN</span><br><span class="line">&#123;</span><br><span class="line">        <span class="class"><span class="keyword">class</span> <span class="title">person</span>;</span><span class="comment">//前置声明</span></span><br><span class="line">        </span><br><span class="line">        <span class="class"><span class="keyword">class</span> <span class="title">person</span>//声明这个类</span></span><br><span class="line"><span class="class">        &#123;</span></span><br><span class="line">                <span class="keyword">int</span> salary;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">public</span>:</span><br><span class="line">                string name;</span><br><span class="line">                <span class="keyword">int</span> age;</span><br><span class="line">                </span><br><span class="line">                <span class="function"><span class="keyword">void</span> <span class="title">work</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br><span class="line">                <span class="function"><span class="keyword">void</span> <span class="title">add_age</span><span class="params">(<span class="keyword">void</span>)</span></span>;</span><br><span class="line">                <span class="function"><span class="keyword">void</span> <span class="title">radd_age</span><span class="params">(<span class="keyword">void</span>)</span> <span class="keyword">const</span></span>;</span><br><span class="line">        </span><br><span class="line">        <span class="keyword">private</span>:</span><br><span class="line">                <span class="keyword">int</span> grade;</span><br><span class="line">                <span class="keyword">mutable</span>        <span class="keyword">int</span> great_grade;</span><br><span class="line">        <span class="keyword">protected</span>:</span><br><span class="line">                        </span><br><span class="line">        &#125;;        </span><br><span class="line">&#125;</span><br><span class="line"><span class="meta">#<span class="meta-keyword">endif</span></span></span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//person.cpp</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;person.hpp&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> MAN;</span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">person::work</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        </span><br><span class="line">        cout &lt;&lt; <span class="keyword">this</span>-&gt;name &lt;&lt; <span class="string">&quot;is working.&quot;</span> &lt;&lt; endl;</span><br><span class="line">        </span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">person::add_age</span><span class="params">(<span class="keyword">void</span>)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        <span class="keyword">this</span>-&gt;age++;</span><br><span class="line">        <span class="keyword">this</span>-&gt;great_grade =<span class="number">149</span>;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;age =&quot;</span> &lt;&lt; <span class="keyword">this</span>-&gt;age &lt;&lt; endl;</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">person::radd_age</span><span class="params">(<span class="keyword">void</span>)</span> <span class="keyword">const</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line"></span><br><span class="line">        <span class="comment">//this-&gt;age++;//这个是不行的，可以取消注释，编译看看实际效果</span></span><br><span class="line">        <span class="keyword">this</span>-&gt;great_grade++;</span><br><span class="line">        <span class="comment">//cout &lt;&lt; &quot;age =&quot; &lt;&lt; this-&gt;age &lt;&lt; endl;        </span></span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;great_grade =&quot;</span> &lt;&lt; <span class="keyword">this</span>-&gt;great_grade &lt;&lt; endl;</span><br><span class="line">        </span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//main.cpp</span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&quot;person.hpp&quot;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> MAN;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">test</span><span class="params">(<span class="keyword">const</span> person&amp; pn)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        pn.<span class="built_in">radd_age</span>();</span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">        person human;</span><br><span class="line">        </span><br><span class="line">        human.name = <span class="string">&quot;zhangsan&quot;</span>;</span><br><span class="line">        human.age = <span class="number">22</span>;</span><br><span class="line">        <span class="comment">//human.grade = 59;</span></span><br><span class="line">        <span class="comment">//human.great_grade = 150;</span></span><br><span class="line">        </span><br><span class="line">        human.<span class="built_in">work</span>();</span><br><span class="line">        human.<span class="built_in">add_age</span>();</span><br><span class="line">        <span class="built_in">test</span>(human);</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>(5)思考：C++为什么设计mutable？<br>和private那里一样，还是“<strong>先全部禁了再按需打开</strong>”的思路。</p>
+<p>3、class的前置声明<br>(1)就是class的声明，安慰编译器的<br>(2)看到了认识即可</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">//前置声明</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">person</span>;</span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 声明这个类</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">person</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">....</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>4、inline 成员函数<br>(1)<strong>类的声明中直接写函数体，则此函数会被编译器inline化处理</strong><br>(2)类的声明中正常处理，而成员函数的实现中加inline<br>(3)<strong>inline的成员函数应该放在hpp中而不是cpp中，这个一定要注意，因为inline是在编译时替换的</strong><br>因为C/C++编译时是以当前.c文件为单位的，只考虑当前c文件，如果将inline函数放在另一个文件中，而在这个文件中有使用，编译时是会报错的，提示无法找到函数体，只有在c文件都编译完链接的时候才会发现，所以要将其放在头文件中。</p>
+<p>5、本篇文章总结<br>(1)本篇文章主要在讲C++的封装特性，以及由此引发的各种细节语法特性。<br>(2)语法上掌握是第一层，会写代码跑起来是第二层，遇到问题能调出来是第三层，理解设计原理是第四层。</p>
+<h2 id="C-的继承和多态特性"><a href="#C-的继承和多态特性" class="headerlink" title="C++的继承和多态特性"></a>C++的继承和多态特性</h2><h2 id="C-的运算符重载"><a href="#C-的运算符重载" class="headerlink" title="C++的运算符重载"></a>C++的运算符重载</h2><h2 id="C-的静态类和静态成员"><a href="#C-的静态类和静态成员" class="headerlink" title="C++的静态类和静态成员"></a>C++的静态类和静态成员</h2><h2 id="C-的友元函数和友元类"><a href="#C-的友元函数和友元类" class="headerlink" title="C++的友元函数和友元类"></a>C++的友元函数和友元类</h2>  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/4-C-C/">4. C/C++</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/C-C/">C/C++</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://shenweikun.github.io/2024/11/17/2024-11-17-CPP-Basics-C-and-ObjectOrientation/" data-title="C++基础之二-C++和面向对象 | Weikun&#39;s Notes" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2024/10/30/2024-10-30-CPP-Basics-C-to-Cpp/"  title="C++基础之一-从C到C++">
+ <strong>下一篇：</strong><br/> 
+ <span>C++基础之一-从C到C++
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/1-Android-Camera/" title="1. Android Camera">1. Android Camera<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/2-Android-Other/" title="2. Android Other">2. Android Other<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/3-Camera基础概念/" title="3. Camera基础概念">3. Camera基础概念<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/4-C-C/" title="4. C/C++">4. C/C++<sup>3</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/建站/" title="建站">建站<sup>5</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Android-Camera/" title="Android Camera">Android Camera<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Camera系统/" title="Camera系统">Camera系统<sup>8</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Camera基础概念/" title="Camera基础概念">Camera基础概念<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C-C/" title="C/C++">C/C++<sup>3</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/CTS/" title="CTS">CTS<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/测试/" title="测试">测试<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/内存/" title="内存">内存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Android/" title="Android">Android<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://coderq.com" target="_blank" title="一个面向程序员交流分享的新一代社区">码农圈</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2024 
+		
+		<a href="/about" target="_blank" title="空白">空白</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?f0ae4262694bb7295d78b134eeeae3b7";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+ </html>
