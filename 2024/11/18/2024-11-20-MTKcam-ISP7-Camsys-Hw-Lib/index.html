@@ -1,0 +1,472 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>MTKcam-ISP7-Camsys Hw-Lib | Weikun&#39;s Notes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="空白">
+    
+
+    
+    <meta name="description" content="High-Level viewCAMSYS_HW-Lib所在位置如上图红框所示，包含CamCtrl，PipeMgr，CamCoordinator，RequestRegulator四个模块，向上通过CamCtrl沟通P1Node，向下通过PipeMgr对接drivers，访问硬件，同时CamCtrl还可以沟通IHALIsp Adapter和3A control flows。 CamCtrl:文件目录">
+<meta property="og:type" content="article">
+<meta property="og:title" content="MTKcam-ISP7-Camsys Hw-Lib">
+<meta property="og:url" content="https://shenweikun.github.io/2024/11/18/2024-11-20-MTKcam-ISP7-Camsys-Hw-Lib/index.html">
+<meta property="og:site_name" content="Weikun&#39;s Notes">
+<meta property="og:description" content="High-Level viewCAMSYS_HW-Lib所在位置如上图红框所示，包含CamCtrl，PipeMgr，CamCoordinator，RequestRegulator四个模块，向上通过CamCtrl沟通P1Node，向下通过PipeMgr对接drivers，访问硬件，同时CamCtrl还可以沟通IHALIsp Adapter和3A control flows。 CamCtrl:文件目录">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shenweikun.github.io/2024/11/18/2024-11-20-MTKcam-ISP7-Camsys-Hw-Lib/High-Level-view.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/11/18/2024-11-20-MTKcam-ISP7-Camsys-Hw-Lib/image1.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/11/18/2024-11-20-MTKcam-ISP7-Camsys-Hw-Lib/image2.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/11/18/2024-11-20-MTKcam-ISP7-Camsys-Hw-Lib/image3.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/11/18/2024-11-20-MTKcam-ISP7-Camsys-Hw-Lib/image4.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/11/18/2024-11-20-MTKcam-ISP7-Camsys-Hw-Lib/image5.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/11/18/2024-11-20-MTKcam-ISP7-Camsys-Hw-Lib/image6.png">
+<meta property="article:published_time" content="2024-11-17T19:00:31.000Z">
+<meta property="article:modified_time" content="2024-11-17T19:24:07.823Z">
+<meta property="article:author" content="空白">
+<meta property="article:tag" content="Android Camera">
+<meta property="article:tag" content="Camera系统">
+<meta property="article:tag" content="MTKCamera">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shenweikun.github.io/2024/11/18/2024-11-20-MTKcam-ISP7-Camsys-Hw-Lib/High-Level-view.png">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Weikun&#39;s Notes" type="application/atom+xml">
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/%02.css">
+<link rel="stylesheet" href="/.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Weikun&#39;s Notes" title="Weikun&#39;s Notes"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Weikun&#39;s Notes">Weikun&#39;s Notes</a></h1>
+				<h2 class="blog-motto">怀揣代码中的唏嘘，记录生活中的点滴</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:shenweikun.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="n" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2024/11/18/2024-11-20-MTKcam-ISP7-Camsys-Hw-Lib/" title="MTKcam-ISP7-Camsys Hw-Lib" itemprop="url">MTKcam-ISP7-Camsys Hw-Lib</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="空白" target="_blank" itemprop="author">空白</a>
+		
+  <p class="article-time">
+    <time datetime="2024-11-17T19:00:31.000Z" itemprop="datePublished"> 发表于 2024-11-18</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#High-Level-view"><span class="toc-number">1.</span> <span class="toc-text">High-Level view</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#CamCtrl"><span class="toc-number">1.1.</span> <span class="toc-text">CamCtrl:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#PipeMgr-SensorPipe"><span class="toc-number">1.2.</span> <span class="toc-text">PipeMgr&#x2F;SensorPipe:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CamCoordinator"><span class="toc-number">1.3.</span> <span class="toc-text">CamCoordinator:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#RequestRegulator"><span class="toc-number">1.4.</span> <span class="toc-text">RequestRegulator:</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Instance-view"><span class="toc-number">2.</span> <span class="toc-text">Instance view</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#The-role-conception-of-module-layer"><span class="toc-number">3.</span> <span class="toc-text">The role&#x2F;conception of module-layer</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Data-Processing"><span class="toc-number">4.</span> <span class="toc-text">Data Processing</span></a></li></ol>
+		
+		</div>
+		
+		<h2 id="High-Level-view"><a href="#High-Level-view" class="headerlink" title="High-Level view"></a>High-Level view</h2><p><img src="High-Level-view.png"><br>CAMSYS_HW-Lib所在位置如上图红框所示，包含<strong>CamCtrl</strong>，<strong>PipeMgr</strong>，<strong>CamCoordinator</strong>，<strong>RequestRegulator</strong>四个模块，向上通过CamCtrl沟通P1Node，向下通过PipeMgr对接drivers，访问硬件，同时CamCtrl还可以沟通IHALIsp Adapter和3A control flows。<br><img src="image1.png"></p>
+<h3 id="CamCtrl"><a href="#CamCtrl" class="headerlink" title="CamCtrl:"></a>CamCtrl:</h3><p>文件目录：vendor/mediatek/proprietary/hardware/mtkcam-core/hw/camsys/cam_ctrl/<br>CamCtrl是P1Node/PipeMgr/3A HAL/ISP HAL的协调者。其主要有两个作用：</p>
+<ul>
+<li>搜集从P1 Node过来的request Info，然后queue给driver（使用PipeMgr并通过SensorPipe接口丢给MTK drivers):<br>request Info包含：</li>
+<li>Image Info. (from P1Node)，例如上层传下来的buffer size，format等</li>
+<li>Setting (from 3A-HAL)，例如需要给到driver的gain值，曝光等</li>
+<li>Tuning (from ISP-HAL)，例如从tuning参数中获取的信息等</li>
+<li>从driver中做deque(使用PipeMgr并通过SensorPipe接口),并将结果传递给用户：<ul>
+<li>Image buffer(to P1Node)</li>
+<li>STT buffer(to 3A HAL)，如AAO，AFO等统计信息</li>
+</ul>
+</li>
+</ul>
+<h3 id="PipeMgr-SensorPipe"><a href="#PipeMgr-SensorPipe" class="headerlink" title="PipeMgr/SensorPipe:"></a>PipeMgr/SensorPipe:</h3><p>文件目录：vendor/mediatek/proprietary/hardware/mtkcam-core/hw/camsys/pipe_mgr/<br>pipeMgr的作用：</p>
+<ul>
+<li>简化和封装V4L2-FW操作</li>
+<li>抽象化CamCtrl</li>
+<li>构建sensor map，映射driver中的设备文件<br>pipe_mgr兼容isp6，pipe_mgr目录下有isp6s和isp7两个目录。主要有如下几个类：<br><img src="image2.png"><br>PipeCapability类没在代码中找到定义。PiPeMgr和sensorPipe互为友元，PiPeMgr和RawPipe互为友元。剩下三个是PipeMgr的友元，可以访问PipeMgr的数据。</li>
+</ul>
+<h3 id="CamCoordinator"><a href="#CamCoordinator" class="headerlink" title="CamCoordinator:"></a>CamCoordinator:</h3><p>文件目录：vendor/mediatek/proprietary/hardware/mtkcam-core/hw/camsys/cam_coordinator/<br>CamCoordinator作用：</p>
+<ul>
+<li>Negotiate and Configure the CAMSYS topology</li>
+<li>Align MW-Frame and CAMSYS Request in multiple-sensor sources</li>
+</ul>
+<h3 id="RequestRegulator"><a href="#RequestRegulator" class="headerlink" title="RequestRegulator:"></a>RequestRegulator:</h3><p>文件目录：vendor/mediatek/proprietary/hardware/mtkcam-core/hw/camsys/request_regulator/<br>RequestRegulator的作用：</p>
+<ul>
+<li>防止request累积，因为enque给driver的request都需要被消费，不会被drop，所以当P1处理较慢就会形成堆积。</li>
+<li>监控和调整request消耗</li>
+<li>为Cam Ctrl提供不同的策略选择<br>  <img src="image3.png"><br>主要有ContSttRegulator，ImageRequestRegulator，SttRegulator三个类对IRequestRegulator接口的实现。</li>
+</ul>
+<h2 id="Instance-view"><a href="#Instance-view" class="headerlink" title="Instance view"></a>Instance view</h2><p>如下是从instance view的视角来看Camsys-HW-Lib各个模块间的关系:<br>   <img src="image4.png"><br>1.此图是一个multicam的例子，可以看到左右两边是对称的<br>2. PipeMgr针对不同的sensor有开出两个SensorPipe接口，不同Sensor的CamCtrl会使用的不同的SensorPipe接口实例<br>3.其他的如：P1Node、HalISP、Hal3A、RequestRegulator也都是每个实例服务对应的单颗sensor<br>4.而像CamCoordinator、PipeMgr、V4L2 Framework因为需要统筹整个系统的资源，所以是Topology的View<br>从这个图也可以看出，<strong>CamCtrl</strong>和<strong>P1Node</strong>等可以有多个实例，<strong>CamCoordinator</strong>和<strong>RequestRegulator</strong>只有单个实例，用于统筹<strong>CamCtrl和P1Node</strong>等模块</p>
+<h2 id="The-role-conception-of-module-layer"><a href="#The-role-conception-of-module-layer" class="headerlink" title="The role/conception of module-layer"></a>The role/conception of module-layer</h2><p>下图描述了从PipelineModel→ P1Node→ CamCtrl→ PipeMgr→ V4L2各层级作用和扮演的角色。<br>   <img src="image5.png"></p>
+<h2 id="Data-Processing"><a href="#Data-Processing" class="headerlink" title="Data Processing"></a>Data Processing</h2><p>   <img src="image6.png"><br>例如：pipelineModel会送一个request给P1Node，P1Node会送给CamCtrl，到了CamCtrl之后，它会跟P1Node拿image、跟ISP_HAL拿tuning、跟HAL3A拿setting，都准备好后就一整包使用同一个<strong>request-FD</strong>打包好后送给PipeMgr，之后再透过PipeMgr往V4L2 FrameWork进行设置，进而控制底层driver的行为。<br>ISP7 之前 P1Node 会跟 Hal3A、P1Driver、HalISP 都有交互,目前在 ISP7 上对 P1Node 有做解耦操作,P1Node 会跟 MW 对接,处理 feature 相关的部分,而跟其他模块交互的动作就交给了 CamCtrl,使 P1Node 的工作变得单纯,也使得 CamCtrl 可以不用关注 feature 相关的部分。</p>
+<p>参考文章：<br>[ISP7]CAMSYS_HW-Lib_P1Node_CamCtrl.pdf</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/1-Android-Camera/">1. Android Camera</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Android-Camera/">Android Camera</a><a href="/tags/Camera系统/">Camera系统</a><a href="/tags/MTKCamera/">MTKCamera</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://shenweikun.github.io/2024/11/18/2024-11-20-MTKcam-ISP7-Camsys-Hw-Lib/" data-title="MTKcam-ISP7-Camsys Hw-Lib | Weikun&#39;s Notes" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2024/11/18/2024-11-20-CPP-Basics-C-Design-Patterns/"  title="C++基础之五-C++的设计模式">
+ <strong>下一篇：</strong><br/> 
+ <span>C++基础之五-C++的设计模式
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/1-Android-Camera/" title="1. Android Camera">1. Android Camera<sup>2</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/2-Android-Other/" title="2. Android Other">2. Android Other<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/3-Camera基础概念/" title="3. Camera基础概念">3. Camera基础概念<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/4-C-C/" title="4. C/C++">4. C/C++<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/建站/" title="建站">建站<sup>5</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Android-Camera/" title="Android Camera">Android Camera<sup>9</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Camera系统/" title="Camera系统">Camera系统<sup>9</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Camera基础概念/" title="Camera基础概念">Camera基础概念<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C-C/" title="C/C++">C/C++<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/CTS/" title="CTS">CTS<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/测试/" title="测试">测试<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/内存/" title="内存">内存<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Android/" title="Android">Android<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MTKCamera/" title="MTKCamera">MTKCamera<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://coderq.com" target="_blank" title="一个面向程序员交流分享的新一代社区">码农圈</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2024 
+		
+		<a href="/about" target="_blank" title="空白">空白</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?f0ae4262694bb7295d78b134eeeae3b7";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+ </html>

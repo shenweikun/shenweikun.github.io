@@ -11,15 +11,15 @@
     
 
     
-    <meta name="description" content="从事Android Camera开发7年，跟相机开发相关的各个模块基本都参与过，例如sensor移植，算法集成，性能&#x2F;内存优化，稳定性等等，零零碎碎的知识点始终没有进行完整的归纳和总结，这里开始回顾和记录，力求温故而知新。">
+    <meta name="description" content="从事Android Camera开发7年，跟相机软件相关的各个模块基本都参与过，例如sensor移植，算法集成，性能&#x2F;内存优化，稳定性等等，零零碎碎的知识点始终没有进行完整的归纳和总结，这里开始回顾和记录，力求温故而知新。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="文章汇总">
 <meta property="og:url" content="https://shenweikun.github.io/2021/10/25/hello-world/index.html">
 <meta property="og:site_name" content="Weikun&#39;s Notes">
-<meta property="og:description" content="从事Android Camera开发7年，跟相机开发相关的各个模块基本都参与过，例如sensor移植，算法集成，性能&#x2F;内存优化，稳定性等等，零零碎碎的知识点始终没有进行完整的归纳和总结，这里开始回顾和记录，力求温故而知新。">
+<meta property="og:description" content="从事Android Camera开发7年，跟相机软件相关的各个模块基本都参与过，例如sensor移植，算法集成，性能&#x2F;内存优化，稳定性等等，零零碎碎的知识点始终没有进行完整的归纳和总结，这里开始回顾和记录，力求温故而知新。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2021-10-24T17:55:47.000Z">
-<meta property="article:modified_time" content="2024-11-17T18:07:12.424Z">
+<meta property="article:modified_time" content="2024-11-17T19:26:00.714Z">
 <meta property="article:author" content="空白">
 <meta name="twitter:card" content="summary">
 
@@ -96,21 +96,22 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%80%E6%9C%AF%E5%8D%9A%E6%96%87%E6%B1%87%E6%80%BB"><span class="toc-number">1.</span> <span class="toc-text">技术博文汇总</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Camera%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5%E7%AF%87"><span class="toc-number">1.1.</span> <span class="toc-text">Camera基础概念篇</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Camera%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E7%AF%87"><span class="toc-number">1.2.</span> <span class="toc-text">Camera系统架构篇</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Camera%E8%BF%9B%E9%98%B6%E7%AF%87"><span class="toc-number">1.3.</span> <span class="toc-text">Camera进阶篇</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#CamX-CHI%E6%9E%B6%E6%9E%84"><span class="toc-number">1.3.1.</span> <span class="toc-text">CamX-CHI架构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#MTKcam3%E6%9E%B6%E6%9E%84"><span class="toc-number">1.3.2.</span> <span class="toc-text">MTKcam3架构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Camera%E4%BC%98%E5%8C%96"><span class="toc-number">1.3.3.</span> <span class="toc-text">Camera优化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Camera-feature%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.3.4.</span> <span class="toc-text">Camera feature实现</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E5%AE%83%E7%9F%A5%E8%AF%86%E7%82%B9"><span class="toc-number">1.4.</span> <span class="toc-text">其它知识点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0"><span class="toc-number">1.5.</span> <span class="toc-text">语言学习</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BB%BA%E7%AB%99"><span class="toc-number">1.6.</span> <span class="toc-text">建站</span></a></li></ol></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%80%E6%9C%AF%E5%8D%9A%E6%96%87%E6%B1%87%E6%80%BB"><span class="toc-number">1.</span> <span class="toc-text">技术博文汇总</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Camera%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5%E7%AF%87"><span class="toc-number">1.1.</span> <span class="toc-text">Camera基础概念篇</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Camera%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E7%AF%87"><span class="toc-number">1.2.</span> <span class="toc-text">Camera系统架构篇</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Camera%E8%BF%9B%E9%98%B6%E7%AF%87"><span class="toc-number">1.3.</span> <span class="toc-text">Camera进阶篇</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#CamX-CHI%E6%9E%B6%E6%9E%84"><span class="toc-number">1.3.1.</span> <span class="toc-text">CamX-CHI架构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#MTK-Camera"><span class="toc-number">1.3.2.</span> <span class="toc-text">MTK Camera</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Qcom-Camera"><span class="toc-number">1.3.3.</span> <span class="toc-text">Qcom Camera</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Camera-feature"><span class="toc-number">1.3.4.</span> <span class="toc-text">Camera feature</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Camera%E4%BC%98%E5%8C%96"><span class="toc-number">1.3.5.</span> <span class="toc-text">Camera优化</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E5%AE%83%E7%9F%A5%E8%AF%86%E7%82%B9"><span class="toc-number">1.4.</span> <span class="toc-text">其它知识点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0"><span class="toc-number">1.5.</span> <span class="toc-text">语言学习</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BB%BA%E7%AB%99"><span class="toc-number">1.6.</span> <span class="toc-text">建站</span></a></li></ol></li></ol>
 		
 		</div>
 		
-		<p>从事Android Camera开发7年，跟相机开发相关的各个模块基本都参与过，例如sensor移植，算法集成，性能/内存优化，稳定性等等，零零碎碎的知识点始终没有进行完整的归纳和总结，这里开始回顾和记录，力求温故而知新。</p>
+		<p>从事Android Camera开发7年，跟相机软件相关的各个模块基本都参与过，例如sensor移植，算法集成，性能/内存优化，稳定性等等，零零碎碎的知识点始终没有进行完整的归纳和总结，这里开始回顾和记录，力求温故而知新。</p>
 <span id="more"></span>
 <h2 id="技术博文汇总"><a href="#技术博文汇总" class="headerlink" title="技术博文汇总"></a>技术博文汇总</h2><hr>
 <h3 id="Camera基础概念篇"><a href="#Camera基础概念篇" class="headerlink" title="Camera基础概念篇"></a>Camera基础概念篇</h3><p><a href="https://shenweikun.github.io/2021/10/25/2021-10-25-Camera-concept/">Camera概念篇-岗位职能划分</a><br><a href="https://shenweikun.github.io/2021/10/25/2021-10-25-Camera-concept-Camera-HW/">Camera概念篇-相机原理</a><br><a href="https://shenweikun.github.io/2021/10/24/2021-10-24-Camera-concept-sensorIntroduction/">Camera概念篇-Sensor介绍</a><br><a href="https://shenweikun.github.io/2021/10/25/2021-10-24-Camera-concept-illuminant/">Camera概念篇-标准光源</a><br><a href="https://shenweikun.github.io/2021/10/25/2021-10-25-Camera-concept-Image/">Camera概念篇-图像</a><br><a href="https://shenweikun.github.io/2021/10/25/2021-10-25-Camera-concept-Color-Correction-Matrix/">Camera概念篇-色彩校正矩阵</a></p>
 <hr>
 <h3 id="Camera系统架构篇"><a href="#Camera系统架构篇" class="headerlink" title="Camera系统架构篇"></a>Camera系统架构篇</h3><p><a href="https://shenweikun.github.io/2021/10/24/2021-10-24-a-Camera-system-architecture/">Android Camera架构概述</a></p>
 <hr>
-<h3 id="Camera进阶篇"><a href="#Camera进阶篇" class="headerlink" title="Camera进阶篇"></a>Camera进阶篇</h3><h4 id="CamX-CHI架构"><a href="#CamX-CHI架构" class="headerlink" title="CamX-CHI架构"></a>CamX-CHI架构</h4><h4 id="MTKcam3架构"><a href="#MTKcam3架构" class="headerlink" title="MTKcam3架构"></a>MTKcam3架构</h4><h4 id="Camera优化"><a href="#Camera优化" class="headerlink" title="Camera优化"></a>Camera优化</h4><h4 id="Camera-feature实现"><a href="#Camera-feature实现" class="headerlink" title="Camera feature实现"></a>Camera feature实现</h4><hr>
+<h3 id="Camera进阶篇"><a href="#Camera进阶篇" class="headerlink" title="Camera进阶篇"></a>Camera进阶篇</h3><h4 id="CamX-CHI架构"><a href="#CamX-CHI架构" class="headerlink" title="CamX-CHI架构"></a>CamX-CHI架构</h4><h4 id="MTK-Camera"><a href="#MTK-Camera" class="headerlink" title="MTK Camera"></a>MTK Camera</h4><p><a href="https://shenweikun.github.io/2024/11/18/2024-11-20-MTKcam-ISP7-Camsys-Hw-Lib/">ISP7-Camsys Hw-Lib</a></p>
+<h4 id="Qcom-Camera"><a href="#Qcom-Camera" class="headerlink" title="Qcom Camera"></a>Qcom Camera</h4><h4 id="Camera-feature"><a href="#Camera-feature" class="headerlink" title="Camera feature"></a>Camera feature</h4><h4 id="Camera优化"><a href="#Camera优化" class="headerlink" title="Camera优化"></a>Camera优化</h4><hr>
 <h3 id="其它知识点"><a href="#其它知识点" class="headerlink" title="其它知识点"></a>其它知识点</h3><p><a href="https://shenweikun.github.io/2021/10/17/2021-10-17-CTS-Introduction/">Camera CTS介绍</a><br><a href="https://shenweikun.github.io/2021/10/24/2021-10-24-BufferQueue/">BufferQueue详解</a></p>
 <hr>
-<h3 id="语言学习"><a href="#语言学习" class="headerlink" title="语言学习"></a>语言学习</h3><p><a href="https://shenweikun.github.io/2024/10/30/2024-10-30-CPP-Basics-C-to-Cpp/">C++基础之一-从C到C++</a><br><a href="https://shenweikun.github.io/2024/11/17/2024-11-17-CPP-Basics-C-and-ObjectOrientation/">C++基础之二-C++和面向对象</a><br><a href="https://shenweikun.github.io/2021/10/10/2021-10-10The-difference-between-C-and-C-static/">C和C++中static的区别</a></p>
+<h3 id="语言学习"><a href="#语言学习" class="headerlink" title="语言学习"></a>语言学习</h3><p><a href="https://shenweikun.github.io/2024/10/30/2024-10-30-CPP-Basics-C-to-Cpp/">C++基础之一-从C到C++</a><br><a href="https://shenweikun.github.io/2024/11/17/2024-11-17-CPP-Basics-C-and-ObjectOrientation/">C++基础之二-C++和面向对象</a><br><a href="https://shenweikun.github.io/2024/11/18/2024-11-18-CPP-Basics-about-STL/">C++基础之三-STL等高阶话题</a><br><a href="https://shenweikun.github.io/2024/11/18/2024-11-19-CPP-Basics-C-Programming-Optimization/">C++基础之四-C++编程优化</a><br><a href="https://shenweikun.github.io/2024/11/18/2024-11-20-CPP-Basics-C-Design-Patterns/">C++基础之五-C++的设计模式</a><br><a href="https://shenweikun.github.io/2021/10/10/2021-10-10The-difference-between-C-and-C-static/">C和C++中static的区别</a></p>
 <hr>
 <h3 id="建站"><a href="#建站" class="headerlink" title="建站"></a>建站</h3><p><a href="https://shenweikun.github.io/2018/02/07/2018-02-07-hexo-github%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">hexo+github搭建个人博客</a><br><a href="https://shenweikun.github.io/2018/03/13/How-to-modify-hexo-config/">怎么把hexo的相关信息修改为自己？</a><br><a href="https://shenweikun.github.io/2018/03/14/How-to-change-theme/">如何更换主题？</a><br><a href="https://shenweikun.github.io/2018/03/14/How-to-backup-blog/">如何备份博客？</a><br><a href="https://shenweikun.github.io/2018/03/14/How-to-edit-MarkDown-visually/">如何可视化编辑markdown?</a></p>
   
@@ -167,7 +168,7 @@
   <div id="toc" class="toc-aside">
   <strong class="toc-title">文章目录</strong>
  
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%80%E6%9C%AF%E5%8D%9A%E6%96%87%E6%B1%87%E6%80%BB"><span class="toc-number">1.</span> <span class="toc-text">技术博文汇总</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Camera%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5%E7%AF%87"><span class="toc-number">1.1.</span> <span class="toc-text">Camera基础概念篇</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Camera%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E7%AF%87"><span class="toc-number">1.2.</span> <span class="toc-text">Camera系统架构篇</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Camera%E8%BF%9B%E9%98%B6%E7%AF%87"><span class="toc-number">1.3.</span> <span class="toc-text">Camera进阶篇</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#CamX-CHI%E6%9E%B6%E6%9E%84"><span class="toc-number">1.3.1.</span> <span class="toc-text">CamX-CHI架构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#MTKcam3%E6%9E%B6%E6%9E%84"><span class="toc-number">1.3.2.</span> <span class="toc-text">MTKcam3架构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Camera%E4%BC%98%E5%8C%96"><span class="toc-number">1.3.3.</span> <span class="toc-text">Camera优化</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Camera-feature%E5%AE%9E%E7%8E%B0"><span class="toc-number">1.3.4.</span> <span class="toc-text">Camera feature实现</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E5%AE%83%E7%9F%A5%E8%AF%86%E7%82%B9"><span class="toc-number">1.4.</span> <span class="toc-text">其它知识点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0"><span class="toc-number">1.5.</span> <span class="toc-text">语言学习</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BB%BA%E7%AB%99"><span class="toc-number">1.6.</span> <span class="toc-text">建站</span></a></li></ol></li></ol>
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E6%8A%80%E6%9C%AF%E5%8D%9A%E6%96%87%E6%B1%87%E6%80%BB"><span class="toc-number">1.</span> <span class="toc-text">技术博文汇总</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Camera%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5%E7%AF%87"><span class="toc-number">1.1.</span> <span class="toc-text">Camera基础概念篇</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Camera%E7%B3%BB%E7%BB%9F%E6%9E%B6%E6%9E%84%E7%AF%87"><span class="toc-number">1.2.</span> <span class="toc-text">Camera系统架构篇</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Camera%E8%BF%9B%E9%98%B6%E7%AF%87"><span class="toc-number">1.3.</span> <span class="toc-text">Camera进阶篇</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#CamX-CHI%E6%9E%B6%E6%9E%84"><span class="toc-number">1.3.1.</span> <span class="toc-text">CamX-CHI架构</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#MTK-Camera"><span class="toc-number">1.3.2.</span> <span class="toc-text">MTK Camera</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Qcom-Camera"><span class="toc-number">1.3.3.</span> <span class="toc-text">Qcom Camera</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Camera-feature"><span class="toc-number">1.3.4.</span> <span class="toc-text">Camera feature</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Camera%E4%BC%98%E5%8C%96"><span class="toc-number">1.3.5.</span> <span class="toc-text">Camera优化</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B6%E5%AE%83%E7%9F%A5%E8%AF%86%E7%82%B9"><span class="toc-number">1.4.</span> <span class="toc-text">其它知识点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AF%AD%E8%A8%80%E5%AD%A6%E4%B9%A0"><span class="toc-number">1.5.</span> <span class="toc-text">语言学习</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BB%BA%E7%AB%99"><span class="toc-number">1.6.</span> <span class="toc-text">建站</span></a></li></ol></li></ol>
  
   </div>
 
@@ -181,7 +182,7 @@
 		<ul>
 		
 		  
-			<li><a href="/categories/1-Android-Camera/" title="1. Android Camera">1. Android Camera<sup>1</sup></a></li>
+			<li><a href="/categories/1-Android-Camera/" title="1. Android Camera">1. Android Camera<sup>2</sup></a></li>
 		  
 		
 		  
@@ -210,11 +211,11 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/Android-Camera/" title="Android Camera">Android Camera<sup>8</sup></a></li>
+				<li><a href="/tags/Android-Camera/" title="Android Camera">Android Camera<sup>9</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/Camera系统/" title="Camera系统">Camera系统<sup>8</sup></a></li>
+				<li><a href="/tags/Camera系统/" title="Camera系统">Camera系统<sup>9</sup></a></li>
 			
 		
 			
@@ -239,6 +240,10 @@
 		
 			
 				<li><a href="/tags/Android/" title="Android">Android<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MTKCamera/" title="MTKCamera">MTKCamera<sup>1</sup></a></li>
 			
 		
 		</ul>
