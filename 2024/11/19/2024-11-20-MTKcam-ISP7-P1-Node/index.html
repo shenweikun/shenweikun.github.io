@@ -4,24 +4,34 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>如何备份博客？ | Weikun&#39;s Notes</title>
+    <title>MTKcam-ISP7-P1 Node | Weikun&#39;s Notes</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="空白">
     
 
     
-    <meta name="description" content="为整个博客目录建立GitHub仓库">
+    <meta name="description" content="P1Node Architecture Overview   如上图所示，在旧版的ISP6中，P1Node会直接与HAL3A，NormalPipe，HalIsp进行交互，但是在新的ISP7架构中，引入了CamCtrl作为协调者，统一协调Camsys Hw-Lib，P1Node与CAMCtrl进行交互。关于Camsys Hw-Lib的介绍可以看文档： ISP7-Camsys Hw-Lib由此，P1">
 <meta property="og:type" content="article">
-<meta property="og:title" content="如何备份博客？">
-<meta property="og:url" content="https://shenweikun.github.io/2018/03/14/How-to-backup-blog/index.html">
+<meta property="og:title" content="MTKcam-ISP7-P1 Node">
+<meta property="og:url" content="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-P1-Node/index.html">
 <meta property="og:site_name" content="Weikun&#39;s Notes">
-<meta property="og:description" content="为整个博客目录建立GitHub仓库">
+<meta property="og:description" content="P1Node Architecture Overview   如上图所示，在旧版的ISP6中，P1Node会直接与HAL3A，NormalPipe，HalIsp进行交互，但是在新的ISP7架构中，引入了CamCtrl作为协调者，统一协调Camsys Hw-Lib，P1Node与CAMCtrl进行交互。关于Camsys Hw-Lib的介绍可以看文档： ISP7-Camsys Hw-Lib由此，P1">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2018-03-14T10:00:05.000Z">
-<meta property="article:modified_time" content="2024-10-29T16:38:43.406Z">
+<meta property="og:image" content="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-P1-Node/image1.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-P1-Node/image2.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-P1-Node/image3.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-P1-Node/image4.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-P1-Node/image5.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-P1-Node/image6.png">
+<meta property="article:published_time" content="2024-11-18T17:57:30.000Z">
+<meta property="article:modified_time" content="2024-11-18T18:07:47.113Z">
 <meta property="article:author" content="空白">
+<meta property="article:tag" content="Android Camera">
+<meta property="article:tag" content="Camera系统">
+<meta property="article:tag" content="MTKCamera">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-P1-Node/image1.png">
 
     
     <link rel="alternative" href="/atom.xml" title="Weikun&#39;s Notes" type="application/atom+xml">
@@ -74,20 +84,20 @@
 </div>
     </header>
     <div id="container">
-      <div id="main" class="post" itemscope itemprop="blogPost">
+      <div id="main" class="n" itemscope itemprop="blogPost">
   
 	<article itemprop="articleBody"> 
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2018/03/14/How-to-backup-blog/" title="如何备份博客？" itemprop="url">如何备份博客？</a>
+      <a href="/2024/11/19/2024-11-20-MTKcam-ISP7-P1-Node/" title="MTKcam-ISP7-P1 Node" itemprop="url">MTKcam-ISP7-P1 Node</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="空白" target="_blank" itemprop="author">空白</a>
 		
   <p class="article-time">
-    <time datetime="2018-03-14T10:00:05.000Z" itemprop="datePublished"> 发表于 2018-03-14</time>
+    <time datetime="2024-11-18T17:57:30.000Z" itemprop="datePublished"> 发表于 2024-11-19</time>
     
   </p>
 </header>
@@ -96,17 +106,29 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E6%95%B4%E4%B8%AA%E7%9B%AE%E5%BD%95%E5%BB%BA%E7%AB%8BGitHub%E4%BB%93%E5%BA%93"><span class="toc-number">1.</span> <span class="toc-text">为整个目录建立GitHub仓库</span></a></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#P1Node-Architecture-Overview"><span class="toc-number">1.</span> <span class="toc-text">P1Node Architecture Overview</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#P1Node-Basic-Flow"><span class="toc-number">2.</span> <span class="toc-text">P1Node Basic Flow</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Nornal-Request%EF%BC%9A"><span class="toc-number">2.1.</span> <span class="toc-text">Nornal Request：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Reprocess%EF%BC%9A"><span class="toc-number">2.2.</span> <span class="toc-text">Reprocess：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#FastPreview-fast-launch"><span class="toc-number">2.3.</span> <span class="toc-text">FastPreview(fast launch):</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Drop-Case%EF%BC%9A"><span class="toc-number">2.4.</span> <span class="toc-text">Drop Case：</span></a></li></ol></li></ol>
 		
 		</div>
 		
-		<p>为整个博客目录建立GitHub仓库</p>
-<span id="more"></span>
-<hr>
-<h3 id="为整个目录建立GitHub仓库"><a href="#为整个目录建立GitHub仓库" class="headerlink" title="为整个目录建立GitHub仓库"></a>为整个目录建立GitHub仓库</h3><p>前面文章<a href="https://shenweikun.github.io/2018/02/07/2018-02-07-hexo-github%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">hexo+github搭建个人博客</a>中，提到使如下命令初始化一个hexo博客，此时会生成一个myblog目录，后面对博客网站的所有操作都是在此目录下完成的，所以我们可以直接为这整个目录建立GitHub仓库，并将所有数据传到GitHub上备份</p>
-<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">hexo init myblog</span><br></pre></td></tr></table></figure>
-
-<p>如何建立可以参考文章<a target="_blank" rel="noopener" href="https://www.cnblogs.com/zhixi/p/9584624.html">在github上创建自己的代码仓库</a></p>
+		<h2 id="P1Node-Architecture-Overview"><a href="#P1Node-Architecture-Overview" class="headerlink" title="P1Node Architecture Overview"></a>P1Node Architecture Overview</h2><p>   <img src="image1.png"><br>如上图所示，在旧版的ISP6中，P1Node会直接与HAL3A，NormalPipe，HalIsp进行交互，但是在新的ISP7架构中，引入了CamCtrl作为协调者，统一协调Camsys Hw-Lib，P1Node与CAMCtrl进行交互。关于Camsys Hw-Lib的介绍可以看文档： <a href="https://shenweikun.github.io/2024/11/18/2024-11-20-MTKcam-ISP7-Camsys-Hw-Lib/">ISP7-Camsys Hw-Lib</a><br>由此，P1 Node的工作变得更加清晰简单。</p>
+<h2 id="P1Node-Basic-Flow"><a href="#P1Node-Basic-Flow" class="headerlink" title="P1Node Basic Flow"></a>P1Node Basic Flow</h2><p>   <img src="image2.png"><br>如图是P1Node处理request的Basic Flow：</p>
+<ol>
+<li>首先P1Node会先实作一些callback，可让CamCtrl回调，主要实作是requestsubmission和setupsubmission。CamCtrl 透过 requestSubmission 去通知 P1Node 送 request 下来,此时 P1Node 会通知 Pipeline 送 request 下来,之后 Pipeline 就会调用 P1Node 的 queue 丢 request 下来,接着P1Node 会 call 到 CamCtrl 的 tryEnQ 将 request 送下来。</li>
+<li>接下来 CamCtrl 会调用 setupSubmission,主要是告之 P1Node 已经送了 request 下来,CamCtrl 这边也拿到了对应的设定,让 P1Node 将对应的 buffer 给 acquire 出来,并通知 P1Node 设定 buffer 的address 给 CamCtrl。</li>
+<li>P1Node 有一个 deque thread,这个 thread 会 call CamCtrl 的 tryDeQ,tryDeQ 是 blocking code,所以只有当真正 driver 那边有吐 data,CamCtrl 的 tryDeQ 才会放开,这个时候 P1Node 就可以拿到result 的数据。</li>
+<li>P1Node 还有一个 deliver thread,deliver thread 会透过 pipeline 的接口进行 dispatch。</li>
+</ol>
+<h3 id="Nornal-Request："><a href="#Nornal-Request：" class="headerlink" title="Nornal Request："></a>Nornal Request：</h3><p>   <img src="image3.png"><br>上面是描述Normal Request的例子：</p>
+<ol>
+<li>假设MW透过P1Node的queue接口送request下来，P1Node 会先执行 parseFrame 产生 <strong>S_Queue</strong>，在S_Queue 的时候主要是去 call CamCtrl 的 tryEnQ(图中 S_Queue 后面的 hwOps_try_enque()表达的是它会 call try enque,其他的状态后面表示被相应的事件来 trigger)。</li>
+<li>tryEnQ 主要是先告知 CamCtrl 有 request 进来,并将一些 setting 预先告知 CamCtrl。</li>
+<li>tryEnQ 之后 state machine 就会进入 <strong>S_Enque</strong>,并等待下一个 event trigger,这个 event 会是setupSubmission,setupSubmission 被 trigger 的时候 S_Enque 相关 function 会被执行,这个过程会跟MW 要 buffer,做完之后 state machine 就会停留在 <strong>S_Deque</strong>。</li>
+<li>S_Deque 状态会等 Deque thread trigger,当 deque thread 已经 deque 到东西,这个时候 S_Deque 的stage 就会做事情去产生 metadata,并切到下一个 state <strong>S_Deliver</strong> 等待被 trigger。</li>
+<li>当Deliver thread 知道有可以 Deliver 的 frame 进入之后就会 call pipeline 的接口做 deliver。</li>
+</ol>
+<h3 id="Reprocess："><a href="#Reprocess：" class="headerlink" title="Reprocess："></a>Reprocess：</h3><p>   <img src="image4.png"></p>
+<h3 id="FastPreview-fast-launch"><a href="#FastPreview-fast-launch" class="headerlink" title="FastPreview(fast launch):"></a>FastPreview(fast launch):</h3><p>   <img src="image5.png"><br>FastPreview的流程如上图(if preqCnt != -1)的流程，原本正常的流程request需要tryEnQ 并进入S_Enque状态，此时需要等待3A相关的计算。<br>为了加速启动，当((if preqCnt != -1)成立时，会调用preEnQ，进入S_PreQue状态，此时采用<strong>默认的3A计算结果（一般会是上一次退出相机时的3A计算结果）</strong>直接作用在driver，随后调用setupSubmission ，让 P1Node 将对应的 buffer 给 acquire 出来，并将buffer address给到Camctrl, 等待driver 吐帧。随后的流程和Normal Request一致。</p>
+<h3 id="Drop-Case："><a href="#Drop-Case：" class="headerlink" title="Drop Case："></a>Drop Case：</h3><p>drop case应用在上层下发flush的场景，通过dropSubmission实现drop：<br>   <img src="image6.png"></p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -114,9 +136,14 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/%E5%BB%BA%E7%AB%99/">建站</a>
+  <a class="article-category-link" href="/categories/1-Android-Camera/">1. Android Camera</a>
 </div>
 
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Android-Camera/">Android Camera</a><a href="/tags/Camera系统/">Camera系统</a><a href="/tags/MTKCamera/">MTKCamera</a>
+  </div>
 
 </div>
 
@@ -124,7 +151,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="https://shenweikun.github.io/2018/03/14/How-to-backup-blog/" data-title="如何备份博客？ | Weikun&#39;s Notes" data-tsina="" class="share clearfix">
+	  <div data-url="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-P1-Node/" data-title="MTKcam-ISP7-P1 Node | Weikun&#39;s Notes" data-tsina="" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -137,19 +164,11 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2018/03/14/How-to-edit-MarkDown-visually/" title="如何可视化编辑markdown?">
-  <strong>上一篇：</strong><br/>
-  <span>
-  如何可视化编辑markdown?</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2018/03/14/How-to-change-theme/"  title="如何更换主题？">
+<a href="/2024/11/19/2024-11-20-MTKcam-ISP7-CamCtrl/"  title="MTKcam-ISP7-CamCtrl">
  <strong>下一篇：</strong><br/> 
- <span>如何更换主题？
+ <span>MTKcam-ISP7-CamCtrl
 </span>
 </a>
 </div>
@@ -162,13 +181,6 @@
 
 </div>  
       <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
-
-  <div id="toc" class="toc-aside">
-  <strong class="toc-title">文章目录</strong>
- 
- <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E6%95%B4%E4%B8%AA%E7%9B%AE%E5%BD%95%E5%BB%BA%E7%AB%8BGitHub%E4%BB%93%E5%BA%93"><span class="toc-number">1.</span> <span class="toc-text">为整个目录建立GitHub仓库</span></a></li></ol>
- 
-  </div>
 
 <div id="asidepart">
 <div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
@@ -370,55 +382,6 @@ $(document).ready(function(){
 </script>
 
 
-<script type="text/javascript">
-$(document).ready(function(){ 
-  var $this = $('.share'),
-      url = $this.attr('data-url'),
-      encodedUrl = encodeURIComponent(url),
-      title = $this.attr('data-title'),
-      tsina = $this.attr('data-tsina'),
-      description = $this.attr('description');
-  var html = [
-  '<div class="hoverqrcode clearfix"></div>',
-  '<a class="overlay" id="qrcode"></a>',
-  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
-  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
-  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
-  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
-  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
-  '<span title="Share to"></span>'
-  ].join('');
-  $this.append(html);
-
-  $('.hoverqrcode').hide();
-
-  var myWidth = 0;
-  function updatehoverqrcode(){
-    if( typeof( window.innerWidth ) == 'number' ) {
-      myWidth = window.innerWidth;
-    } else if( document.documentElement && document.documentElement.clientWidth) {
-      myWidth = document.documentElement.clientWidth;
-    };
-    var qrsize = myWidth > 1024 ? 200:100;
-    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
-    var p = $('.article-share-qrcode').position();
-    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
-                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
-                          .qrcode(options);
-  };
-  $(window).resize(function(){
-    $('.hoverqrcode').hide();
-  });
-  $('.article-share-qrcode').click(function(){
-    updatehoverqrcode();
-    $('.hoverqrcode').toggle();
-  });
-  $('.article-share-qrcode').hover(function(){}, function(){
-      $('.hoverqrcode').hide();
-  });
-});   
-</script>
-
 
 
 
@@ -490,4 +453,4 @@ var _hmt = _hmt || [];
 <!-- Tiny_search End -->
 
   </body>
-</html>
+ </html>
