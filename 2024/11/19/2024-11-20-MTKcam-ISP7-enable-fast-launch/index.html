@@ -4,25 +4,36 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>C++基础之三-STL等高阶话题 | Weikun&#39;s Notes</title>
+    <title>MTKcam-ISP7-enable fast launch | Weikun&#39;s Notes</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="空白">
     
 
     
-    <meta name="description" content="记录生活与职业中的点滴">
+    <meta name="description" content="Breakdown相机的冷&#x2F;热启动，若从systrace上分析耗时，可以按照cameraservice进程来分5个阶段：   S1: AppLaunch_dispatchPtr:Up –&gt; connectDevice点击APP按钮到连接相机，这部分主要是APP和framework的耗时；  S2: connectDevice连接相机的耗时，对应HAL层的open操作，主要包括遍历sensor">
 <meta property="og:type" content="article">
-<meta property="og:title" content="C++基础之三-STL等高阶话题">
-<meta property="og:url" content="https://shenweikun.github.io/2024/11/18/2024-11-18-CPP-Basics-about-STL/index.html">
+<meta property="og:title" content="MTKcam-ISP7-enable fast launch">
+<meta property="og:url" content="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-enable-fast-launch/index.html">
 <meta property="og:site_name" content="Weikun&#39;s Notes">
-<meta property="og:description" content="记录生活与职业中的点滴">
+<meta property="og:description" content="Breakdown相机的冷&#x2F;热启动，若从systrace上分析耗时，可以按照cameraservice进程来分5个阶段：   S1: AppLaunch_dispatchPtr:Up –&gt; connectDevice点击APP按钮到连接相机，这部分主要是APP和framework的耗时；  S2: connectDevice连接相机的耗时，对应HAL层的open操作，主要包括遍历sensor">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2024-11-17T18:09:47.000Z">
-<meta property="article:modified_time" content="2024-11-17T18:14:22.413Z">
+<meta property="og:image" content="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-enable-fast-launch/image1.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-enable-fast-launch/image2.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-enable-fast-launch/image3.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-enable-fast-launch/image4.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-enable-fast-launch/image5.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-enable-fast-launch/image6.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-enable-fast-launch/image7.png">
+<meta property="article:published_time" content="2024-11-18T18:14:21.000Z">
+<meta property="article:modified_time" content="2024-11-18T18:30:51.369Z">
 <meta property="article:author" content="空白">
-<meta property="article:tag" content="C&#x2F;C++">
+<meta property="article:tag" content="Android Camera">
+<meta property="article:tag" content="Camera系统">
+<meta property="article:tag" content="MTKCamera">
+<meta property="article:tag" content="性能">
 <meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-enable-fast-launch/image1.png">
 
     
     <link rel="alternative" href="/atom.xml" title="Weikun&#39;s Notes" type="application/atom+xml">
@@ -81,14 +92,14 @@
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2024/11/18/2024-11-18-CPP-Basics-about-STL/" title="C++基础之三-STL等高阶话题" itemprop="url">C++基础之三-STL等高阶话题</a>
+      <a href="/2024/11/19/2024-11-20-MTKcam-ISP7-enable-fast-launch/" title="MTKcam-ISP7-enable fast launch" itemprop="url">MTKcam-ISP7-enable fast launch</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="空白" target="_blank" itemprop="author">空白</a>
 		
   <p class="article-time">
-    <time datetime="2024-11-17T18:09:47.000Z" itemprop="datePublished"> 发表于 2024-11-18</time>
+    <time datetime="2024-11-18T18:14:21.000Z" itemprop="datePublished"> 发表于 2024-11-19</time>
     
   </p>
 </header>
@@ -97,24 +108,37 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Breakdown"><span class="toc-number">1.</span> <span class="toc-text">Breakdown</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#analysis"><span class="toc-number">2.</span> <span class="toc-text">analysis</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#fast-launch%E5%8A%9F%E8%83%BD%E4%BB%8B%E7%BB%8D"><span class="toc-number">3.</span> <span class="toc-text">fast launch功能介绍</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#SysTrace%E5%88%86%E6%9E%90"><span class="toc-number">4.</span> <span class="toc-text">SysTrace分析</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Normal-Request%EF%BC%9A"><span class="toc-number">4.1.</span> <span class="toc-text">Normal Request：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#fast-launch-Request%EF%BC%9A"><span class="toc-number">4.2.</span> <span class="toc-text">fast launch Request：</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BC%98%E5%8C%96%E6%96%B9%E6%B3%95"><span class="toc-number">5.</span> <span class="toc-text">优化方法</span></a></li></ol>
 		
 		</div>
 		
-		  
+		<h2 id="Breakdown"><a href="#Breakdown" class="headerlink" title="Breakdown"></a>Breakdown</h2><p>相机的冷/热启动，若从systrace上分析耗时，可以按照cameraservice进程来分5个阶段：</p>
+<ol>
+<li> <strong>S1: AppLaunch_dispatchPtr:Up –&gt; connectDevice</strong><br>点击APP按钮到连接相机，这部分主要是APP和framework的耗时；</li>
+<li> <strong>S2: connectDevice</strong><br>连接相机的耗时，对应HAL层的open操作，主要包括遍历sensorlist，加载tuning算法库（并行化的，不需要等上下电），主要是HAL部分耗时</li>
+<li> <strong>S3: connectDevice –&gt; endConfigure</strong><br>CameraDevice callback之后，就可以调用createcapturesession（endConfigure），因此这部分耗时主要来源于APP和framework</li>
+<li> <strong>S4:endConfigure</strong><br>对应HAL层的configstream，需要等待sensor上电完成，以及3A初始化，耗时主要是HAL部分</li>
+<li> <strong>S5: endConfigure –&gt; first full buffer call back</strong><br>流配置完成到回帧到APP，需要等待HAL pipeline创建完成，3A计算和吐帧，主要耗时是HAL部分</li>
+</ol>
+<h2 id="analysis"><a href="#analysis" class="headerlink" title="analysis"></a>analysis</h2><p>breakdown的结果是<strong>S5: endConfigure –&gt; first full buffer call back</strong>耗时长，流配置完成到回帧到APP，需要等待HAL pipeline创建完成，3A计算和吐帧，主要耗时是HAL部分;<br>在这个阶段MTK有一个fast lunch功能可以开启</p>
+<h2 id="fast-launch功能介绍"><a href="#fast-launch功能介绍" class="headerlink" title="fast launch功能介绍"></a>fast launch功能介绍</h2><p>fast launch又叫Fast Preview，在了解fast launch功能之前，我们首先需要知道request在MTK P1 Node中是如何流转的，具体过程可以参考文档<a href="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-P1-Node/">ISP7-P1 node</a>简介 ，里面有相关介绍。<br>开启fast launch主要时节省了3A相关的计算，使用<strong>默认的3A计算结果（一般会是上一次退出相机时的3A计算结果）</strong>直接作用在driver，随后等待driver出帧。</p>
+<h2 id="SysTrace分析"><a href="#SysTrace分析" class="headerlink" title="SysTrace分析"></a>SysTrace分析</h2><h3 id="Normal-Request："><a href="#Normal-Request：" class="headerlink" title="Normal Request："></a>Normal Request：</h3><p>cameraservice通过sendRequestsBatch下发quest，正常需要等待P1Node.queue走完之后才会返回：<br>   <img src="image1.png"><br>   <img src="image2.png"><br>并且会调用tryEnQ 并进入S_Enque状态，此时需要等待3A相关的计算：<br>   <img src="image3.png"></p>
+<h3 id="fast-launch-Request："><a href="#fast-launch-Request：" class="headerlink" title="fast launch Request："></a>fast launch Request：</h3><p>   <img src="image4.png"><br>这里有3个sendRequestsBatch执行时间特别短，原因就是开启了fast launch功能。我们看来下这些request在HAL中是怎么走的：<br>   <img src="image5.png"><br>request下发到HAL之后并没有等待queue。queue动作在另一个线程中完成：<br>   <img src="image6.png"><br>另外，第一个queue函数执行很长，主要是在等res寄存器的写入。<br>   <img src="image7.png"><br>这里做的实际上是调用preEnQ，进入S_PreQue状态，这里便是核心区别。用preEnQ，进入S_PreQue状态，此时采用<strong>默认的3A计算结果（一般会是上一次退出相机时的3A计算结果）</strong>直接作用在driver，随后调用setupSubmission ，让 P1Node 将对应的 buffer 给 acquire 出来，并将buffer address给到Camctrl, 等待driver 吐帧。随后的流程和Normal Request一致。</p>
+<h2 id="优化方法"><a href="#优化方法" class="headerlink" title="优化方法"></a>优化方法</h2><p>通过设置：<br>adb shell setprop vendor.debug.camera.pass1initrequestnum 4 //可以开启功能4-1=3帧，理论优化耗时3*33=99ms<br>或者直接在代码里面修改</p>
+  
 	</div>
 		<footer class="article-footer clearfix">
 <div class="article-catetags">
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/4-C-C/">4. C/C++</a>
+  <a class="article-category-link" href="/categories/1-Android-Camera/">1. Android Camera</a>
 </div>
 
 
   <div class="article-tags">
   
-  <span></span> <a href="/tags/C-C/">C/C++</a>
+  <span></span> <a href="/tags/Android-Camera/">Android Camera</a><a href="/tags/Camera系统/">Camera系统</a><a href="/tags/MTKCamera/">MTKCamera</a><a href="/tags/性能/">性能</a>
   </div>
 
 </div>
@@ -123,7 +147,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="https://shenweikun.github.io/2024/11/18/2024-11-18-CPP-Basics-about-STL/" data-title="C++基础之三-STL等高阶话题 | Weikun&#39;s Notes" data-tsina="" class="share clearfix">
+	  <div data-url="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-enable-fast-launch/" data-title="MTKcam-ISP7-enable fast launch | Weikun&#39;s Notes" data-tsina="" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -136,19 +160,11 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2024/11/18/2024-11-19-CPP-Basics-C-Programming-Optimization/" title="C++基础之四-C++编程优化">
-  <strong>上一篇：</strong><br/>
-  <span>
-  C++基础之四-C++编程优化</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2024/11/17/2024-11-17-CPP-Basics-C-and-ObjectOrientation/"  title="C++基础之二-C++和面向对象">
+<a href="/2024/11/19/2024-11-20-MTKcam-ISP7-P1-Node/"  title="MTKcam-ISP7-P1 Node">
  <strong>下一篇：</strong><br/> 
- <span>C++基础之二-C++和面向对象
+ <span>MTKcam-ISP7-P1 Node
 </span>
 </a>
 </div>
