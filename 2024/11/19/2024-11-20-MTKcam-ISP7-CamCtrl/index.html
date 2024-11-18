@@ -4,26 +4,29 @@
 <head>
   <meta charset="UTF-8">
   
-    <title>如何可视化编辑markdown? | Weikun&#39;s Notes</title>
+    <title>MTKcam-ISP7-CamCtrl | Weikun&#39;s Notes</title>
     <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
     
     <meta name="author" content="空白">
     
 
     
-    <meta name="description" content="使用 Hexo Admin 插件">
+    <meta name="description" content="CamCtrl简介：文件目录：vendor&#x2F;mediatek&#x2F;proprietary&#x2F;hardware&#x2F;mtkcam-core&#x2F;hw&#x2F;camsys&#x2F;cam_ctrl&#x2F;CamCtrl是P1Node&#x2F;PipeMgr&#x2F;3A HAL&#x2F;ISP HAL的协调者。其主要有两个作用：  搜集从P1 Node过来的request Info，然后queue给driver（使用PipeMgr并通过SensorPipe接">
 <meta property="og:type" content="article">
-<meta property="og:title" content="如何可视化编辑markdown?">
-<meta property="og:url" content="https://shenweikun.github.io/2018/03/14/How-to-edit-MarkDown-visually/index.html">
+<meta property="og:title" content="MTKcam-ISP7-CamCtrl">
+<meta property="og:url" content="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-CamCtrl/index.html">
 <meta property="og:site_name" content="Weikun&#39;s Notes">
-<meta property="og:description" content="使用 Hexo Admin 插件">
+<meta property="og:description" content="CamCtrl简介：文件目录：vendor&#x2F;mediatek&#x2F;proprietary&#x2F;hardware&#x2F;mtkcam-core&#x2F;hw&#x2F;camsys&#x2F;cam_ctrl&#x2F;CamCtrl是P1Node&#x2F;PipeMgr&#x2F;3A HAL&#x2F;ISP HAL的协调者。其主要有两个作用：  搜集从P1 Node过来的request Info，然后queue给driver（使用PipeMgr并通过SensorPipe接">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://shenweikun.github.io/2018/03/14/How-to-edit-MarkDown-visually/How-to-edit-MarkDown-visually.png">
-<meta property="article:published_time" content="2018-03-14T10:00:31.000Z">
-<meta property="article:modified_time" content="2024-10-29T16:38:43.407Z">
+<meta property="og:image" content="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-CamCtrl/image1.png">
+<meta property="article:published_time" content="2024-11-18T17:46:48.000Z">
+<meta property="article:modified_time" content="2024-11-18T17:52:02.654Z">
 <meta property="article:author" content="空白">
+<meta property="article:tag" content="Android Camera">
+<meta property="article:tag" content="Camera系统">
+<meta property="article:tag" content="MTKCamera">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://shenweikun.github.io/2018/03/14/How-to-edit-MarkDown-visually/How-to-edit-MarkDown-visually.png">
+<meta name="twitter:image" content="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-CamCtrl/image1.png">
 
     
     <link rel="alternative" href="/atom.xml" title="Weikun&#39;s Notes" type="application/atom+xml">
@@ -76,20 +79,20 @@
 </div>
     </header>
     <div id="container">
-      <div id="main" class="post" itemscope itemprop="blogPost">
+      <div id="main" class="n" itemscope itemprop="blogPost">
   
 	<article itemprop="articleBody"> 
 		<header class="article-info clearfix">
   <h1 itemprop="name">
     
-      <a href="/2018/03/14/How-to-edit-MarkDown-visually/" title="如何可视化编辑markdown?" itemprop="url">如何可视化编辑markdown?</a>
+      <a href="/2024/11/19/2024-11-20-MTKcam-ISP7-CamCtrl/" title="MTKcam-ISP7-CamCtrl" itemprop="url">MTKcam-ISP7-CamCtrl</a>
   </h1>
   <p class="article-author">By
        
 		<a href="/about" title="空白" target="_blank" itemprop="author">空白</a>
 		
   <p class="article-time">
-    <time datetime="2018-03-14T10:00:31.000Z" itemprop="datePublished"> 发表于 2018-03-14</time>
+    <time datetime="2024-11-18T17:46:48.000Z" itemprop="datePublished"> 发表于 2024-11-19</time>
     
   </p>
 </header>
@@ -98,19 +101,53 @@
 		<div id="toc" class="toc-article">
 			<strong class="toc-title">文章目录</strong>
 		
-			<ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-Hexo-Admin-%E6%8F%92%E4%BB%B6"><span class="toc-number">1.</span> <span class="toc-text">使用 Hexo Admin 插件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95"><span class="toc-number">1.1.</span> <span class="toc-text">使用方法</span></a></li></ol></li></ol>
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#CamCtrl%E7%AE%80%E4%BB%8B%EF%BC%9A"><span class="toc-number">1.</span> <span class="toc-text">CamCtrl简介：</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#CamCtrl%E5%9F%BA%E6%9C%AC%E6%B5%81%E7%A8%8B"><span class="toc-number">2.</span> <span class="toc-text">CamCtrl基本流程:</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#request-thread"><span class="toc-number">2.1.</span> <span class="toc-text">request thread:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#requestRegulator-thread"><span class="toc-number">2.2.</span> <span class="toc-text">requestRegulator thread:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#deque-thread"><span class="toc-number">2.3.</span> <span class="toc-text">deque thread:</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#CamCtrl-thread-3A-thread"><span class="toc-number">2.4.</span> <span class="toc-text">CamCtrl thread&#x2F;3A thread:</span></a></li></ol></li></ol>
 		
 		</div>
 		
-		<p>使用 Hexo Admin 插件</p>
-<span id="more"></span>
-<hr>
-<h3 id="使用-Hexo-Admin-插件"><a href="#使用-Hexo-Admin-插件" class="headerlink" title="使用 Hexo Admin 插件"></a>使用 Hexo Admin 插件</h3><p>Hexo Admin 是一个本地在线式文章管理器，可以用直观可视化的方式新建、编辑博客文章、page页面，添加标签、分类等，并且支持剪贴板粘贴图片（自动在source_images_目录中创建文件）<br><img src="How-to-edit-MarkDown-visually.png"></p>
-<h4 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h4><ol>
-<li>在Hexo网站目录下，安装 Hexo Admin 插件<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">npm install --save hexo-admin</span><br></pre></td></tr></table></figure></li>
-<li>启动本地服务器并打开管理界面，即可使用<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">hexo server -d</span><br><span class="line">open http:<span class="comment">//localhost:4000/admin/</span></span><br></pre></td></tr></table></figure></li>
+		<h2 id="CamCtrl简介："><a href="#CamCtrl简介：" class="headerlink" title="CamCtrl简介："></a>CamCtrl简介：</h2><p>文件目录：vendor/mediatek/proprietary/hardware/mtkcam-core/hw/camsys/cam_ctrl/<br>CamCtrl是P1Node/PipeMgr/3A HAL/ISP HAL的协调者。其主要有两个作用：</p>
+<ul>
+<li>搜集从P1 Node过来的request Info，然后queue给driver（使用PipeMgr并通过SensorPipe接口丢给MTK drivers):<br>request Info包含：</li>
+<li>Image Info. (from P1Node)，例如上层传下来的buffer size，format等</li>
+<li>Setting (from 3A-HAL)，例如需要给到driver的gain值，曝光等</li>
+<li>Tuning (from ISP-HAL)，例如从tuning参数中获取的信息等</li>
+<li>从driver中做deque(使用PipeMgr并通过SensorPipe接口),并将结果传递给用户：<ul>
+<li>Image buffer(to P1Node)</li>
+<li>STT buffer(to 3A HAL)，如AAO，AFO等统计信息</li>
+</ul>
+</li>
+</ul>
+<p>更多可以参考：<a href="https://shenweikun.github.io/2024/11/18/2024-11-20-MTKcam-ISP7-Camsys-Hw-Lib/">ISP7-Camsys Hw-Lib</a></p>
+<h2 id="CamCtrl基本流程"><a href="#CamCtrl基本流程" class="headerlink" title="CamCtrl基本流程:"></a>CamCtrl基本流程:</h2><p>   <img src="image1.png"><br>如上图，描述的是CamCtrl与其它模块相互交互时使用的function。不同颜色的线代表不同的线程，其中requestregulator thread是混色的，代表包含多个线程(实现同一功能)。同一颜色的不同标号代表一串事件的先后顺序。</p>
+<h3 id="request-thread"><a href="#request-thread" class="headerlink" title="request thread:"></a>request thread:</h3><ol>
+<li>当Pipeline model Queue一个request到P1 Node时，P1 Node会调用的Camtrl的tryEnQ()往Camtrl塞request</li>
+<li>随后CamCtrl会调用到3A-HAL的setControl()，把当前request带下来的metadata数据设置到3A-HAL中，让3A-HAL去做一些预处理。</li>
+<li>同时，CamCtrl还会调用到RequestRegulator中的enrollRequest()函数，通知RequestRegulator，CamCtrl收到了一帧request，并且已将其相关的metadata参数设置到了3A-HAL。此信息将用于控制request的节奏。</li>
 </ol>
-<p><a target="_blank" rel="noopener" href="https://www.jianshu.com/p/925fa86ccc95">参考文章：使用Hexo写博客</a></p>
+<h3 id="requestRegulator-thread"><a href="#requestRegulator-thread" class="headerlink" title="requestRegulator thread:"></a>requestRegulator thread:</h3><ol>
+<li>RequestRegulator有一个线程会通过CamCtrl去调用到Sensor-Pipe的wait-SOF()，去等待sof信号。</li>
+<li>当RequestRegulator收到sof信号后，会通过CamCtrl的cueFrameStart()去triggerFrameStart（我理解是触发接收下一个request）。</li>
+<li>CamCtrl调用RequestRegulator的available()去确认request的节奏，CamCtrl是否可以接收下一个request。</li>
+<li>若能接收下一个quest，CamCtrl会调用到P1 Node的requestSubmission()，告诉P1 Node可以继续tryEnQ()塞request下来了。</li>
+<li>于此同时,CamCtrl会通过P1 Node的setupSubmission(),去获取上一个request的image buffer。</li>
+</ol>
+<h3 id="deque-thread"><a href="#deque-thread" class="headerlink" title="deque thread:"></a>deque thread:</h3><ol>
+<li>P1 Node会调用CamCtrl的tryDeQ()。tryDeQ()是blocking code，所以只有当真正的driver那边吐出data，CamCtrl的tryDeQ才会被完成，这个时候P1 Node就可以拿到result的数据。</li>
+<li>CamCtrl的tryDeQ()实际会去调用Sensor-Pipe的deque()，然后等待driver deque数据出来。这个数据包括Image buffer和STT buffer。</li>
+<li>当Sensor-Pipe deque出数据之后，首先CamCtrl会调用3A-HAL 的setSttBuffer()，将统计数据设置到3A-HAL</li>
+<li>CamCtrl调用3A-HAL的getResult()，去获取3A的result meta。</li>
+<li>CamCtrl调用ISP-HAL的getResultByFrameID()，去获取ISP的result meta。</li>
+</ol>
+<h3 id="CamCtrl-thread-3A-thread"><a href="#CamCtrl-thread-3A-thread" class="headerlink" title="CamCtrl thread/3A thread:"></a>CamCtrl thread/3A thread:</h3><ol>
+<li>当deque thread的第3步，CamCtrl通过setSttBuffer将统计数据给到3A-HAL后，若3A-HAL使用完，会调用notifySettingReadyEvent()告诉CamCtrl有一个request的结果计算完成了。</li>
+<li>CamCtrl调用3A-HAL的getSetting()，拿到3A-HAL的计算结果。</li>
+<li>CamCtrl调用ISP-HAL的getCamSysMetaTuning()，拿到ISP-HAL的计算结果。</li>
+<li>前面2(getSetting())，3(getCamSysMetaTuning())，结合requestRegulator thread中的5(setupSubmission())，这里就获取到了3份数据（3A-HAL的计算结果，ISP-HAL的计算结果，Image Buffer），此时所有数据准备就绪，就可以通过CamCtrl去调用RequestRegulator的informReady()，通知RequestRegulator已经CamCtrl已经准备好了，可以enque了。</li>
+<li>RequestRegulator调用CamCtrl的hintForEnQ(),去通知CamCtrl做enque。</li>
+<li>CamCtrl去做enque。</li>
+<li>当CamCtrl做完enque之后，CamCtrl会调用RequestRegulator的informCount，去告诉RequestRegulator，我已经往driver做enque了。之所以要告诉RequestRegulator，是因为RequestRegulator要控制enque的节奏，避免driver中累积太多的request。</li>
+</ol>
+<p>参考：[ISP7]CAMSYS_HW-Lib_P1Node_CamCtrl.pdf</p>
   
 	</div>
 		<footer class="article-footer clearfix">
@@ -118,9 +155,14 @@
 
 <div class="article-categories">
   <span></span>
-  <a class="article-category-link" href="/categories/%E5%BB%BA%E7%AB%99/">建站</a>
+  <a class="article-category-link" href="/categories/1-Android-Camera/">1. Android Camera</a>
 </div>
 
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Android-Camera/">Android Camera</a><a href="/tags/Camera系统/">Camera系统</a><a href="/tags/MTKCamera/">MTKCamera</a>
+  </div>
 
 </div>
 
@@ -128,7 +170,7 @@
 
 	<div class="article-share" id="share">
 	
-	  <div data-url="https://shenweikun.github.io/2018/03/14/How-to-edit-MarkDown-visually/" data-title="如何可视化编辑markdown? | Weikun&#39;s Notes" data-tsina="" class="share clearfix">
+	  <div data-url="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-CamCtrl/" data-title="MTKcam-ISP7-CamCtrl | Weikun&#39;s Notes" data-tsina="" class="share clearfix">
 	  </div>
 	
 	</div>
@@ -141,19 +183,11 @@
 	
 <nav class="article-nav clearfix">
  
- <div class="prev" >
- <a href="/2021/10/10/2021-10-10The-difference-between-C-and-C-static/" title="C和C++中static的区别">
-  <strong>上一篇：</strong><br/>
-  <span>
-  C和C++中static的区别</span>
-</a>
-</div>
-
 
 <div class="next">
-<a href="/2018/03/14/How-to-backup-blog/"  title="如何备份博客？">
+<a href="/2024/11/18/2024-11-20-MTKcam-ISP7-Camsys-Hw-Lib/"  title="MTKcam-ISP7-Camsys Hw-Lib">
  <strong>下一篇：</strong><br/> 
- <span>如何备份博客？
+ <span>MTKcam-ISP7-Camsys Hw-Lib
 </span>
 </a>
 </div>
@@ -166,13 +200,6 @@
 
 </div>  
       <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
-
-  <div id="toc" class="toc-aside">
-  <strong class="toc-title">文章目录</strong>
- 
- <ol class="toc"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8-Hexo-Admin-%E6%8F%92%E4%BB%B6"><span class="toc-number">1.</span> <span class="toc-text">使用 Hexo Admin 插件</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95"><span class="toc-number">1.1.</span> <span class="toc-text">使用方法</span></a></li></ol></li></ol>
- 
-  </div>
 
 <div id="asidepart">
 <div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
@@ -374,55 +401,6 @@ $(document).ready(function(){
 </script>
 
 
-<script type="text/javascript">
-$(document).ready(function(){ 
-  var $this = $('.share'),
-      url = $this.attr('data-url'),
-      encodedUrl = encodeURIComponent(url),
-      title = $this.attr('data-title'),
-      tsina = $this.attr('data-tsina'),
-      description = $this.attr('description');
-  var html = [
-  '<div class="hoverqrcode clearfix"></div>',
-  '<a class="overlay" id="qrcode"></a>',
-  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
-  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
-  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
-  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
-  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
-  '<span title="Share to"></span>'
-  ].join('');
-  $this.append(html);
-
-  $('.hoverqrcode').hide();
-
-  var myWidth = 0;
-  function updatehoverqrcode(){
-    if( typeof( window.innerWidth ) == 'number' ) {
-      myWidth = window.innerWidth;
-    } else if( document.documentElement && document.documentElement.clientWidth) {
-      myWidth = document.documentElement.clientWidth;
-    };
-    var qrsize = myWidth > 1024 ? 200:100;
-    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
-    var p = $('.article-share-qrcode').position();
-    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
-                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
-                          .qrcode(options);
-  };
-  $(window).resize(function(){
-    $('.hoverqrcode').hide();
-  });
-  $('.article-share-qrcode').click(function(){
-    updatehoverqrcode();
-    $('.hoverqrcode').toggle();
-  });
-  $('.article-share-qrcode').hover(function(){}, function(){
-      $('.hoverqrcode').hide();
-  });
-});   
-</script>
-
 
 
 
@@ -494,4 +472,4 @@ var _hmt = _hmt || [];
 <!-- Tiny_search End -->
 
   </body>
-</html>
+ </html>
