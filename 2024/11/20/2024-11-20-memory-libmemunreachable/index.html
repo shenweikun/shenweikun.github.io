@@ -1,0 +1,516 @@
+
+ <!DOCTYPE HTML>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  
+    <title>Memory libmemunreachable | Weikun&#39;s Notes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="空白">
+    
+
+    
+    <meta name="description" content="Introductionlibmemunreachable is a zero-overhead native memory leak detector.">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Memory libmemunreachable">
+<meta property="og:url" content="https://shenweikun.github.io/2024/11/20/2024-11-20-memory-libmemunreachable/index.html">
+<meta property="og:site_name" content="Weikun&#39;s Notes">
+<meta property="og:description" content="Introductionlibmemunreachable is a zero-overhead native memory leak detector.">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shenweikun.github.io/2024/11/20/2024-11-20-memory-libmemunreachable/image1.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/11/20/2024-11-20-memory-libmemunreachable/image2.png">
+<meta property="article:published_time" content="2024-11-20T15:06:27.000Z">
+<meta property="article:modified_time" content="2024-11-20T15:49:02.337Z">
+<meta property="article:author" content="空白">
+<meta property="article:tag" content="内存">
+<meta property="article:tag" content="Android">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shenweikun.github.io/2024/11/20/2024-11-20-memory-libmemunreachable/image1.png">
+
+    
+    <link rel="alternative" href="/atom.xml" title="Weikun&#39;s Notes" type="application/atom+xml">
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/%02.css">
+<link rel="stylesheet" href="/.css">
+
+<meta name="generator" content="Hexo 5.4.0"></head>
+
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Weikun&#39;s Notes" title="Weikun&#39;s Notes"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Weikun&#39;s Notes">Weikun&#39;s Notes</a></h1>
+				<h2 class="blog-motto">怀揣代码中的唏嘘，记录生活中的点滴</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:shenweikun.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
+</div>
+    </header>
+    <div id="container">
+      <div id="main" class="n" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2024/11/20/2024-11-20-memory-libmemunreachable/" title="Memory libmemunreachable" itemprop="url">Memory libmemunreachable</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="空白" target="_blank" itemprop="author">空白</a>
+		
+  <p class="article-time">
+    <time datetime="2024-11-20T15:06:27.000Z" itemprop="datePublished"> 发表于 2024-11-20</time>
+    
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Introduction"><span class="toc-number">1.</span> <span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Usage"><span class="toc-number">2.</span> <span class="toc-text">Usage</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#In-Android-apps"><span class="toc-number">2.1.</span> <span class="toc-text">In Android apps</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-interface"><span class="toc-number">2.2.</span> <span class="toc-text">C interface</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#bool-LogUnreachableMemory-bool-log-contents-size-t-limit"><span class="toc-number">2.2.1.</span> <span class="toc-text">bool LogUnreachableMemory(bool log_contents, size_t limit)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#bool-NoLeaks"><span class="toc-number">2.2.2.</span> <span class="toc-text">bool NoLeaks()</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-interface-1"><span class="toc-number">2.3.</span> <span class="toc-text">C++ interface</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#bool-GetUnreachableMemory-UnreachableMemoryInfo-amp-info-size-t-limit-100"><span class="toc-number">2.3.1.</span> <span class="toc-text">bool GetUnreachableMemory(UnreachableMemoryInfo&amp; info, size_t limit &#x3D; 100)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#std-string-GetUnreachableMemoryString-bool-log-contents-false-size-t-limit-100"><span class="toc-number">2.3.2.</span> <span class="toc-text">std::string GetUnreachableMemoryString(bool log_contents &#x3D; false, size_t limit &#x3D; 100)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Implementation"><span class="toc-number">2.4.</span> <span class="toc-text">Implementation</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Components"><span class="toc-number">3.</span> <span class="toc-text">Components</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Heap-allocator-requirements"><span class="toc-number">4.</span> <span class="toc-text">Heap allocator requirements</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%A8%E7%9B%B8%E6%9C%BA%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8"><span class="toc-number">5.</span> <span class="toc-text">在相机中的应用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E7%9A%84%EF%BC%9A"><span class="toc-number">5.1.</span> <span class="toc-text">目的：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%EF%BC%9A"><span class="toc-number">5.2.</span> <span class="toc-text">方法：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E6%9E%9C%EF%BC%9A"><span class="toc-number">5.3.</span> <span class="toc-text">结果：</span></a></li></ol></li></ol>
+		
+		</div>
+		
+		<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>libmemunreachable is a zero-overhead native memory leak detector. </p>
+<span id="more"></span>
+<p>It uses an imprecise mark-and-sweep garbage collector pass over all native memory, reporting any unreachable blocks as leaks. It is similar to the Heap Checker from tcmalloc, but with a few key differences to remove the overhead. Instead of instrumenting every call to malloc and free, it queries the allocator (jemalloc) for active allocations when leak detection is requested. In addition, it performs a very short stop-the-world data collection on the main process, and then forks a copy of the process to perform the mark-and-sweep, minimizing disruption to the original process.</p>
+<p>In the default (zero-overhead) mode, the returned data on leaks is limited to the address, approximate (upper bound) size, and the the first 32 bytes of the contents of the leaked allocation. If malloc_debug backtraces are enabled they will be included in the leak information, but backtracing allocations requires significant overhead.</p>
+<hr>
+<h2 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h2><h3 id="In-Android-apps"><a href="#In-Android-apps" class="headerlink" title="In Android apps"></a>In Android apps</h3><p>libmemunreachble is loaded by zygote and can be triggered with dumpsys -t 600 meminfo –unreachable [process].</p>
+<p>To enable malloc_debug backtraces on allocations for a single app process on a userdebug device, use:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">adb root</span><br><span class="line">adb shell setprop libc.debug.malloc.program app_process</span><br><span class="line">adb shell setprop wrap.[process] <span class="string">&quot;\$\@&quot;</span></span><br><span class="line">adb shell setprop libc.debug.malloc.options backtrace=<span class="number">4</span></span><br></pre></td></tr></table></figure>
+<p>Kill and restart the app, trigger the leak, and then run dumpsys -t 600 meminfo –unreachable [process].</p>
+<p>To disable malloc_debug:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">adb shell setprop libc.debug.malloc.options <span class="string">&quot;&#x27;&#x27;&quot;</span></span><br><span class="line">adb shell setprop libc.debug.malloc.program <span class="string">&quot;&#x27;&#x27;&quot;</span></span><br><span class="line">adb shell setprop wrap.[process]  <span class="string">&quot;&#x27;&#x27;&quot;</span></span><br></pre></td></tr></table></figure>
+<p>Starting with Android U, new malloc debug options have been added that allow specific sized allocation to be backtraced. The three new options are:</p>
+<ul>
+<li>backtrace_size</li>
+<li>backtrace_min_size</li>
+<li>backtrace_max_size</li>
+</ul>
+<p>When enabling backtracing on all allocations, it is possible to have the process run so slowly that the app does not come up. Or the app runs so slowly that the leaks do not occur. The best way to avoid any slowdowns or timeouts is to first run libmemunreachable and look at the sizes of the leaking allocations. If there is only a single allocation size, then use backtrace_size which will indicate that backtraces should only be collected for that exact size. For example, if the output of dumpsys is:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Unreachable memory</span><br><span class="line"> <span class="number">24</span> bytes in <span class="number">2</span> unreachable allocations</span><br><span class="line"> ABI: <span class="string">&#x27;arm64&#x27;</span></span><br><span class="line"></span><br><span class="line"> <span class="number">24</span> bytes unreachable at <span class="number">71</span>d37787d0</span><br><span class="line">  first <span class="number">20</span> bytes of contents:</span><br><span class="line">  <span class="number">71</span>d37787d0: <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ................</span><br><span class="line">  <span class="number">71</span>d37787e0: <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ................</span><br><span class="line"></span><br><span class="line"> <span class="number">24</span> bytes unreachable at <span class="number">71</span>d37797d0</span><br><span class="line">  first <span class="number">20</span> bytes of contents:</span><br><span class="line">  <span class="number">71</span>d37797d0: <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ................</span><br><span class="line">  <span class="number">71</span>d37797e0: <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ................</span><br></pre></td></tr></table></figure>
+<p>Then set the malloc debug options thusly:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb shell setprop libc.debug.malloc.options <span class="string">&quot;&#x27;backtrace backtrace_size=24&#x27;&quot;</span></span><br></pre></td></tr></table></figure>
+<p>This will backtrace only 24 byte allocations.</p>
+<p>If the output of libmemunreachable has multiple sized allocations, set the backtrace_min_size and backtrace_max_size options to cover all of the sizes. For example, if the output of dumpsys is:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">Unreachable memory</span><br><span class="line"> <span class="number">512</span> bytes in <span class="number">2</span> unreachable allocations</span><br><span class="line"> ABI: <span class="string">&#x27;arm64&#x27;</span></span><br><span class="line"></span><br><span class="line"> <span class="number">320</span> bytes unreachable at <span class="number">71</span>d37787d0</span><br><span class="line">  first <span class="number">20</span> bytes of contents:</span><br><span class="line">  <span class="number">71</span>d37787d0: <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ................</span><br><span class="line">  <span class="number">71</span>d37787e0: <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ................</span><br><span class="line"></span><br><span class="line"> <span class="number">192</span> bytes unreachable at <span class="number">71b</span>37b2f50</span><br><span class="line">  first <span class="number">20</span> bytes of contents:</span><br><span class="line">  <span class="number">71b</span>37b2f50: <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ................</span><br><span class="line">  <span class="number">71b</span>37b2f60: <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ................</span><br></pre></td></tr></table></figure>
+
+<p>Then set the malloc debug options thusly:</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb shell setprop libc.debug.malloc.options <span class="string">&quot;&#x27;backtrace backtrace_min_size=192 backtrace_max_size=320&#x27;&quot;</span></span><br></pre></td></tr></table></figure>
+<p>This will backtrace allocations of any size between 192 bytes and 320 bytes inclusively.</p>
+<p>After setting the backtrace size options, restart the application so that running dumpsys again will include the actual backtrace of the leaking allocations.</p>
+<h3 id="C-interface"><a href="#C-interface" class="headerlink" title="C interface"></a>C interface</h3><h4 id="bool-LogUnreachableMemory-bool-log-contents-size-t-limit"><a href="#bool-LogUnreachableMemory-bool-log-contents-size-t-limit" class="headerlink" title="bool LogUnreachableMemory(bool log_contents, size_t limit)"></a>bool LogUnreachableMemory(bool log_contents, size_t limit)</h4><p>Writes a description of leaked memory to the log. A summary is always written, followed by details of up to limit leaks. If log_contents is true, details include up to 32 bytes of the contents of each leaked allocation. Returns true if leak detection succeeded.</p>
+<h4 id="bool-NoLeaks"><a href="#bool-NoLeaks" class="headerlink" title="bool NoLeaks()"></a>bool NoLeaks()</h4><p>Returns true if no unreachable memory was found.</p>
+<h3 id="C-interface-1"><a href="#C-interface-1" class="headerlink" title="C++ interface"></a>C++ interface</h3><h4 id="bool-GetUnreachableMemory-UnreachableMemoryInfo-amp-info-size-t-limit-100"><a href="#bool-GetUnreachableMemory-UnreachableMemoryInfo-amp-info-size-t-limit-100" class="headerlink" title="bool GetUnreachableMemory(UnreachableMemoryInfo&amp; info, size_t limit = 100)"></a>bool GetUnreachableMemory(UnreachableMemoryInfo&amp; info, size_t limit = 100)</h4><p>Updates an UnreachableMemoryInfo object with information on leaks, including details on up to limit leaks. Returns true if leak detection succeeded.</p>
+<h4 id="std-string-GetUnreachableMemoryString-bool-log-contents-false-size-t-limit-100"><a href="#std-string-GetUnreachableMemoryString-bool-log-contents-false-size-t-limit-100" class="headerlink" title="std::string GetUnreachableMemoryString(bool log_contents = false, size_t limit = 100)"></a>std::string GetUnreachableMemoryString(bool log_contents = false, size_t limit = 100)</h4><p>Returns a description of leaked memory. A summary is always written, followed by details of up to limit leaks. If log_contents is true, details include up to 32 bytes of the contents of each leaked allocation. Returns true if leak detection succeeded.</p>
+<h3 id="Implementation"><a href="#Implementation" class="headerlink" title="Implementation"></a>Implementation</h3><p>The sequence of steps required to perform a leak detection pass is divided into three processes - the original process, the collection process, and the sweeper process.</p>
+<ol>
+<li>Original process: Leak detection is requested by calling GetUnreachableMemory()</li>
+<li>Allocations are disabled using malloc_disable()</li>
+<li>The collection process is spawned. The collection process, created using clone, is similar to a normal fork() child process, except that it shares the address space of the parent - any writes by the original process are visible to the collection process, and vice-versa. If we forked instead of using clone, the address space might get out of sync with observed post-ptrace thread state, since it takes some time to pause the parent.</li>
+<li>Collection process: All threads in the original process are paused with ptrace().</li>
+<li>Registers contents, active stack areas, and memory mapping information are collected.</li>
+<li>Original process: Allocations are re-enabled using malloc_enable(), but all threads are still paused with ptrace().</li>
+<li>Collection process: The sweeper process is spawned using a normal fork(). The sweeper process has a copy of all memory from the original process, including all the data collected by the collection process.</li>
+<li>Collection process releases all threads from ptrace and exits</li>
+<li>Original process: All threads continue, the thread that called GetUnreachableMemory() blocks waiting for leak data over a pipe.</li>
+<li>Sweeper process: A list of all active allocations is produced by examining the memory mappings and calling malloc_iterate() on any heap mappings.</li>
+<li>A list of all roots is produced from globals (.data and .bss sections of binaries), and registers and stacks from each thread.</li>
+<li>The mark-and-sweep pass is performed starting from roots.</li>
+<li>Unmarked allocations are sent over the pipe back to the original process.</li>
+</ol>
+<hr>
+<h2 id="Components"><a href="#Components" class="headerlink" title="Components"></a>Components</h2><ul>
+<li>MemUnreachable.cpp: Entry points, implements the sequencing described above.</li>
+<li>PtracerThread.cpp: Used to clone the collection process with shared address space.</li>
+<li>ThreadCapture.cpp: Pauses threads in the main process and collects register contents.</li>
+<li>ProcessMappings.cpp: Collects snapshots of /proc/pid/maps.</li>
+<li>HeapWalker.cpp: Performs the mark-and-sweep pass over active allocations.</li>
+<li>LeakPipe.cpp: transfers data describing leaks from the sweeper process to the original process.</li>
+</ul>
+<h2 id="Heap-allocator-requirements"><a href="#Heap-allocator-requirements" class="headerlink" title="Heap allocator requirements"></a>Heap allocator requirements</h2><p>libmemunreachable requires a small interface to the allocator in order to collect information about active allocations.</p>
+<ul>
+<li>malloc_disable(): prevent any thread from mutating internal allocator state.</li>
+<li>malloc enable(): re-enable allocations in all threads.</li>
+<li>malloc_iterate(): call a callback on each active allocation in a given heap region.</li>
+<li>malloc_backtrace(): return the backtrace from when the allocation at the given address was allocated, if it was collected.</li>
+</ul>
+<p>上文来源于官方文档，但是需要翻墙访问，原文链接：<a target="_blank" rel="noopener" href="https://android.googlesource.com/platform/system/memory/libmemunreachable/+/master/README.md">libmemunreachable</a></p>
+<hr>
+<h2 id="在相机中的应用"><a href="#在相机中的应用" class="headerlink" title="在相机中的应用"></a>在相机中的应用</h2><p>unreachable是一个零开销的内存泄露检测工具，使用mark-and-sweep（一种垃圾回收算法） 遍历所有的native memory，统计出所有unreachable内存。</p>
+<p>什么是unreachable内存：如果堆内存中的内存没有引用指向他，那么该内存就无法被调用，这样的内存称为不可达(unreachable)</p>
+<h3 id="目的："><a href="#目的：" class="headerlink" title="目的："></a>目的：</h3><p>使用unreachable检查camera provider 内存泄露。</p>
+<h3 id="方法："><a href="#方法：" class="headerlink" title="方法："></a>方法：</h3><p>1、链接库libmemunreachable.so, 在dumpsys  media.camera 时通过GetUnreachableMemory获取unreachable memory信息</p>
+<p>在dumpsys 的流程中加入一下如下代码（除此之外还需要在mk中链接一下，具体看patch）：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br></pre></td><td class="code"><pre><span class="line"><span class="comment">////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">// dump_unreachable_info</span></span><br><span class="line"><span class="comment">////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dump_unreachable_info</span><span class="params">(<span class="keyword">int</span> fd)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    android::UnreachableMemoryInfo info;</span><br><span class="line">    <span class="keyword">bool</span> success = <span class="built_in">GetUnreachableMemory</span>(info, <span class="comment">/*limit*/</span> <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span> (!success)</span><br><span class="line">    &#123;</span><br><span class="line">        CamX::OsUtils::<span class="built_in">DPrintF</span>(fd, <span class="string">&quot;%s&quot;</span>, <span class="string">&quot;\n== Unable to dump unreachable memory. &quot;</span></span><br><span class="line">                <span class="string">&quot;Try disabling SELinux enforcement. ==\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        CamX::OsUtils::<span class="built_in">DPrintF</span>(fd,<span class="string">&quot;%s&quot;</span>, <span class="string">&quot;\n== Dumping unreachable memory: ==\n&quot;</span>);</span><br><span class="line">        std::string s = info.<span class="built_in">ToString</span>(<span class="comment">/*log_contents*/</span> <span class="literal">false</span>);</span><br><span class="line">        <span class="built_in">write</span>(fd, s.<span class="built_in">c_str</span>(), s.<span class="built_in">size</span>());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>limit ： 打印最多的内存泄露信息，如果只需要统计总的内存泄露大小，limit设置为0就可以了。<br>log_contents ：为true时会打印泄露位置前32字节的内容。</p>
+<h3 id="结果："><a href="#结果：" class="headerlink" title="结果："></a>结果：</h3><p>adb shell dumpsys media.camera  &gt; dumpsys.txt<br>   <img src="image1.png"><br>把limit 设置为0后dump出的结果将更加简洁：<br>   <img src="image2.png"></p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
+
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/5-Memory/">5. Memory</a>
+</div>
+
+
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/内存/">内存</a><a href="/tags/Android/">Android</a>
+  </div>
+
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://shenweikun.github.io/2024/11/20/2024-11-20-memory-libmemunreachable/" data-title="Memory libmemunreachable | Weikun&#39;s Notes" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+
+<div class="next">
+<a href="/2024/11/19/2024-11-20-MTKcam-ISP7-enable-fast-launch/"  title="MTKcam-ISP7-enable fast launch">
+ <strong>下一篇：</strong><br/> 
+ <span>MTKcam-ISP7-enable fast launch
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/1-Android-Camera/" title="1. Android Camera">1. Android Camera<sup>5</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/2-Android-Other/" title="2. Android Other">2. Android Other<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/3-Camera基础概念/" title="3. Camera基础概念">3. Camera基础概念<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/4-C-C/" title="4. C/C++">4. C/C++<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/5-Memory/" title="5. Memory">5. Memory<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/建站/" title="建站">建站<sup>5</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Android-Camera/" title="Android Camera">Android Camera<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Camera系统/" title="Camera系统">Camera系统<sup>12</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Camera基础概念/" title="Camera基础概念">Camera基础概念<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C-C/" title="C/C++">C/C++<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MTKCamera/" title="MTKCamera">MTKCamera<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/内存/" title="内存">内存<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Android/" title="Android">Android<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/CTS/" title="CTS">CTS<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/测试/" title="测试">测试<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/性能/" title="性能">性能<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
+        
+          <li>
+            
+            	<a href="https://coderq.com" target="_blank" title="一个面向程序员交流分享的新一代社区">码农圈</a>
+            
+          </li>
+        
+    </ul>
+</div>
+
+</aside>
+</div>
+    </div>
+    <footer><div id="footer" >
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
+
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2024 
+		
+		<a href="/about" target="_blank" title="空白">空白</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
+  
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?f0ae4262694bb7295d78b134eeeae3b7";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
+ </html>
