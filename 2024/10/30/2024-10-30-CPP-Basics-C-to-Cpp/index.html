@@ -19,7 +19,7 @@
 <meta property="og:description" content="曾经跟随过朱老师系统地学习过C&#x2F;C++编程语言，然而一直没有机会对所学内容进行有效的整理。近来，有了较多的空闲时间，于是决定利用这段时间将以往的笔记进行回顾并整理。">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-10-29T17:07:50.000Z">
-<meta property="article:modified_time" content="2024-11-19T17:30:39.580Z">
+<meta property="article:modified_time" content="2024-11-20T17:52:06.642Z">
 <meta property="article:author" content="空白">
 <meta property="article:tag" content="C&#x2F;C++">
 <meta name="twitter:card" content="summary">
@@ -75,7 +75,7 @@
 </div>
     </header>
     <div id="container">
-      <div id="main" class="n" itemscope itemprop="blogPost">
+      <div id="main" class="post" itemscope itemprop="blogPost">
   
 	<article itemprop="articleBody"> 
 		<header class="article-info clearfix">
@@ -543,6 +543,13 @@
 </div>  
       <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
 
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#C-%E5%9F%BA%E6%9C%AC%E7%BC%96%E7%A8%8B"><span class="toc-number">1.</span> <span class="toc-text">C++基本编程</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%95%E4%B8%BA%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4"><span class="toc-number">1.1.</span> <span class="toc-text">何为命名空间</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E7%9A%84%E5%BC%95%E5%85%A5"><span class="toc-number">1.1.1.</span> <span class="toc-text">命名空间的引入</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#C%E8%AF%AD%E8%A8%80%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%E5%90%8D%E7%A7%B0%E5%86%B2%E7%AA%81"><span class="toc-number">1.1.2.</span> <span class="toc-text">C语言如何解决名称冲突</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E5%A6%82%E4%BD%95%E8%A7%A3%E5%86%B3%E9%97%AE%E9%A2%98"><span class="toc-number">1.1.3.</span> <span class="toc-text">命名空间如何解决问题</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%85%B3%E4%BA%8E%E8%AF%AD%E8%A8%80%E7%89%B9%E6%80%A7%E7%9A%84%E6%80%9D%E8%80%83"><span class="toc-number">1.1.4.</span> <span class="toc-text">关于语言特性的思考</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%E7%9A%84%E5%88%9D%E7%BA%A7%E5%AE%9A%E4%B9%89%E5%92%8C%E4%BD%BF%E7%94%A8"><span class="toc-number">1.2.</span> <span class="toc-text">命名空间的初级定义和使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E9%BB%98%E8%AE%A4%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4"><span class="toc-number">1.3.</span> <span class="toc-text">C++默认命名空间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E5%8C%BF%E5%90%8D%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4%EF%BC%88%E6%B2%A1%E6%9C%89%E5%90%8D%E5%AD%97%E7%9A%84namespace%EF%BC%89"><span class="toc-number">1.4.</span> <span class="toc-text">C++匿名命名空间（没有名字的namespace）</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B5%8C%E5%A5%97%E5%91%BD%E5%90%8D%E7%A9%BA%E9%97%B4"><span class="toc-number">1.5.</span> <span class="toc-text">嵌套命名空间</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C%E4%B8%8EC-%E7%9A%84%E5%85%B3%E7%B3%BB%E5%8F%8AC-%E6%A0%87%E5%87%86%E5%BA%93%E4%BB%8B%E7%BB%8D"><span class="toc-number">1.6.</span> <span class="toc-text">C与C++的关系及C++标准库介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#iostream%E7%9A%84cout-cin%E4%BD%BF%E7%94%A8"><span class="toc-number">1.7.</span> <span class="toc-text">iostream的cout&#x2F;cin使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E7%94%A8fstream%E8%AF%BB%E5%86%99%E6%96%87%E4%BB%B6"><span class="toc-number">1.8.</span> <span class="toc-text">C++用fstream读写文件</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E5%AD%97%E7%AC%A6%E4%B8%B2string%E7%B1%BB%E4%BD%BF%E7%94%A8"><span class="toc-number">1.9.</span> <span class="toc-text">C++字符串string类使用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C%E4%B8%8EC-%E6%B7%B7%E5%90%88%E7%BC%96%E7%A8%8B"><span class="toc-number">1.10.</span> <span class="toc-text">C与C++混合编程</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C-%E6%96%B0%E5%A2%9E%E5%92%8C%E6%9C%89%E5%8F%98%E5%8C%96%E7%9A%84%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-number">2.</span> <span class="toc-text">C++新增和有变化的关键字</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#bool%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-number">2.1.</span> <span class="toc-text">bool关键字</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E7%9A%84%E5%AD%97%E7%AC%A6%E7%B1%BB%E5%9E%8Bchar"><span class="toc-number">2.2.</span> <span class="toc-text">C++的字符类型char</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E4%B8%AD%E6%97%A0%E5%8F%98%E5%8C%96%E5%85%B3%E9%94%AE%E5%AD%97%E5%92%8C%E8%BF%90%E7%AE%97%E7%AC%A6%E4%BB%A3%E7%94%A8%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-number">2.3.</span> <span class="toc-text">C++中无变化关键字和运算符代用关键字</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E6%96%B0%E5%A2%9E%E7%9A%84%E5%BC%95%E7%94%A8%EF%BC%88reference%EF%BC%89%E4%BB%8B%E7%BB%8D"><span class="toc-number">2.4.</span> <span class="toc-text">C++新增的引用（reference）介绍</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%BC%95%E7%94%A8%E7%9A%84%E6%9C%AC%E8%B4%A8%E5%89%96%E6%9E%90"><span class="toc-number">2.5.</span> <span class="toc-text">引用的本质剖析</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E7%9A%84enum%E6%9E%9A%E4%B8%BE"><span class="toc-number">2.6.</span> <span class="toc-text">C++的enum枚举</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E7%9A%84%E5%85%B1%E7%94%A8%E4%BD%93union"><span class="toc-number">2.7.</span> <span class="toc-text">C++的共用体union</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#inline%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-number">2.8.</span> <span class="toc-text">inline关键字</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-11%E5%BC%95%E5%85%A5%E7%9A%84nullptr"><span class="toc-number">2.9.</span> <span class="toc-text">C++11引入的nullptr</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BD%BF%E7%94%A8%E9%9D%99%E6%80%81%E6%96%AD%E8%A8%80"><span class="toc-number">2.10.</span> <span class="toc-text">使用静态断言</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E5%86%85%E5%AD%98%E5%AF%B9%E9%BD%90"><span class="toc-number">2.11.</span> <span class="toc-text">C++内存对齐</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#alignas%E5%92%8Ctypeid"><span class="toc-number">2.12.</span> <span class="toc-text">alignas和typeid</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E7%9A%844%E7%A7%8Dcast%E8%BD%AC%E6%8D%A2"><span class="toc-number">2.13.</span> <span class="toc-text">C++的4种cast转换</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E7%9A%84%E8%87%AA%E5%8A%A8%E7%B1%BB%E5%9E%8B%E6%8E%A8%E5%AF%BC"><span class="toc-number">2.14.</span> <span class="toc-text">C++的自动类型推导</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E7%B1%BB%E4%B8%8E%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1"><span class="toc-number">2.15.</span> <span class="toc-text">C++类与面向对象</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E4%B8%ADstatic%E5%92%8Cthis%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-number">2.16.</span> <span class="toc-text">C++中static和this关键字</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%9A%84%E5%85%B6%E4%BB%96%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-number">2.17.</span> <span class="toc-text">C++面向对象的其他关键字</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E7%9A%84const%E5%85%B3%E9%94%AE%E5%AD%97%E4%BB%A5%E5%8F%8Aconst%E6%9C%89%E5%85%B3%E7%9A%84%E5%85%B6%E4%BB%96%E5%87%A0%E4%B8%AA%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-number">2.18.</span> <span class="toc-text">C++的const关键字以及const有关的其他几个关键字</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%A8%A1%E6%9D%BF%E7%BC%96%E7%A8%8B%E7%9A%84%E5%87%A0%E4%B8%AA%E5%85%B3%E9%94%AE%E5%AD%97"><span class="toc-number">2.19.</span> <span class="toc-text">模板编程的几个关键字</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E7%9A%84%E5%BC%82%E5%B8%B8%E5%A4%84%E7%90%86%E6%9C%BA%E5%88%B6"><span class="toc-number">2.20.</span> <span class="toc-text">C++的异常处理机制</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C-%E7%9A%84%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="toc-number">3.</span> <span class="toc-text">C++的内存管理</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E7%A0%94%E7%A9%B6%E5%86%85%E5%AD%98%E7%AE%A1%E7%90%86"><span class="toc-number">3.1.</span> <span class="toc-text">为什么要研究内存管理</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E5%8F%AF%E7%94%A8%E5%86%85%E5%AD%98%E5%8C%BA%E5%9F%9F"><span class="toc-number">3.2.</span> <span class="toc-text">C++可用内存区域</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#new%E5%92%8Cmalloc%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">3.3.</span> <span class="toc-text">new和malloc的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%99%BA%E8%83%BD%E6%8C%87%E9%92%88%E7%9A%84%E5%BC%95%E5%85%A5"><span class="toc-number">3.4.</span> <span class="toc-text">智能指针的引入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Java%E7%9A%84%E5%9E%83%E5%9C%BE%E5%9B%9E%E6%94%B6%E6%9C%BA%E5%88%B6"><span class="toc-number">3.5.</span> <span class="toc-text">Java的垃圾回收机制</span></a></li></ol></li></ol>
+ 
+  </div>
+
 <div id="asidepart">
 <div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
 <aside class="clearfix">
@@ -553,7 +560,7 @@
 		<ul>
 		
 		  
-			<li><a href="/categories/1-Android-Camera/" title="1. Android Camera">1. Android Camera<sup>5</sup></a></li>
+			<li><a href="/categories/1-Android-Camera/" title="1. Android Camera">1. Android Camera<sup>16</sup></a></li>
 		  
 		
 		  
@@ -586,11 +593,11 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/Android-Camera/" title="Android Camera">Android Camera<sup>12</sup></a></li>
+				<li><a href="/tags/Android-Camera/" title="Android Camera">Android Camera<sup>23</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/Camera系统/" title="Camera系统">Camera系统<sup>12</sup></a></li>
+				<li><a href="/tags/Camera系统/" title="Camera系统">Camera系统<sup>23</sup></a></li>
 			
 		
 			
@@ -751,6 +758,55 @@ $(document).ready(function(){
 </script>
 
 
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
 
 
 
@@ -822,4 +878,4 @@ var _hmt = _hmt || [];
 <!-- Tiny_search End -->
 
   </body>
- </html>
+</html>

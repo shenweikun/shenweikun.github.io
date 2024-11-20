@@ -21,7 +21,7 @@
 <meta property="og:image" content="https://shenweikun.github.io/2024/11/20/2024-11-20-memory-libmemunreachable/image1.png">
 <meta property="og:image" content="https://shenweikun.github.io/2024/11/20/2024-11-20-memory-libmemunreachable/image2.png">
 <meta property="article:published_time" content="2024-11-20T15:06:27.000Z">
-<meta property="article:modified_time" content="2024-11-20T15:49:02.337Z">
+<meta property="article:modified_time" content="2024-11-20T17:53:39.191Z">
 <meta property="article:author" content="空白">
 <meta property="article:tag" content="内存">
 <meta property="article:tag" content="Android">
@@ -79,7 +79,7 @@
 </div>
     </header>
     <div id="container">
-      <div id="main" class="n" itemscope itemprop="blogPost">
+      <div id="main" class="post" itemscope itemprop="blogPost">
   
 	<article itemprop="articleBody"> 
 		<header class="article-info clearfix">
@@ -216,6 +216,14 @@
 	
 <nav class="article-nav clearfix">
  
+ <div class="prev" >
+ <a href="/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-1/" title="深入理解Android相机体系结构之一：相机简史">
+  <strong>上一篇：</strong><br/>
+  <span>
+  深入理解Android相机体系结构之一：相机简史</span>
+</a>
+</div>
+
 
 <div class="next">
 <a href="/2024/11/19/2024-11-20-MTKcam-ISP7-enable-fast-launch/"  title="MTKcam-ISP7-enable fast launch">
@@ -234,6 +242,13 @@
 </div>  
       <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
 
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Introduction"><span class="toc-number">1.</span> <span class="toc-text">Introduction</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Usage"><span class="toc-number">2.</span> <span class="toc-text">Usage</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#In-Android-apps"><span class="toc-number">2.1.</span> <span class="toc-text">In Android apps</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-interface"><span class="toc-number">2.2.</span> <span class="toc-text">C interface</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#bool-LogUnreachableMemory-bool-log-contents-size-t-limit"><span class="toc-number">2.2.1.</span> <span class="toc-text">bool LogUnreachableMemory(bool log_contents, size_t limit)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#bool-NoLeaks"><span class="toc-number">2.2.2.</span> <span class="toc-text">bool NoLeaks()</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-interface-1"><span class="toc-number">2.3.</span> <span class="toc-text">C++ interface</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#bool-GetUnreachableMemory-UnreachableMemoryInfo-amp-info-size-t-limit-100"><span class="toc-number">2.3.1.</span> <span class="toc-text">bool GetUnreachableMemory(UnreachableMemoryInfo&amp; info, size_t limit &#x3D; 100)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#std-string-GetUnreachableMemoryString-bool-log-contents-false-size-t-limit-100"><span class="toc-number">2.3.2.</span> <span class="toc-text">std::string GetUnreachableMemoryString(bool log_contents &#x3D; false, size_t limit &#x3D; 100)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Implementation"><span class="toc-number">2.4.</span> <span class="toc-text">Implementation</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Components"><span class="toc-number">3.</span> <span class="toc-text">Components</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Heap-allocator-requirements"><span class="toc-number">4.</span> <span class="toc-text">Heap allocator requirements</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#%E5%9C%A8%E7%9B%B8%E6%9C%BA%E4%B8%AD%E7%9A%84%E5%BA%94%E7%94%A8"><span class="toc-number">5.</span> <span class="toc-text">在相机中的应用</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%9B%AE%E7%9A%84%EF%BC%9A"><span class="toc-number">5.1.</span> <span class="toc-text">目的：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%96%B9%E6%B3%95%EF%BC%9A"><span class="toc-number">5.2.</span> <span class="toc-text">方法：</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%93%E6%9E%9C%EF%BC%9A"><span class="toc-number">5.3.</span> <span class="toc-text">结果：</span></a></li></ol></li></ol>
+ 
+  </div>
+
 <div id="asidepart">
 <div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
 <aside class="clearfix">
@@ -244,7 +259,7 @@
 		<ul>
 		
 		  
-			<li><a href="/categories/1-Android-Camera/" title="1. Android Camera">1. Android Camera<sup>5</sup></a></li>
+			<li><a href="/categories/1-Android-Camera/" title="1. Android Camera">1. Android Camera<sup>16</sup></a></li>
 		  
 		
 		  
@@ -277,11 +292,11 @@
 		<ul class="clearfix">
 		
 			
-				<li><a href="/tags/Android-Camera/" title="Android Camera">Android Camera<sup>12</sup></a></li>
+				<li><a href="/tags/Android-Camera/" title="Android Camera">Android Camera<sup>23</sup></a></li>
 			
 		
 			
-				<li><a href="/tags/Camera系统/" title="Camera系统">Camera系统<sup>12</sup></a></li>
+				<li><a href="/tags/Camera系统/" title="Camera系统">Camera系统<sup>23</sup></a></li>
 			
 		
 			
@@ -442,6 +457,55 @@ $(document).ready(function(){
 </script>
 
 
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
+
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
+
 
 
 
@@ -513,4 +577,4 @@ var _hmt = _hmt || [];
 <!-- Tiny_search End -->
 
   </body>
- </html>
+</html>
