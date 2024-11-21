@@ -1,25 +1,16 @@
-<!DOCTYPE html>
+
+ <!DOCTYPE HTML>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width">
-<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 5.4.0">
+  
+    <title>Camera概念篇-图像 | Weikun&#39;s Notes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="空白">
+    
 
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
-  <link rel="mask-icon" href="/images/logo.svg" color="#222">
-
-<link rel="stylesheet" href="/css/main.css">
-
-
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
-
-<script class="next-config" data-name="main" type="application/json">{"hostname":"shenweikun.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.21.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
-
+    
     <meta name="description" content="本文介绍Camera成像相关概念。">
 <meta property="og:type" content="article">
 <meta property="og:title" content="Camera概念篇-图像">
@@ -57,244 +48,84 @@
 <meta name="twitter:card" content="summary">
 <meta name="twitter:image" content="https://shenweikun.github.io/2021/10/25/2021-10-25-Camera-concept-Image/Image.png">
 
+    
+    <link rel="alternative" href="/atom.xml" title="Weikun&#39;s Notes" type="application/atom+xml">
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/%02.css">
+<link rel="stylesheet" href="/.css">
 
-<link rel="canonical" href="https://shenweikun.github.io/2021/10/25/2021-10-25-Camera-concept-Image/">
+<meta name="generator" content="Hexo 5.4.0"></head>
 
-
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://shenweikun.github.io/2021/10/25/2021-10-25-Camera-concept-Image/","path":"2021/10/25/2021-10-25-Camera-concept-Image/","title":"Camera概念篇-图像"}</script>
-
-<script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Camera概念篇-图像 | Weikun's Notes</title>
-  
-
-
-
-
-
-
-
-
-  <noscript>
-    <link rel="stylesheet" href="/css/noscript.css">
-  </noscript>
-</head>
-
-<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
-  <div class="headband"></div>
-
-  <main class="main">
-    <div class="column">
-      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
-  <div class="site-nav-toggle">
-    <div class="toggle" aria-label="切换导航栏" role="button">
-        <span class="toggle-line"></span>
-        <span class="toggle-line"></span>
-        <span class="toggle-line"></span>
-    </div>
-  </div>
-
-  <div class="site-meta">
-
-    <a href="/" class="brand" rel="start">
-      <i class="logo-line"></i>
-      <p class="site-title">Weikun's Notes</p>
-      <i class="logo-line"></i>
-    </a>
-      <p class="site-subtitle" itemprop="description">怀揣代码中的唏嘘，记录生活中的点滴</p>
-  </div>
-
-  <div class="site-nav-right">
-    <div class="toggle popup-trigger" aria-label="搜索" role="button">
-        <i class="fa fa-search fa-fw fa-lg"></i>
-    </div>
-  </div>
+  <body>
+    <header>
+      
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Weikun&#39;s Notes" title="Weikun&#39;s Notes"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Weikun&#39;s Notes">Weikun&#39;s Notes</a></h1>
+				<h2 class="blog-motto">怀揣代码中的唏嘘，记录生活中的点滴</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:shenweikun.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
 </div>
-
-
-
-<nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
-      <li class="menu-item menu-item-search">
-        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
-        </a>
-      </li>
-  </ul>
-</nav>
-
-
-
-  <div class="search-pop-overlay">
-    <div class="popup search-popup">
-      <div class="search-header">
-        <span class="search-icon">
-          <i class="fa fa-search"></i>
-        </span>
-        <div class="search-input-container">
-          <input autocomplete="off" autocapitalize="off" maxlength="80"
-                placeholder="搜索..." spellcheck="false"
-                type="search" class="search-input">
-        </div>
-        <span class="popup-btn-close" role="button">
-          <i class="fa fa-times-circle"></i>
-        </span>
-      </div>
-      <div class="search-result-container">
-        <div class="search-result-icon">
-          <i class="fa fa-spinner fa-pulse fa-5x"></i>
-        </div>
-      </div>
-    </div>
-  </div>
-
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
+    
+      <a href="/2021/10/25/2021-10-25-Camera-concept-Image/" title="Camera概念篇-图像" itemprop="url">Camera概念篇-图像</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="空白" target="_blank" itemprop="author">空白</a>
+		
+  <p class="article-time">
+    <time datetime="2021-10-24T16:22:15.000Z" itemprop="datePublished"> 发表于 2021-10-25</time>
+    
+  </p>
 </header>
-        
-  
-  <aside class="sidebar">
-
-    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
-      <ul class="sidebar-nav">
-        <li class="sidebar-nav-toc">
-          文章目录
-        </li>
-        <li class="sidebar-nav-overview">
-          站点概览
-        </li>
-      </ul>
-
-      <div class="sidebar-panel-container">
-        <!--noindex-->
-        <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#Shutter%EF%BC%88%E5%BF%AB%E9%97%A8%EF%BC%89"><span class="nav-number">1.</span> <span class="nav-text">Shutter（快门）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Aperture%EF%BC%88%E5%85%89%E5%9C%88%EF%BC%89"><span class="nav-number">2.</span> <span class="nav-text">Aperture（光圈）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#ISO%EF%BC%88%E6%84%9F%E5%85%89%E5%BA%A6%EF%BC%89"><span class="nav-number">3.</span> <span class="nav-text">ISO（感光度）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Focal-Length%EF%BC%88%E7%84%A6%E8%B7%9D%EF%BC%89"><span class="nav-number">4.</span> <span class="nav-text">Focal Length（焦距）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Saturation%EF%BC%88%E9%A5%B1%E5%92%8C%E5%BA%A6%EF%BC%89"><span class="nav-number">5.</span> <span class="nav-text">Saturation（饱和度）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Sharpness%EF%BC%88%E9%94%90%E5%BA%A6%EF%BC%89"><span class="nav-number">6.</span> <span class="nav-text">Sharpness（锐度）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Contrast%EF%BC%88%E5%AF%B9%E6%AF%94%E5%BA%A6%EF%BC%89"><span class="nav-number">7.</span> <span class="nav-text">Contrast（对比度）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Color-Temperature%EF%BC%88%E8%89%B2%E6%B8%A9%EF%BC%89"><span class="nav-number">8.</span> <span class="nav-text">Color Temperature（色温）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Shading%EF%BC%88%E6%B8%90%E6%99%95%E6%95%88%E5%BA%94%EF%BC%89"><span class="nav-number">9.</span> <span class="nav-text">Shading（渐晕效应）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Flare%EF%BC%88%E7%9C%A9%E5%85%89%EF%BC%89"><span class="nav-number">10.</span> <span class="nav-text">Flare（眩光）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Defect-Pixel%EF%BC%88%E5%9D%8F%E7%82%B9%EF%BC%89"><span class="nav-number">11.</span> <span class="nav-text">Defect Pixel（坏点）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Flicker%EF%BC%88%E9%A2%91%E9%97%AA-%E6%B0%B4%E6%B3%A2%E7%BA%B9%EF%BC%89"><span class="nav-number">12.</span> <span class="nav-text">Flicker（频闪&#x2F;水波纹）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Moire%EF%BC%88%E6%91%A9%E5%B0%94%E7%BA%B9%EF%BC%89"><span class="nav-number">13.</span> <span class="nav-text">Moire（摩尔纹）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#False-Color%EF%BC%88%E9%94%99%E8%AF%AF%E8%89%B2%EF%BC%89"><span class="nav-number">14.</span> <span class="nav-text">False Color（错误色）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Purple-Fringe%EF%BC%88%E7%B4%AB%E8%BE%B9%EF%BC%89"><span class="nav-number">15.</span> <span class="nav-text">Purple Fringe（紫边）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Image-File-Format-RGB-YUV-Bayer"><span class="nav-number">16.</span> <span class="nav-text">Image File Format-RGB&#x2F;YUV&#x2F;Bayer</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Resolution%EF%BC%88%E8%A7%A3%E5%83%8F%E5%8A%9B-amp-%E5%88%86%E8%BE%A8%E7%8E%87%EF%BC%89"><span class="nav-number">17.</span> <span class="nav-text">Resolution（解像力&amp;分辨率）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Color-Error%EF%BC%88%E8%89%B2%E5%B7%AE%EF%BC%89"><span class="nav-number">18.</span> <span class="nav-text">Color Error（色差）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Black-Level%EF%BC%88%E6%9A%97%E7%94%B5%E6%B5%81%EF%BC%89"><span class="nav-number">19.</span> <span class="nav-text">Black Level（暗电流）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Gamma-Curve%EF%BC%88Gamma%E6%9B%B2%E7%BA%BF%EF%BC%89"><span class="nav-number">20.</span> <span class="nav-text">Gamma Curve（Gamma曲线）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Image-Noise%EF%BC%88%E5%9B%BE%E5%83%8F%E5%99%AA%E5%A3%B0%EF%BC%89"><span class="nav-number">21.</span> <span class="nav-text">Image Noise（图像噪声）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Latitude%EF%BC%88%E5%AE%BD%E5%AE%B9%E5%BA%A6%EF%BC%89"><span class="nav-number">22.</span> <span class="nav-text">Latitude（宽容度）</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E5%9B%BE%E5%83%8F%E8%B4%A8%E9%87%8F"><span class="nav-number">23.</span> <span class="nav-text">图像质量</span></a></li></ol></div>
-        </div>
-        <!--/noindex-->
-
-        <div class="site-overview-wrap sidebar-panel">
-          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
-  <p class="site-author-name" itemprop="name">空白</p>
-  <div class="site-description" itemprop="description">记录生活与职业中的点滴</div>
-</div>
-<div class="site-state-wrap animated">
-  <nav class="site-state">
-      <div class="site-state-item site-state-posts">
-        <a href="/archives/">
-          <span class="site-state-item-count">37</span>
-          <span class="site-state-item-name">日志</span>
-        </a>
-      </div>
-      <div class="site-state-item site-state-categories">
-          <a href="/categories/">
-        <span class="site-state-item-count">6</span>
-        <span class="site-state-item-name">分类</span></a>
-      </div>
-      <div class="site-state-item site-state-tags">
-          <a href="/tags/">
-        <span class="site-state-item-count">10</span>
-        <span class="site-state-item-name">标签</span></a>
-      </div>
-  </nav>
-</div>
-
-        </div>
-      </div>
-    </div>
-
-    
-  </aside>
-
-
-    </div>
-
-    <div class="main-inner post posts-expand">
-
-
-  
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://shenweikun.github.io/2021/10/25/2021-10-25-Camera-concept-Image/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="空白">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Weikun's Notes">
-      <meta itemprop="description" content="记录生活与职业中的点滴">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Camera概念篇-图像 | Weikun's Notes">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          Camera概念篇-图像
-        </h1>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-10-25 00:22:15" itemprop="dateCreated datePublished" datetime="2021-10-25T00:22:15+08:00">2021-10-25</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-10-31 00:57:48" itemprop="dateModified" datetime="2024-10-31T00:57:48+08:00">2024-10-31</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/3-Camera%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/" itemprop="url" rel="index"><span itemprop="name">3. Camera基础概念</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
-      <span class="post-meta-item-icon">
-        <i class="far fa-eye"></i>
-      </span>
-      <span class="post-meta-item-text">阅读次数：</span>
-      <span id="busuanzi_value_page_pv"></span>
-    </span>
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>5.6k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>5 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody"><p>本文介绍Camera成像相关概念。</p>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			<ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#Shutter%EF%BC%88%E5%BF%AB%E9%97%A8%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">Shutter（快门）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Aperture%EF%BC%88%E5%85%89%E5%9C%88%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">Aperture（光圈）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ISO%EF%BC%88%E6%84%9F%E5%85%89%E5%BA%A6%EF%BC%89"><span class="toc-number">3.</span> <span class="toc-text">ISO（感光度）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Focal-Length%EF%BC%88%E7%84%A6%E8%B7%9D%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">Focal Length（焦距）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Saturation%EF%BC%88%E9%A5%B1%E5%92%8C%E5%BA%A6%EF%BC%89"><span class="toc-number">5.</span> <span class="toc-text">Saturation（饱和度）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Sharpness%EF%BC%88%E9%94%90%E5%BA%A6%EF%BC%89"><span class="toc-number">6.</span> <span class="toc-text">Sharpness（锐度）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Contrast%EF%BC%88%E5%AF%B9%E6%AF%94%E5%BA%A6%EF%BC%89"><span class="toc-number">7.</span> <span class="toc-text">Contrast（对比度）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Color-Temperature%EF%BC%88%E8%89%B2%E6%B8%A9%EF%BC%89"><span class="toc-number">8.</span> <span class="toc-text">Color Temperature（色温）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Shading%EF%BC%88%E6%B8%90%E6%99%95%E6%95%88%E5%BA%94%EF%BC%89"><span class="toc-number">9.</span> <span class="toc-text">Shading（渐晕效应）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Flare%EF%BC%88%E7%9C%A9%E5%85%89%EF%BC%89"><span class="toc-number">10.</span> <span class="toc-text">Flare（眩光）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Defect-Pixel%EF%BC%88%E5%9D%8F%E7%82%B9%EF%BC%89"><span class="toc-number">11.</span> <span class="toc-text">Defect Pixel（坏点）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Flicker%EF%BC%88%E9%A2%91%E9%97%AA-%E6%B0%B4%E6%B3%A2%E7%BA%B9%EF%BC%89"><span class="toc-number">12.</span> <span class="toc-text">Flicker（频闪&#x2F;水波纹）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Moire%EF%BC%88%E6%91%A9%E5%B0%94%E7%BA%B9%EF%BC%89"><span class="toc-number">13.</span> <span class="toc-text">Moire（摩尔纹）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#False-Color%EF%BC%88%E9%94%99%E8%AF%AF%E8%89%B2%EF%BC%89"><span class="toc-number">14.</span> <span class="toc-text">False Color（错误色）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Purple-Fringe%EF%BC%88%E7%B4%AB%E8%BE%B9%EF%BC%89"><span class="toc-number">15.</span> <span class="toc-text">Purple Fringe（紫边）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Image-File-Format-RGB-YUV-Bayer"><span class="toc-number">16.</span> <span class="toc-text">Image File Format-RGB&#x2F;YUV&#x2F;Bayer</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Resolution%EF%BC%88%E8%A7%A3%E5%83%8F%E5%8A%9B-amp-%E5%88%86%E8%BE%A8%E7%8E%87%EF%BC%89"><span class="toc-number">17.</span> <span class="toc-text">Resolution（解像力&amp;分辨率）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Color-Error%EF%BC%88%E8%89%B2%E5%B7%AE%EF%BC%89"><span class="toc-number">18.</span> <span class="toc-text">Color Error（色差）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Black-Level%EF%BC%88%E6%9A%97%E7%94%B5%E6%B5%81%EF%BC%89"><span class="toc-number">19.</span> <span class="toc-text">Black Level（暗电流）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Gamma-Curve%EF%BC%88Gamma%E6%9B%B2%E7%BA%BF%EF%BC%89"><span class="toc-number">20.</span> <span class="toc-text">Gamma Curve（Gamma曲线）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Image-Noise%EF%BC%88%E5%9B%BE%E5%83%8F%E5%99%AA%E5%A3%B0%EF%BC%89"><span class="toc-number">21.</span> <span class="toc-text">Image Noise（图像噪声）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Latitude%EF%BC%88%E5%AE%BD%E5%AE%B9%E5%BA%A6%EF%BC%89"><span class="toc-number">22.</span> <span class="toc-text">Latitude（宽容度）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%BE%E5%83%8F%E8%B4%A8%E9%87%8F"><span class="toc-number">23.</span> <span class="toc-text">图像质量</span></a></li></ol>
+		
+		</div>
+		
+		<p>本文介绍Camera成像相关概念。</p>
 <span id="more"></span>
 <h4 id="Shutter（快门）"><a href="#Shutter（快门）" class="headerlink" title="Shutter（快门）"></a>Shutter（快门）</h4><p>快门，原指传统相机上控制感光片有效曝光时间的一种装置，手机相机上是指曝光时间的长短。</p>
 <h4 id="Aperture（光圈）"><a href="#Aperture（光圈）" class="headerlink" title="Aperture（光圈）"></a>Aperture（光圈）</h4><p>光圈表示光通过的有效孔的直径。通常是一个用来控制光线透过镜头，进入机身内感光面的光亮的装置，它在镜头内。它的大小决定着通过镜头进入感光元件的光线的多少。<br>光圈大小用f值表示，光圈F值=镜头的焦距/镜头光圈的直径<br><img src="Image.png"></p>
@@ -336,139 +167,400 @@
 <p><em><strong>（二）固定图像噪声（FPN）</strong></em><br>均匀光照条件下单个像素输出的信号变化。<br>由于CMOS每个感光二极管旁都搭配了一个ADC放大器，如果以百万像素计，那么就需要百万个以上的ADC放大器。每个像素结构中的光电二极管的尺寸、掺杂浓度、生成过程中的沾污以及MOS场效应管的参数的偏差等都会造成像素输出信号的变化。表现为：<br>1.转移劣化（低照度黑点和彩色的固定直线）<br>2.光电二极管的观光度不均匀（亮白点、亮点、黑点与亮斑纹）</p>
 <h4 id="Latitude（宽容度）"><a href="#Latitude（宽容度）" class="headerlink" title="Latitude（宽容度）"></a>Latitude（宽容度）</h4><p>宽容度是指感光材料按比例正确记录景物亮度范围的能力。被摄景物表面由最亮部分至最暗部分的差别，可以用明暗间的比例数字来表示。假设：景物最亮部分比最暗部分要明亮50倍，那么它们之间的比例数字是1:50，这就是景物的明暗差别。感光片所具有的正确表现被摄景物明暗差别的能力，即为感光材料的宽容度，通常也称为曝光宽容度。<br>黑白胶片的宽容度是1:128左右，彩色负片的宽容度在1:32～64左右， 彩色反转片的宽容度仅为1:16～32左右，相纸的宽容度大约在1:30左右。<br>在摄影曝光中，使用宽容度较大的感光胶片去拍摄亮度差较小的景物，即使曝光量稍微多一些或少一些，对底片密度的影响不大。从实用的角度来讲，感光胶片的宽容度越大，对曝光控制越有利。<br>曝光与感光胶片宽容度之间的关系，大致存在以下三种情况：<br>（一）宽容度等于景物亮度范围<br>当感光胶片宽容度等于景物亮度明暗比例数时，感光胶片所能记录的亮度范围正好与景物由最亮到最暗的间距相同，在曝光上没有其他可选择的余地。如曝光稍有出入，即会使明亮部分或阴暗部分的层次受到损害。<br>（二）宽容度大于景物亮度范围<br>当感光胶片宽容度大于景物亮度明暗比例数时，感光胶片所能记录的这度范围超过景物由最亮到最暗的间距，在曝光上留有很大的选择余地，通常是在可容许的范围内，选用最低曝光量作为曝光标准，这样所获得的底片密度达到最低曝光量的标准，印放照片或拷贝正片均可获得最佳的影像效果。在胶片宽容度大于景物亮度范围的情况下，摄影曝光量的控制即使略有出入，也不会影响到景物明暗层次的再现。<br>（三）宽容度小于景物亮度范围<br>当感光胶片宽容度小于景物亮度明暗比例数时，感光胶片所能记录的亮度范围远不及景物由最亮到最暗的间距范围，在曝光上很难控制，要想全部记录下景物的明暗比例是不可能的。一般来说，这时应按被摄主体的不同情况，选择曝光的侧重点，以被摄景物主要部位的亮度来作为曝光的基准，兼顾到其他部分的层次。很显然，在这种情况下的曝光，势必要损失相当一部分的亮度范围的层次，其关键在于恰当地确定曝光侧重点，所损失的只是次要部位的一些层次。<br><img src="Image18.png"><br>人眼的感光宽容度比胶片要高很多，而胶片的感光宽容度要比数码相机CCD高出很多！了解这个概念之后，我们就不难了解，为什么在逆光的条件下，人眼能看清背光的建筑物以及耀眼的天空云彩。而一旦拍摄出来，要么就是云彩颜色绚烂而建筑物变成了黑糊糊的剪影，要么就是建筑物色彩细节清楚而原本美丽的云彩却成了白色的一片。<br>再看人眼的结构，有瞳孔可以控制通光量，有杆状感光细胞和椎状感光细胞以适应不同的光强，可见即使人眼有着很高的感光宽容度，依然有亮度调节系统，以适应光强变化。</p>
 <h4 id="图像质量"><a href="#图像质量" class="headerlink" title="图像质量"></a>图像质量</h4><p>图像质量指人们对一幅图像视觉感受的评价，它包括主观评价和客观评价。<br>（一）主观评价<br>主观评价通常认为图像质量指被测图像（即目标图像）相对于标准图像（即原图像）在人眼视觉系统中产生误差的程度。换一句话说就是相对于原图像，人眼认为目标图像几乎没有降质或损伤，则说目标图像的质量高，否则说图像质量差。另一种定义指在没有原图像的情况下，人眼能清晰地分辨图像中的事物，对图像中前景和背景、物体的轮廓、纹理等等能较好地区分，则说图像质量好，否则说图像质量差。<br>（二）客观评价<br>客观评价是指将测试数据化，由机器算法计算得出结果。<br><img src="Image19.png"><br>在国际上，Imatest和DxO Analyzer是比较有名的影像质量客观评测软件系统。Imatest和DxO Analyzer有异曲同工之处，都是把影响影像质量的各个因素拆分开来，分别对各个因素进行测试，由软件分析得出结论，可以非常直观看到各个方面的表现。Imatest(<a target="_blank" rel="noopener" href="http://www.imatest.com/">http://www.imatest.com</a> )是美国Imatest公司旗下的影像质量评测软件系统，测试项目有镜头分辨率测试（SFR－MTF）、色差、色彩还原度、色彩空间等等。DxO Analyzer(<a target="_blank" rel="noopener" href="http://www.dxo.com/">http://www.dxo.com</a> )是法国DxO公司旗下的影像质量评测软件系统，测试项目与imatest大同小异。DxO系统不仅可以测试镜头、sensor/ISP/video，甚至是多阵列的摄像头。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
 
-    </div>
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/3-Camera%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/">3. Camera基础概念</a>
+</div>
 
-    
-    
-    
 
-    <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/Camera%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/" rel="tag"><i class="fa fa-tag"></i> Camera基础概念</a>
-              <a href="/tags/Android-Camera/" rel="tag"><i class="fa fa-tag"></i> Android Camera</a>
-              <a href="/tags/Camera%E7%B3%BB%E7%BB%9F/" rel="tag"><i class="fa fa-tag"></i> Camera系统</a>
-          </div>
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Camera基础概念/">Camera基础概念</a><a href="/tags/Android-Camera/">Android Camera</a><a href="/tags/Camera系统/">Camera系统</a>
+  </div>
 
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://shenweikun.github.io/2021/10/25/2021-10-25-Camera-concept-Image/" data-title="Camera概念篇-图像 | Weikun&#39;s Notes" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2021/10/25/2021-10-25-Camera-concept-Camera-HW/" title="Camera概念篇-相机原理">
+  <strong>上一篇：</strong><br/>
+  <span>
+  Camera概念篇-相机原理</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2021/10/25/2021-10-25-Camera-concept-Color-Correction-Matrix/"  title="Camera概念篇-色彩校正矩阵">
+ <strong>下一篇：</strong><br/> 
+ <span>Camera概念篇-色彩校正矩阵
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ <ol class="toc"><li class="toc-item toc-level-4"><a class="toc-link" href="#Shutter%EF%BC%88%E5%BF%AB%E9%97%A8%EF%BC%89"><span class="toc-number">1.</span> <span class="toc-text">Shutter（快门）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Aperture%EF%BC%88%E5%85%89%E5%9C%88%EF%BC%89"><span class="toc-number">2.</span> <span class="toc-text">Aperture（光圈）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#ISO%EF%BC%88%E6%84%9F%E5%85%89%E5%BA%A6%EF%BC%89"><span class="toc-number">3.</span> <span class="toc-text">ISO（感光度）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Focal-Length%EF%BC%88%E7%84%A6%E8%B7%9D%EF%BC%89"><span class="toc-number">4.</span> <span class="toc-text">Focal Length（焦距）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Saturation%EF%BC%88%E9%A5%B1%E5%92%8C%E5%BA%A6%EF%BC%89"><span class="toc-number">5.</span> <span class="toc-text">Saturation（饱和度）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Sharpness%EF%BC%88%E9%94%90%E5%BA%A6%EF%BC%89"><span class="toc-number">6.</span> <span class="toc-text">Sharpness（锐度）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Contrast%EF%BC%88%E5%AF%B9%E6%AF%94%E5%BA%A6%EF%BC%89"><span class="toc-number">7.</span> <span class="toc-text">Contrast（对比度）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Color-Temperature%EF%BC%88%E8%89%B2%E6%B8%A9%EF%BC%89"><span class="toc-number">8.</span> <span class="toc-text">Color Temperature（色温）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Shading%EF%BC%88%E6%B8%90%E6%99%95%E6%95%88%E5%BA%94%EF%BC%89"><span class="toc-number">9.</span> <span class="toc-text">Shading（渐晕效应）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Flare%EF%BC%88%E7%9C%A9%E5%85%89%EF%BC%89"><span class="toc-number">10.</span> <span class="toc-text">Flare（眩光）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Defect-Pixel%EF%BC%88%E5%9D%8F%E7%82%B9%EF%BC%89"><span class="toc-number">11.</span> <span class="toc-text">Defect Pixel（坏点）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Flicker%EF%BC%88%E9%A2%91%E9%97%AA-%E6%B0%B4%E6%B3%A2%E7%BA%B9%EF%BC%89"><span class="toc-number">12.</span> <span class="toc-text">Flicker（频闪&#x2F;水波纹）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Moire%EF%BC%88%E6%91%A9%E5%B0%94%E7%BA%B9%EF%BC%89"><span class="toc-number">13.</span> <span class="toc-text">Moire（摩尔纹）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#False-Color%EF%BC%88%E9%94%99%E8%AF%AF%E8%89%B2%EF%BC%89"><span class="toc-number">14.</span> <span class="toc-text">False Color（错误色）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Purple-Fringe%EF%BC%88%E7%B4%AB%E8%BE%B9%EF%BC%89"><span class="toc-number">15.</span> <span class="toc-text">Purple Fringe（紫边）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Image-File-Format-RGB-YUV-Bayer"><span class="toc-number">16.</span> <span class="toc-text">Image File Format-RGB&#x2F;YUV&#x2F;Bayer</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Resolution%EF%BC%88%E8%A7%A3%E5%83%8F%E5%8A%9B-amp-%E5%88%86%E8%BE%A8%E7%8E%87%EF%BC%89"><span class="toc-number">17.</span> <span class="toc-text">Resolution（解像力&amp;分辨率）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Color-Error%EF%BC%88%E8%89%B2%E5%B7%AE%EF%BC%89"><span class="toc-number">18.</span> <span class="toc-text">Color Error（色差）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Black-Level%EF%BC%88%E6%9A%97%E7%94%B5%E6%B5%81%EF%BC%89"><span class="toc-number">19.</span> <span class="toc-text">Black Level（暗电流）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Gamma-Curve%EF%BC%88Gamma%E6%9B%B2%E7%BA%BF%EF%BC%89"><span class="toc-number">20.</span> <span class="toc-text">Gamma Curve（Gamma曲线）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Image-Noise%EF%BC%88%E5%9B%BE%E5%83%8F%E5%99%AA%E5%A3%B0%EF%BC%89"><span class="toc-number">21.</span> <span class="toc-text">Image Noise（图像噪声）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Latitude%EF%BC%88%E5%AE%BD%E5%AE%B9%E5%BA%A6%EF%BC%89"><span class="toc-number">22.</span> <span class="toc-text">Latitude（宽容度）</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#%E5%9B%BE%E5%83%8F%E8%B4%A8%E9%87%8F"><span class="toc-number">23.</span> <span class="toc-text">图像质量</span></a></li></ol>
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/1-Android-Camera/" title="1. Android Camera">1. Android Camera<sup>16</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/2-Android-Other/" title="2. Android Other">2. Android Other<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/3-Camera基础概念/" title="3. Camera基础概念">3. Camera基础概念<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/4-C-C/" title="4. C/C++">4. C/C++<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/5-Memory/" title="5. Memory">5. Memory<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/建站/" title="建站">建站<sup>5</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Android-Camera/" title="Android Camera">Android Camera<sup>23</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Camera系统/" title="Camera系统">Camera系统<sup>23</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Camera基础概念/" title="Camera基础概念">Camera基础概念<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C-C/" title="C/C++">C/C++<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MTKCamera/" title="MTKCamera">MTKCamera<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Android/" title="Android">Android<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/内存/" title="内存">内存<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/CTS/" title="CTS">CTS<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/测试/" title="测试">测试<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/性能/" title="性能">性能<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
         
-
-          <div class="post-nav">
-            <div class="post-nav-item">
-                <a href="/2021/10/25/2021-10-25-Camera-concept-Color-Correction-Matrix/" rel="prev" title="Camera概念篇-色彩校正矩阵">
-                  <i class="fa fa-angle-left"></i> Camera概念篇-色彩校正矩阵
-                </a>
-            </div>
-            <div class="post-nav-item">
-                <a href="/2021/10/25/2021-10-25-Camera-concept-Camera-HW/" rel="next" title="Camera概念篇-相机原理">
-                  Camera概念篇-相机原理 <i class="fa fa-angle-right"></i>
-                </a>
-            </div>
-          </div>
-    </footer>
-  </article>
+          <li>
+            
+            	<a href="https://coderq.com" target="_blank" title="一个面向程序员交流分享的新一代社区">码农圈</a>
+            
+          </li>
+        
+    </ul>
 </div>
 
-
-
-
-
-
-    <div class="comments utterances-container"></div>
+</aside>
 </div>
-  </main>
-
-  <footer class="footer">
-    <div class="footer-inner">
-
-  <div class="copyright">
-    &copy; 
-    <span itemprop="copyrightYear">2024</span>
-    <span class="with-love">
-      <i class="fa fa-heart"></i>
-    </span>
-    <span class="author" itemprop="copyrightHolder">空白</span>
-  </div>
-<div class="wordcount">
-  <span class="post-meta-item">
-    <span class="post-meta-item-icon">
-      <i class="fa fa-chart-line"></i>
-    </span>
-    <span title="站点总字数">288k</span>
-  </span>
-  <span class="post-meta-item">
-    <span class="post-meta-item-icon">
-      <i class="fa fa-coffee"></i>
-    </span>
-    <span title="站点阅读时长">4:22</span>
-  </span>
-</div>
-<div class="busuanzi-count">
-    <span class="post-meta-item" id="busuanzi_container_site_uv">
-      <span class="post-meta-item-icon">
-        <i class="fa fa-user"></i>
-      </span>
-      <span class="site-uv" title="总访客量">
-        <span id="busuanzi_value_site_uv"></span>
-      </span>
-    </span>
-    <span class="post-meta-item" id="busuanzi_container_site_pv">
-      <span class="post-meta-item-icon">
-        <i class="fa fa-eye"></i>
-      </span>
-      <span class="site-pv" title="总访问量">
-        <span id="busuanzi_value_site_pv"></span>
-      </span>
-    </span>
-</div>
-  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
-  </div>
-
     </div>
-  </footer>
+    <footer><div id="footer" >
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
 
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2024 
+		
+		<a href="/about" target="_blank" title="空白">空白</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
   
-  <div class="toggle sidebar-toggle" role="button">
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-  </div>
-  <div class="sidebar-dimmer"></div>
-  <div class="back-to-top" role="button" aria-label="返回顶部">
-    <i class="fa fa-arrow-up fa-lg"></i>
-    <span>0%</span>
-  </div>
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
 
-<noscript>
-  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
-</noscript>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
 
 
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous"></script>
-<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
-<script src="/js/third-party/search/local-search.js"></script>
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
 
 
 
 
-  <script src="/js/third-party/fancybox.js"></script>
-
-
-
-  
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 
 
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.3.0/quicklink.umd.js" integrity="sha256-yvJQOINiH9fWemHn0vCA5lsHWJaHs6/ZmO+1Ft04SvM=" crossorigin="anonymous"></script>
-  <script class="next-config" data-name="quicklink" type="application/json">{"enable":true,"home":true,"archive":true,"delay":true,"timeout":3000,"priority":true,"url":"https://shenweikun.github.io/2021/10/25/2021-10-25-Camera-concept-Image/"}</script>
-  <script src="/js/third-party/quicklink.js"></script>
-<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"shenweikun/helloworld","issue_term":"pathname","theme":"github-light"}</script>
-<script src="/js/third-party/comments/utterances.js"></script>
 
-</body>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?f0ae4262694bb7295d78b134eeeae3b7";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
 </html>
