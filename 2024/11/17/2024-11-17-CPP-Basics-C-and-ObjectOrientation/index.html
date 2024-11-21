@@ -1,16 +1,25 @@
-
- <!DOCTYPE HTML>
+<!DOCTYPE html>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-  
-    <title>C++从入门到进阶之二-C++和面向对象 | Weikun&#39;s Notes</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
-    
-    <meta name="author" content="空白">
-    
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 5.4.0">
 
-    
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"shenweikun.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.21.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
     <meta name="description" content="面向对象是一种编程思想">
 <meta property="og:type" content="article">
 <meta property="og:title" content="C++从入门到进阶之二-C++和面向对象">
@@ -24,84 +33,244 @@
 <meta property="article:tag" content="C&#x2F;C++">
 <meta name="twitter:card" content="summary">
 
-    
-    <link rel="alternative" href="/atom.xml" title="Weikun&#39;s Notes" type="application/atom+xml">
-    
-    
-    
-    
-<link rel="stylesheet" href="/css/style.css">
-<link rel="stylesheet" href="/%02.css">
-<link rel="stylesheet" href="/.css">
 
-<meta name="generator" content="Hexo 5.4.0"></head>
+<link rel="canonical" href="https://shenweikun.github.io/2024/11/17/2024-11-17-CPP-Basics-C-and-ObjectOrientation/">
 
-  <body>
-    <header>
-      
-<div>
-		
-			<div id="imglogo">
-				<a href="/"><img src="/img/logo.png" alt="Weikun&#39;s Notes" title="Weikun&#39;s Notes"/></a>
-			</div>
-			
-			<div id="textlogo">
-				<h1 class="site-name"><a href="/" title="Weikun&#39;s Notes">Weikun&#39;s Notes</a></h1>
-				<h2 class="blog-motto">怀揣代码中的唏嘘，记录生活中的点滴</h2>
-			</div>
-			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
-			</a></div>
-			<nav class="animated">
-				<ul>
-					<ul>
-					 
-						<li><a href="/">主页</a></li>
-					
-						<li><a href="/archives">归档</a></li>
-					
-						<li><a href="/about">关于</a></li>
-					
-					<li>
- 					
-					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
-						<label>Search</label>
-						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
-						<input type="hidden" name="q" value="site:shenweikun.github.io">
-					</form>
-					
-					</li>
-				</ul>
-			</nav>			
-</div>
-    </header>
-    <div id="container">
-      <div id="main" class="post" itemscope itemprop="blogPost">
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://shenweikun.github.io/2024/11/17/2024-11-17-CPP-Basics-C-and-ObjectOrientation/","path":"2024/11/17/2024-11-17-CPP-Basics-C-and-ObjectOrientation/","title":"C++从入门到进阶之二-C++和面向对象"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>C++从入门到进阶之二-C++和面向对象 | Weikun's Notes</title>
   
-	<article itemprop="articleBody"> 
-		<header class="article-info clearfix">
-  <h1 itemprop="name">
-    
-      <a href="/2024/11/17/2024-11-17-CPP-Basics-C-and-ObjectOrientation/" title="C++从入门到进阶之二-C++和面向对象" itemprop="url">C++从入门到进阶之二-C++和面向对象</a>
-  </h1>
-  <p class="article-author">By
-       
-		<a href="/about" title="空白" target="_blank" itemprop="author">空白</a>
-		
-  <p class="article-time">
-    <time datetime="2024-11-16T17:07:50.000Z" itemprop="datePublished"> 发表于 2024-11-17</time>
-    
-  </p>
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Weikun's Notes</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">怀揣代码中的唏嘘，记录生活中的点滴</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </header>
-	<div class="article-content">
-		
-		<div id="toc" class="toc-article">
-			<strong class="toc-title">文章目录</strong>
-		
-			<ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E%E9%AB%98%E5%A4%84%E7%9C%8B%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1"><span class="toc-number">1.</span> <span class="toc-text">从高处看面向对象</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E6%98%AF%E4%B8%80%E7%A7%8D%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3"><span class="toc-number">1.1.</span> <span class="toc-text">面向对象是一种编程思想</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%B9%B6%E4%B8%8D%E6%98%AF%E4%B8%80%E4%B8%AA%E5%8D%95%E4%B8%80%E6%A6%82%E5%BF%B5"><span class="toc-number">1.2.</span> <span class="toc-text">面向对象并不是一个单一概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8B%93%E5%B1%95%E5%88%86%E6%9E%90%E5%92%8C%E6%80%BB%E7%BB%93"><span class="toc-number">1.3.</span> <span class="toc-text">拓展分析和总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C-%E7%9A%84%E5%B0%81%E8%A3%85%E5%92%8C%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90"><span class="toc-number">2.</span> <span class="toc-text">C++的封装和访问权限</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B8%E5%9E%8B%E7%9A%84C-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BC%96%E7%A8%8B"><span class="toc-number">2.1.</span> <span class="toc-text">典型的C++面向对象编程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E7%9A%84%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%92%8C%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0"><span class="toc-number">2.2.</span> <span class="toc-text">C++的构造函数和析构函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8%E6%9E%84%E9%80%A0%E5%92%8C%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0%E4%B8%AD%E4%BD%BF%E7%94%A8%E5%8A%A8%E6%80%81%E5%86%85%E5%AD%98"><span class="toc-number">2.3.</span> <span class="toc-text">在构造和析构函数中使用动态内存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E4%B8%8E%E7%B1%BB%E7%9A%84%E6%88%90%E5%91%98%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-number">2.4.</span> <span class="toc-text">构造函数与类的成员初始化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8B%B7%E8%B4%9D%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E7%9A%84%E5%BC%95%E5%85%A5"><span class="toc-number">2.5.</span> <span class="toc-text">拷贝构造函数的引入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90%E9%97%AE%E9%A2%98"><span class="toc-number">2.6.</span> <span class="toc-text">什么是访问权限问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E8%AE%BE%E8%AE%A1%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90"><span class="toc-number">2.7.</span> <span class="toc-text">C++为什么要设计访问权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90%E5%B8%A6%E6%9D%A5%E7%9A%84%E4%B8%80%E4%BA%9B%E6%96%B0%E7%BC%96%E7%A8%8B%E7%90%86%E5%BF%B5"><span class="toc-number">2.8.</span> <span class="toc-text">访问权限带来的一些新编程理念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#struct%E5%92%8Cclass%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">2.9.</span> <span class="toc-text">struct和class的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#const%E5%92%8Cmutable%E6%98%AF%E5%B9%B2%E5%98%9B%E7%9A%84"><span class="toc-number">2.10.</span> <span class="toc-text">const和mutable是干嘛的</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C-%E7%9A%84%E7%BB%A7%E6%89%BF%E5%92%8C%E5%A4%9A%E6%80%81%E7%89%B9%E6%80%A7"><span class="toc-number">3.</span> <span class="toc-text">C++的继承和多态特性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%BB%A7%E6%89%BF%E7%89%B9%E6%80%A7"><span class="toc-number">3.1.</span> <span class="toc-text">什么是面向对象的继承特性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E7%BB%A7%E6%89%BF%E4%B8%AD%E7%9A%84%E6%9D%83%E9%99%90%E7%AE%A1%E6%8E%A7"><span class="toc-number">3.2.</span> <span class="toc-text">C++继承中的权限管控</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%A7%E6%89%BF%E4%BD%93%E7%B3%BB%E4%B8%8B%E5%AD%90%E7%B1%BB%E5%92%8C%E7%88%B6%E7%B1%BB%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">3.3.</span> <span class="toc-text">继承体系下子类和父类的关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B4%BE%E7%94%9F%E7%B1%BB%E5%92%8C%E5%9F%BA%E7%B1%BB%E7%9A%84%E6%9E%84%E9%80%A0%E6%9E%90%E6%9E%84%E5%85%B3%E7%B3%BB"><span class="toc-number">3.4.</span> <span class="toc-text">派生类和基类的构造析构关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B4%BE%E7%94%9F%E7%B1%BB%E5%92%8C%E5%9F%BA%E7%B1%BB%E7%9A%84%E5%90%8C%E5%90%8D%E6%88%90%E5%91%98%E9%97%AE%E9%A2%98"><span class="toc-number">3.5.</span> <span class="toc-text">派生类和基类的同名成员问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%90%E7%B1%BB%E5%92%8C%E7%88%B6%E7%B1%BB%E7%9A%84%E7%B1%BB%E5%9E%8B%E5%85%BC%E5%AE%B9%E8%A7%84%E5%88%99"><span class="toc-number">3.6.</span> <span class="toc-text">子类和父类的类型兼容规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%A7%E6%89%BF%E7%9A%84%E4%BC%98%E5%8A%BF%E4%B8%8E%E4%B8%8D%E8%89%AF%E7%BB%A7%E6%89%BF"><span class="toc-number">3.7.</span> <span class="toc-text">继承的优势与不良继承</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%84%E5%90%88%E4%BB%8B%E7%BB%8D%E4%BB%A5%E5%8F%8A%E4%B8%8E%E7%BB%A7%E6%89%BF%E5%AF%B9%E6%AF%94"><span class="toc-number">3.8.</span> <span class="toc-text">组合介绍以及与继承对比</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E7%BB%A7%E6%89%BF%E5%8F%8A%E5%85%B6%E4%BA%8C%E4%B9%89%E6%80%A7%E9%97%AE%E9%A2%98"><span class="toc-number">3.9.</span> <span class="toc-text">多继承及其二义性问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%99%9A%E7%BB%A7%E6%89%BF%E8%A7%A3%E5%86%B3%E8%8F%B1%E5%BD%A2%E7%BB%A7%E6%89%BF%E7%9A%84%E4%BA%8C%E4%B9%89%E6%80%A7%E9%97%AE%E9%A2%98"><span class="toc-number">3.10.</span> <span class="toc-text">虚继承解决菱形继承的二义性问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E6%80%81%E5%92%8C%E8%99%9A%E5%87%BD%E6%95%B0"><span class="toc-number">3.11.</span> <span class="toc-text">多态和虚函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%AF%E8%99%9A%E5%87%BD%E6%95%B0%E4%B8%8E%E6%8A%BD%E8%B1%A1%E7%B1%BB"><span class="toc-number">3.12.</span> <span class="toc-text">纯虚函数与抽象类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%99%9A%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0"><span class="toc-number">3.13.</span> <span class="toc-text">虚析构函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#using%E9%87%8D%E6%96%B0%E5%AE%9A%E4%B9%89%E7%BB%A7%E6%89%BF%E6%97%B6%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90"><span class="toc-number">3.14.</span> <span class="toc-text">using重新定义继承时访问权限</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C-%E7%9A%84%E8%BF%90%E7%AE%97%E7%AC%A6%E9%87%8D%E8%BD%BD"><span class="toc-number">4.</span> <span class="toc-text">C++的运算符重载</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%90%E7%AE%97%E7%AC%A6%E9%87%8D%E8%BD%BD%E5%BC%95%E5%85%A5"><span class="toc-number">4.1.</span> <span class="toc-text">运算符重载引入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B1%E5%BA%A6%E7%90%86%E8%A7%A3%E8%BF%90%E7%AE%97%E7%AC%A6%E9%87%8D%E8%BD%BD"><span class="toc-number">4.2.</span> <span class="toc-text">深度理解运算符重载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%90%86%E8%A7%A3%E8%BF%90%E7%AE%97%E7%AC%A6%E9%87%8D%E8%BD%BD%E7%9A%84%E5%85%B3%E9%94%AE%E7%82%B9"><span class="toc-number">4.3.</span> <span class="toc-text">理解运算符重载的关键点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%90%E7%AE%97%E7%AC%A6%E9%87%8D%E8%BD%BD%E5%87%BD%E6%95%B0%E4%B8%AD%E7%9A%84%E7%BB%86%E8%8A%82"><span class="toc-number">4.4.</span> <span class="toc-text">运算符重载函数中的细节</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B5%8B%E5%80%BC%E8%BF%90%E7%AE%97%E7%AC%A6%E9%87%8D%E8%BD%BD%E5%87%BD%E6%95%B0%E8%BF%94%E5%9B%9E%E5%BC%95%E7%94%A8"><span class="toc-number">4.5.</span> <span class="toc-text">赋值运算符重载函数返回引用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#String%E7%B1%BB%E7%9A%84%E8%B5%8B%E5%80%BC%E8%BF%90%E7%AE%97%E7%AC%A6%E9%87%8D%E8%BD%BD"><span class="toc-number">4.6.</span> <span class="toc-text">String类的赋值运算符重载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%92%8C%E2%80%93%E8%BF%90%E7%AE%97%E7%AC%A6%E7%9A%84%E5%89%8D%E7%BD%AE%E5%90%8E%E7%BD%AE%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0"><span class="toc-number">4.7.</span> <span class="toc-text">++和–运算符的前置后置如何实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%A4%E7%A7%8D%E8%BF%90%E7%AE%97%E7%AC%A6%E9%87%8D%E8%BD%BD%E6%96%B9%E6%B3%95"><span class="toc-number">4.8.</span> <span class="toc-text">两种运算符重载方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C-%E7%9A%84%E9%9D%99%E6%80%81%E7%B1%BB%E5%92%8C%E9%9D%99%E6%80%81%E6%88%90%E5%91%98"><span class="toc-number">5.</span> <span class="toc-text">C++的静态类和静态成员</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB%E7%9A%84%E9%9D%99%E6%80%81%E6%88%90%E5%91%98"><span class="toc-number">5.1.</span> <span class="toc-text">类的静态成员</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%99%E6%80%81%E6%88%90%E5%91%98%E7%9A%84%E6%B7%B1%E5%BA%A6%E7%90%86%E8%A7%A3"><span class="toc-number">5.2.</span> <span class="toc-text">静态成员的深度理解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%99%E6%80%81%E6%88%90%E5%91%98%E7%9A%84%E7%94%A8%E9%80%94"><span class="toc-number">5.3.</span> <span class="toc-text">静态成员的用途</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%99%E6%80%81%E7%B1%BB%E7%9A%84%E6%89%A9%E5%B1%95%E8%AE%B2%E8%A7%A3"><span class="toc-number">5.4.</span> <span class="toc-text">静态类的扩展讲解</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C-%E7%9A%84%E5%8F%8B%E5%85%83%E5%87%BD%E6%95%B0%E5%92%8C%E5%8F%8B%E5%85%83%E7%B1%BB"><span class="toc-number">6.</span> <span class="toc-text">C++的友元函数和友元类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%8F%8B%E5%85%83%E5%87%BD%E6%95%B0"><span class="toc-number">6.1.</span> <span class="toc-text">什么是友元函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8B%E5%85%83%E5%87%BD%E6%95%B0%E7%9A%842%E7%A7%8D%E5%AE%9E%E7%8E%B0"><span class="toc-number">6.2.</span> <span class="toc-text">友元函数的2种实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8B%E5%85%83%E7%B1%BB"><span class="toc-number">6.3.</span> <span class="toc-text">友元类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E6%9C%89%E5%8F%8B%E5%85%83%E5%87%BD%E6%95%B0"><span class="toc-number">6.4.</span> <span class="toc-text">为什么会有友元函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B5%8C%E5%A5%97%E7%B1%BB%E5%92%8C%E5%B1%80%E9%83%A8%E7%B1%BB"><span class="toc-number">6.5.</span> <span class="toc-text">嵌套类和局部类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E5%80%BC%E4%B8%8E%E5%AF%B9%E8%B1%A1%E4%BA%92%E8%BD%AC"><span class="toc-number">6.6.</span> <span class="toc-text">数值与对象互转</span></a></li></ol></li></ol>
-		
-		</div>
-		
-		<p>面向对象是一种编程思想</p>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BB%8E%E9%AB%98%E5%A4%84%E7%9C%8B%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1"><span class="nav-number">1.</span> <span class="nav-text">从高处看面向对象</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E6%98%AF%E4%B8%80%E7%A7%8D%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3"><span class="nav-number">1.1.</span> <span class="nav-text">面向对象是一种编程思想</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%B9%B6%E4%B8%8D%E6%98%AF%E4%B8%80%E4%B8%AA%E5%8D%95%E4%B8%80%E6%A6%82%E5%BF%B5"><span class="nav-number">1.2.</span> <span class="nav-text">面向对象并不是一个单一概念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8B%93%E5%B1%95%E5%88%86%E6%9E%90%E5%92%8C%E6%80%BB%E7%BB%93"><span class="nav-number">1.3.</span> <span class="nav-text">拓展分析和总结</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E7%9A%84%E5%B0%81%E8%A3%85%E5%92%8C%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90"><span class="nav-number">2.</span> <span class="nav-text">C++的封装和访问权限</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%85%B8%E5%9E%8B%E7%9A%84C-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BC%96%E7%A8%8B"><span class="nav-number">2.1.</span> <span class="nav-text">典型的C++面向对象编程</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#C-%E7%9A%84%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%92%8C%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0"><span class="nav-number">2.2.</span> <span class="nav-text">C++的构造函数和析构函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%9C%A8%E6%9E%84%E9%80%A0%E5%92%8C%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0%E4%B8%AD%E4%BD%BF%E7%94%A8%E5%8A%A8%E6%80%81%E5%86%85%E5%AD%98"><span class="nav-number">2.3.</span> <span class="nav-text">在构造和析构函数中使用动态内存</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E4%B8%8E%E7%B1%BB%E7%9A%84%E6%88%90%E5%91%98%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="nav-number">2.4.</span> <span class="nav-text">构造函数与类的成员初始化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%8B%B7%E8%B4%9D%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E7%9A%84%E5%BC%95%E5%85%A5"><span class="nav-number">2.5.</span> <span class="nav-text">拷贝构造函数的引入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90%E9%97%AE%E9%A2%98"><span class="nav-number">2.6.</span> <span class="nav-text">什么是访问权限问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#C-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E8%AE%BE%E8%AE%A1%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90"><span class="nav-number">2.7.</span> <span class="nav-text">C++为什么要设计访问权限</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90%E5%B8%A6%E6%9D%A5%E7%9A%84%E4%B8%80%E4%BA%9B%E6%96%B0%E7%BC%96%E7%A8%8B%E7%90%86%E5%BF%B5"><span class="nav-number">2.8.</span> <span class="nav-text">访问权限带来的一些新编程理念</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#struct%E5%92%8Cclass%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="nav-number">2.9.</span> <span class="nav-text">struct和class的区别</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#const%E5%92%8Cmutable%E6%98%AF%E5%B9%B2%E5%98%9B%E7%9A%84"><span class="nav-number">2.10.</span> <span class="nav-text">const和mutable是干嘛的</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E7%9A%84%E7%BB%A7%E6%89%BF%E5%92%8C%E5%A4%9A%E6%80%81%E7%89%B9%E6%80%A7"><span class="nav-number">3.</span> <span class="nav-text">C++的继承和多态特性</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%BB%A7%E6%89%BF%E7%89%B9%E6%80%A7"><span class="nav-number">3.1.</span> <span class="nav-text">什么是面向对象的继承特性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#C-%E7%BB%A7%E6%89%BF%E4%B8%AD%E7%9A%84%E6%9D%83%E9%99%90%E7%AE%A1%E6%8E%A7"><span class="nav-number">3.2.</span> <span class="nav-text">C++继承中的权限管控</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%A7%E6%89%BF%E4%BD%93%E7%B3%BB%E4%B8%8B%E5%AD%90%E7%B1%BB%E5%92%8C%E7%88%B6%E7%B1%BB%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="nav-number">3.3.</span> <span class="nav-text">继承体系下子类和父类的关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B4%BE%E7%94%9F%E7%B1%BB%E5%92%8C%E5%9F%BA%E7%B1%BB%E7%9A%84%E6%9E%84%E9%80%A0%E6%9E%90%E6%9E%84%E5%85%B3%E7%B3%BB"><span class="nav-number">3.4.</span> <span class="nav-text">派生类和基类的构造析构关系</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B4%BE%E7%94%9F%E7%B1%BB%E5%92%8C%E5%9F%BA%E7%B1%BB%E7%9A%84%E5%90%8C%E5%90%8D%E6%88%90%E5%91%98%E9%97%AE%E9%A2%98"><span class="nav-number">3.5.</span> <span class="nav-text">派生类和基类的同名成员问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%AD%90%E7%B1%BB%E5%92%8C%E7%88%B6%E7%B1%BB%E7%9A%84%E7%B1%BB%E5%9E%8B%E5%85%BC%E5%AE%B9%E8%A7%84%E5%88%99"><span class="nav-number">3.6.</span> <span class="nav-text">子类和父类的类型兼容规则</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%A7%E6%89%BF%E7%9A%84%E4%BC%98%E5%8A%BF%E4%B8%8E%E4%B8%8D%E8%89%AF%E7%BB%A7%E6%89%BF"><span class="nav-number">3.7.</span> <span class="nav-text">继承的优势与不良继承</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%84%E5%90%88%E4%BB%8B%E7%BB%8D%E4%BB%A5%E5%8F%8A%E4%B8%8E%E7%BB%A7%E6%89%BF%E5%AF%B9%E6%AF%94"><span class="nav-number">3.8.</span> <span class="nav-text">组合介绍以及与继承对比</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E7%BB%A7%E6%89%BF%E5%8F%8A%E5%85%B6%E4%BA%8C%E4%B9%89%E6%80%A7%E9%97%AE%E9%A2%98"><span class="nav-number">3.9.</span> <span class="nav-text">多继承及其二义性问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%99%9A%E7%BB%A7%E6%89%BF%E8%A7%A3%E5%86%B3%E8%8F%B1%E5%BD%A2%E7%BB%A7%E6%89%BF%E7%9A%84%E4%BA%8C%E4%B9%89%E6%80%A7%E9%97%AE%E9%A2%98"><span class="nav-number">3.10.</span> <span class="nav-text">虚继承解决菱形继承的二义性问题</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%A4%9A%E6%80%81%E5%92%8C%E8%99%9A%E5%87%BD%E6%95%B0"><span class="nav-number">3.11.</span> <span class="nav-text">多态和虚函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%AF%E8%99%9A%E5%87%BD%E6%95%B0%E4%B8%8E%E6%8A%BD%E8%B1%A1%E7%B1%BB"><span class="nav-number">3.12.</span> <span class="nav-text">纯虚函数与抽象类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%99%9A%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0"><span class="nav-number">3.13.</span> <span class="nav-text">虚析构函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#using%E9%87%8D%E6%96%B0%E5%AE%9A%E4%B9%89%E7%BB%A7%E6%89%BF%E6%97%B6%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90"><span class="nav-number">3.14.</span> <span class="nav-text">using重新定义继承时访问权限</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E7%9A%84%E8%BF%90%E7%AE%97%E7%AC%A6%E9%87%8D%E8%BD%BD"><span class="nav-number">4.</span> <span class="nav-text">C++的运算符重载</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E7%AE%97%E7%AC%A6%E9%87%8D%E8%BD%BD%E5%BC%95%E5%85%A5"><span class="nav-number">4.1.</span> <span class="nav-text">运算符重载引入</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B7%B1%E5%BA%A6%E7%90%86%E8%A7%A3%E8%BF%90%E7%AE%97%E7%AC%A6%E9%87%8D%E8%BD%BD"><span class="nav-number">4.2.</span> <span class="nav-text">深度理解运算符重载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%90%86%E8%A7%A3%E8%BF%90%E7%AE%97%E7%AC%A6%E9%87%8D%E8%BD%BD%E7%9A%84%E5%85%B3%E9%94%AE%E7%82%B9"><span class="nav-number">4.3.</span> <span class="nav-text">理解运算符重载的关键点</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%BF%90%E7%AE%97%E7%AC%A6%E9%87%8D%E8%BD%BD%E5%87%BD%E6%95%B0%E4%B8%AD%E7%9A%84%E7%BB%86%E8%8A%82"><span class="nav-number">4.4.</span> <span class="nav-text">运算符重载函数中的细节</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E8%B5%8B%E5%80%BC%E8%BF%90%E7%AE%97%E7%AC%A6%E9%87%8D%E8%BD%BD%E5%87%BD%E6%95%B0%E8%BF%94%E5%9B%9E%E5%BC%95%E7%94%A8"><span class="nav-number">4.5.</span> <span class="nav-text">赋值运算符重载函数返回引用</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#String%E7%B1%BB%E7%9A%84%E8%B5%8B%E5%80%BC%E8%BF%90%E7%AE%97%E7%AC%A6%E9%87%8D%E8%BD%BD"><span class="nav-number">4.6.</span> <span class="nav-text">String类的赋值运算符重载</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%92%8C%E2%80%93%E8%BF%90%E7%AE%97%E7%AC%A6%E7%9A%84%E5%89%8D%E7%BD%AE%E5%90%8E%E7%BD%AE%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0"><span class="nav-number">4.7.</span> <span class="nav-text">++和–运算符的前置后置如何实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%A4%E7%A7%8D%E8%BF%90%E7%AE%97%E7%AC%A6%E9%87%8D%E8%BD%BD%E6%96%B9%E6%B3%95"><span class="nav-number">4.8.</span> <span class="nav-text">两种运算符重载方法</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E7%9A%84%E9%9D%99%E6%80%81%E7%B1%BB%E5%92%8C%E9%9D%99%E6%80%81%E6%88%90%E5%91%98"><span class="nav-number">5.</span> <span class="nav-text">C++的静态类和静态成员</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%B1%BB%E7%9A%84%E9%9D%99%E6%80%81%E6%88%90%E5%91%98"><span class="nav-number">5.1.</span> <span class="nav-text">类的静态成员</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E6%88%90%E5%91%98%E7%9A%84%E6%B7%B1%E5%BA%A6%E7%90%86%E8%A7%A3"><span class="nav-number">5.2.</span> <span class="nav-text">静态成员的深度理解</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E6%88%90%E5%91%98%E7%9A%84%E7%94%A8%E9%80%94"><span class="nav-number">5.3.</span> <span class="nav-text">静态成员的用途</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%9D%99%E6%80%81%E7%B1%BB%E7%9A%84%E6%89%A9%E5%B1%95%E8%AE%B2%E8%A7%A3"><span class="nav-number">5.4.</span> <span class="nav-text">静态类的扩展讲解</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#C-%E7%9A%84%E5%8F%8B%E5%85%83%E5%87%BD%E6%95%B0%E5%92%8C%E5%8F%8B%E5%85%83%E7%B1%BB"><span class="nav-number">6.</span> <span class="nav-text">C++的友元函数和友元类</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%8F%8B%E5%85%83%E5%87%BD%E6%95%B0"><span class="nav-number">6.1.</span> <span class="nav-text">什么是友元函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8B%E5%85%83%E5%87%BD%E6%95%B0%E7%9A%842%E7%A7%8D%E5%AE%9E%E7%8E%B0"><span class="nav-number">6.2.</span> <span class="nav-text">友元函数的2种实现</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%8F%8B%E5%85%83%E7%B1%BB"><span class="nav-number">6.3.</span> <span class="nav-text">友元类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E6%9C%89%E5%8F%8B%E5%85%83%E5%87%BD%E6%95%B0"><span class="nav-number">6.4.</span> <span class="nav-text">为什么会有友元函数</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B5%8C%E5%A5%97%E7%B1%BB%E5%92%8C%E5%B1%80%E9%83%A8%E7%B1%BB"><span class="nav-number">6.5.</span> <span class="nav-text">嵌套类和局部类</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E5%80%BC%E4%B8%8E%E5%AF%B9%E8%B1%A1%E4%BA%92%E8%BD%AC"><span class="nav-number">6.6.</span> <span class="nav-text">数值与对象互转</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">空白</p>
+  <div class="site-description" itemprop="description">记录生活与职业中的点滴</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">37</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://shenweikun.github.io/2024/11/17/2024-11-17-CPP-Basics-C-and-ObjectOrientation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="空白">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Weikun's Notes">
+      <meta itemprop="description" content="记录生活与职业中的点滴">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="C++从入门到进阶之二-C++和面向对象 | Weikun's Notes">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          C++从入门到进阶之二-C++和面向对象
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-11-17 01:07:50" itemprop="dateCreated datePublished" datetime="2024-11-17T01:07:50+08:00">2024-11-17</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-11-21 01:51:52" itemprop="dateModified" datetime="2024-11-21T01:51:52+08:00">2024-11-21</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/4-C-C/" itemprop="url" rel="index"><span itemprop="name">4. C/C++</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-break"></span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span></span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>NaN:aN</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>面向对象是一种编程思想</p>
 <span id="more"></span>
 <h2 id="从高处看面向对象"><a href="#从高处看面向对象" class="headerlink" title="从高处看面向对象"></a>从高处看面向对象</h2><h3 id="面向对象是一种编程思想"><a href="#面向对象是一种编程思想" class="headerlink" title="面向对象是一种编程思想"></a>面向对象是一种编程思想</h3><p>(1)<strong>面向对象并不是C++特有的，所有编程语言都可以面向对象</strong><br>(2)面向对象语言就是设计语言特性时充分考虑并且原生支持面向对象特征的那些编程语言<br>(3)<strong>面向对象之于编程，就好像比喻修辞法之于写作</strong><br>(4)面向对象只是编程语言语法层面的东西，不影响最终生成的二进制程序，也不关CPU的事</p>
 <h3 id="面向对象并不是一个单一概念"><a href="#面向对象并不是一个单一概念" class="headerlink" title="面向对象并不是一个单一概念"></a>面向对象并不是一个单一概念</h3><p>(1)面向对象三大特征：<strong>封装、继承、多态</strong><br>(2)面向对象还会延伸出很多细节，而不同编程语言会选择不同的应对方法<br>(3)C++的语法细节很多，而Java的语法细节少，但都是面向对象的<br>(4)面向对象是设计模式的基础，凡事从简单到复杂其实学起来顺理成章</p>
@@ -392,400 +561,137 @@
 <figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="keyword">using</span> <span class="keyword">namespace</span> std;</span><br><span class="line"></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Int</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line"><span class="keyword">private</span>:</span><br><span class="line">    <span class="keyword">int</span> a;</span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Int</span>()</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">this</span>-&gt;a = <span class="number">0</span>;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Int()&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">Int</span>(<span class="keyword">int</span> a)</span><br><span class="line">    &#123;</span><br><span class="line">        <span class="keyword">this</span>-&gt;a = a;</span><br><span class="line">        cout &lt;&lt; <span class="string">&quot;Int(int a)&quot;</span> &lt;&lt; endl;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="function"><span class="keyword">int</span> <span class="title">toint</span><span class="params">()</span></span></span><br><span class="line"><span class="function">    </span>&#123;</span><br><span class="line">        <span class="keyword">return</span> <span class="keyword">this</span>-&gt;a;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">(<span class="keyword">int</span> argc, <span class="keyword">char</span> *argv[])</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    Int a;</span><br><span class="line">    a = <span class="number">7</span>;<span class="comment">//这句会先把数值7内部隐式转成一个临时Int对象，</span></span><br><span class="line">          <span class="comment">//然后再将临时对象（调用Int类的默认的oprator=函数）赋值给a</span></span><br><span class="line"></span><br><span class="line">    <span class="keyword">int</span> b;</span><br><span class="line">    b = a.<span class="built_in">toint</span>();</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
 
 <p>3、对象数组<br>(1)就是一次定义多个对象<br>(2)对象数组的访问和普通变量数组没区别<br>(3)要注意如果是用new来分配的对象数组，则销毁时要用delete[] xx;</p>
-  
-	</div>
-		<footer class="article-footer clearfix">
-<div class="article-catetags">
 
-<div class="article-categories">
-  <span></span>
-  <a class="article-category-link" href="/categories/4-C-C/">4. C/C++</a>
-</div>
-
-
-  <div class="article-tags">
-  
-  <span></span> <a href="/tags/C-C/">C/C++</a>
-  </div>
-
-</div>
-
-
-
-	<div class="article-share" id="share">
-	
-	  <div data-url="https://shenweikun.github.io/2024/11/17/2024-11-17-CPP-Basics-C-and-ObjectOrientation/" data-title="C++从入门到进阶之二-C++和面向对象 | Weikun&#39;s Notes" data-tsina="" class="share clearfix">
-	  </div>
-	
-	</div>
-
-
-</footer>
-
-   	       
-	</article>
-	
-<nav class="article-nav clearfix">
- 
- <div class="prev" >
- <a href="/2024/11/18/2024-11-18-CPP-Basics-about-STL/" title="C++从入门到进阶之三-STL等高阶话题">
-  <strong>上一篇：</strong><br/>
-  <span>
-  C++从入门到进阶之三-STL等高阶话题</span>
-</a>
-</div>
-
-
-<div class="next">
-<a href="/2024/10/30/2024-10-30-CPP-Basics-C-to-Cpp/"  title="C++从入门到进阶之一-从C到C++">
- <strong>下一篇：</strong><br/> 
- <span>C++从入门到进阶之一-从C到C++
-</span>
-</a>
-</div>
-
-</nav>
-
-	
-
-
-
-</div>  
-      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
-
-  <div id="toc" class="toc-aside">
-  <strong class="toc-title">文章目录</strong>
- 
- <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#%E4%BB%8E%E9%AB%98%E5%A4%84%E7%9C%8B%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1"><span class="toc-number">1.</span> <span class="toc-text">从高处看面向对象</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E6%98%AF%E4%B8%80%E7%A7%8D%E7%BC%96%E7%A8%8B%E6%80%9D%E6%83%B3"><span class="toc-number">1.1.</span> <span class="toc-text">面向对象是一种编程思想</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E5%B9%B6%E4%B8%8D%E6%98%AF%E4%B8%80%E4%B8%AA%E5%8D%95%E4%B8%80%E6%A6%82%E5%BF%B5"><span class="toc-number">1.2.</span> <span class="toc-text">面向对象并不是一个单一概念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8B%93%E5%B1%95%E5%88%86%E6%9E%90%E5%92%8C%E6%80%BB%E7%BB%93"><span class="toc-number">1.3.</span> <span class="toc-text">拓展分析和总结</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C-%E7%9A%84%E5%B0%81%E8%A3%85%E5%92%8C%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90"><span class="toc-number">2.</span> <span class="toc-text">C++的封装和访问权限</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%85%B8%E5%9E%8B%E7%9A%84C-%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%BC%96%E7%A8%8B"><span class="toc-number">2.1.</span> <span class="toc-text">典型的C++面向对象编程</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E7%9A%84%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E5%92%8C%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0"><span class="toc-number">2.2.</span> <span class="toc-text">C++的构造函数和析构函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%9C%A8%E6%9E%84%E9%80%A0%E5%92%8C%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0%E4%B8%AD%E4%BD%BF%E7%94%A8%E5%8A%A8%E6%80%81%E5%86%85%E5%AD%98"><span class="toc-number">2.3.</span> <span class="toc-text">在构造和析构函数中使用动态内存</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E4%B8%8E%E7%B1%BB%E7%9A%84%E6%88%90%E5%91%98%E5%88%9D%E5%A7%8B%E5%8C%96"><span class="toc-number">2.4.</span> <span class="toc-text">构造函数与类的成员初始化</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%8B%B7%E8%B4%9D%E6%9E%84%E9%80%A0%E5%87%BD%E6%95%B0%E7%9A%84%E5%BC%95%E5%85%A5"><span class="toc-number">2.5.</span> <span class="toc-text">拷贝构造函数的引入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90%E9%97%AE%E9%A2%98"><span class="toc-number">2.6.</span> <span class="toc-text">什么是访问权限问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E4%B8%BA%E4%BB%80%E4%B9%88%E8%A6%81%E8%AE%BE%E8%AE%A1%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90"><span class="toc-number">2.7.</span> <span class="toc-text">C++为什么要设计访问权限</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90%E5%B8%A6%E6%9D%A5%E7%9A%84%E4%B8%80%E4%BA%9B%E6%96%B0%E7%BC%96%E7%A8%8B%E7%90%86%E5%BF%B5"><span class="toc-number">2.8.</span> <span class="toc-text">访问权限带来的一些新编程理念</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#struct%E5%92%8Cclass%E7%9A%84%E5%8C%BA%E5%88%AB"><span class="toc-number">2.9.</span> <span class="toc-text">struct和class的区别</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#const%E5%92%8Cmutable%E6%98%AF%E5%B9%B2%E5%98%9B%E7%9A%84"><span class="toc-number">2.10.</span> <span class="toc-text">const和mutable是干嘛的</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C-%E7%9A%84%E7%BB%A7%E6%89%BF%E5%92%8C%E5%A4%9A%E6%80%81%E7%89%B9%E6%80%A7"><span class="toc-number">3.</span> <span class="toc-text">C++的继承和多态特性</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E9%9D%A2%E5%90%91%E5%AF%B9%E8%B1%A1%E7%9A%84%E7%BB%A7%E6%89%BF%E7%89%B9%E6%80%A7"><span class="toc-number">3.1.</span> <span class="toc-text">什么是面向对象的继承特性</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#C-%E7%BB%A7%E6%89%BF%E4%B8%AD%E7%9A%84%E6%9D%83%E9%99%90%E7%AE%A1%E6%8E%A7"><span class="toc-number">3.2.</span> <span class="toc-text">C++继承中的权限管控</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%A7%E6%89%BF%E4%BD%93%E7%B3%BB%E4%B8%8B%E5%AD%90%E7%B1%BB%E5%92%8C%E7%88%B6%E7%B1%BB%E7%9A%84%E5%85%B3%E7%B3%BB"><span class="toc-number">3.3.</span> <span class="toc-text">继承体系下子类和父类的关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B4%BE%E7%94%9F%E7%B1%BB%E5%92%8C%E5%9F%BA%E7%B1%BB%E7%9A%84%E6%9E%84%E9%80%A0%E6%9E%90%E6%9E%84%E5%85%B3%E7%B3%BB"><span class="toc-number">3.4.</span> <span class="toc-text">派生类和基类的构造析构关系</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B4%BE%E7%94%9F%E7%B1%BB%E5%92%8C%E5%9F%BA%E7%B1%BB%E7%9A%84%E5%90%8C%E5%90%8D%E6%88%90%E5%91%98%E9%97%AE%E9%A2%98"><span class="toc-number">3.5.</span> <span class="toc-text">派生类和基类的同名成员问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%AD%90%E7%B1%BB%E5%92%8C%E7%88%B6%E7%B1%BB%E7%9A%84%E7%B1%BB%E5%9E%8B%E5%85%BC%E5%AE%B9%E8%A7%84%E5%88%99"><span class="toc-number">3.6.</span> <span class="toc-text">子类和父类的类型兼容规则</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%A7%E6%89%BF%E7%9A%84%E4%BC%98%E5%8A%BF%E4%B8%8E%E4%B8%8D%E8%89%AF%E7%BB%A7%E6%89%BF"><span class="toc-number">3.7.</span> <span class="toc-text">继承的优势与不良继承</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BB%84%E5%90%88%E4%BB%8B%E7%BB%8D%E4%BB%A5%E5%8F%8A%E4%B8%8E%E7%BB%A7%E6%89%BF%E5%AF%B9%E6%AF%94"><span class="toc-number">3.8.</span> <span class="toc-text">组合介绍以及与继承对比</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E7%BB%A7%E6%89%BF%E5%8F%8A%E5%85%B6%E4%BA%8C%E4%B9%89%E6%80%A7%E9%97%AE%E9%A2%98"><span class="toc-number">3.9.</span> <span class="toc-text">多继承及其二义性问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%99%9A%E7%BB%A7%E6%89%BF%E8%A7%A3%E5%86%B3%E8%8F%B1%E5%BD%A2%E7%BB%A7%E6%89%BF%E7%9A%84%E4%BA%8C%E4%B9%89%E6%80%A7%E9%97%AE%E9%A2%98"><span class="toc-number">3.10.</span> <span class="toc-text">虚继承解决菱形继承的二义性问题</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%A4%9A%E6%80%81%E5%92%8C%E8%99%9A%E5%87%BD%E6%95%B0"><span class="toc-number">3.11.</span> <span class="toc-text">多态和虚函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%BA%AF%E8%99%9A%E5%87%BD%E6%95%B0%E4%B8%8E%E6%8A%BD%E8%B1%A1%E7%B1%BB"><span class="toc-number">3.12.</span> <span class="toc-text">纯虚函数与抽象类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%99%9A%E6%9E%90%E6%9E%84%E5%87%BD%E6%95%B0"><span class="toc-number">3.13.</span> <span class="toc-text">虚析构函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#using%E9%87%8D%E6%96%B0%E5%AE%9A%E4%B9%89%E7%BB%A7%E6%89%BF%E6%97%B6%E8%AE%BF%E9%97%AE%E6%9D%83%E9%99%90"><span class="toc-number">3.14.</span> <span class="toc-text">using重新定义继承时访问权限</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C-%E7%9A%84%E8%BF%90%E7%AE%97%E7%AC%A6%E9%87%8D%E8%BD%BD"><span class="toc-number">4.</span> <span class="toc-text">C++的运算符重载</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%90%E7%AE%97%E7%AC%A6%E9%87%8D%E8%BD%BD%E5%BC%95%E5%85%A5"><span class="toc-number">4.1.</span> <span class="toc-text">运算符重载引入</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%B7%B1%E5%BA%A6%E7%90%86%E8%A7%A3%E8%BF%90%E7%AE%97%E7%AC%A6%E9%87%8D%E8%BD%BD"><span class="toc-number">4.2.</span> <span class="toc-text">深度理解运算符重载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%90%86%E8%A7%A3%E8%BF%90%E7%AE%97%E7%AC%A6%E9%87%8D%E8%BD%BD%E7%9A%84%E5%85%B3%E9%94%AE%E7%82%B9"><span class="toc-number">4.3.</span> <span class="toc-text">理解运算符重载的关键点</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%BF%90%E7%AE%97%E7%AC%A6%E9%87%8D%E8%BD%BD%E5%87%BD%E6%95%B0%E4%B8%AD%E7%9A%84%E7%BB%86%E8%8A%82"><span class="toc-number">4.4.</span> <span class="toc-text">运算符重载函数中的细节</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E8%B5%8B%E5%80%BC%E8%BF%90%E7%AE%97%E7%AC%A6%E9%87%8D%E8%BD%BD%E5%87%BD%E6%95%B0%E8%BF%94%E5%9B%9E%E5%BC%95%E7%94%A8"><span class="toc-number">4.5.</span> <span class="toc-text">赋值运算符重载函数返回引用</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#String%E7%B1%BB%E7%9A%84%E8%B5%8B%E5%80%BC%E8%BF%90%E7%AE%97%E7%AC%A6%E9%87%8D%E8%BD%BD"><span class="toc-number">4.6.</span> <span class="toc-text">String类的赋值运算符重载</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%92%8C%E2%80%93%E8%BF%90%E7%AE%97%E7%AC%A6%E7%9A%84%E5%89%8D%E7%BD%AE%E5%90%8E%E7%BD%AE%E5%A6%82%E4%BD%95%E5%AE%9E%E7%8E%B0"><span class="toc-number">4.7.</span> <span class="toc-text">++和–运算符的前置后置如何实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%A4%E7%A7%8D%E8%BF%90%E7%AE%97%E7%AC%A6%E9%87%8D%E8%BD%BD%E6%96%B9%E6%B3%95"><span class="toc-number">4.8.</span> <span class="toc-text">两种运算符重载方法</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C-%E7%9A%84%E9%9D%99%E6%80%81%E7%B1%BB%E5%92%8C%E9%9D%99%E6%80%81%E6%88%90%E5%91%98"><span class="toc-number">5.</span> <span class="toc-text">C++的静态类和静态成员</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E7%B1%BB%E7%9A%84%E9%9D%99%E6%80%81%E6%88%90%E5%91%98"><span class="toc-number">5.1.</span> <span class="toc-text">类的静态成员</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%99%E6%80%81%E6%88%90%E5%91%98%E7%9A%84%E6%B7%B1%E5%BA%A6%E7%90%86%E8%A7%A3"><span class="toc-number">5.2.</span> <span class="toc-text">静态成员的深度理解</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%99%E6%80%81%E6%88%90%E5%91%98%E7%9A%84%E7%94%A8%E9%80%94"><span class="toc-number">5.3.</span> <span class="toc-text">静态成员的用途</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E9%9D%99%E6%80%81%E7%B1%BB%E7%9A%84%E6%89%A9%E5%B1%95%E8%AE%B2%E8%A7%A3"><span class="toc-number">5.4.</span> <span class="toc-text">静态类的扩展讲解</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#C-%E7%9A%84%E5%8F%8B%E5%85%83%E5%87%BD%E6%95%B0%E5%92%8C%E5%8F%8B%E5%85%83%E7%B1%BB"><span class="toc-number">6.</span> <span class="toc-text">C++的友元函数和友元类</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%BB%80%E4%B9%88%E6%98%AF%E5%8F%8B%E5%85%83%E5%87%BD%E6%95%B0"><span class="toc-number">6.1.</span> <span class="toc-text">什么是友元函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8B%E5%85%83%E5%87%BD%E6%95%B0%E7%9A%842%E7%A7%8D%E5%AE%9E%E7%8E%B0"><span class="toc-number">6.2.</span> <span class="toc-text">友元函数的2种实现</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%8F%8B%E5%85%83%E7%B1%BB"><span class="toc-number">6.3.</span> <span class="toc-text">友元类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E4%B8%BA%E4%BB%80%E4%B9%88%E4%BC%9A%E6%9C%89%E5%8F%8B%E5%85%83%E5%87%BD%E6%95%B0"><span class="toc-number">6.4.</span> <span class="toc-text">为什么会有友元函数</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E5%B5%8C%E5%A5%97%E7%B1%BB%E5%92%8C%E5%B1%80%E9%83%A8%E7%B1%BB"><span class="toc-number">6.5.</span> <span class="toc-text">嵌套类和局部类</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#%E6%95%B0%E5%80%BC%E4%B8%8E%E5%AF%B9%E8%B1%A1%E4%BA%92%E8%BD%AC"><span class="toc-number">6.6.</span> <span class="toc-text">数值与对象互转</span></a></li></ol></li></ol>
- 
-  </div>
-
-<div id="asidepart">
-<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
-<aside class="clearfix">
-
-  
-<div class="categorieslist">
-	<p class="asidetitle">分类</p>
-		<ul>
-		
-		  
-			<li><a href="/categories/1-Android-Camera/" title="1. Android Camera">1. Android Camera<sup>16</sup></a></li>
-		  
-		
-		  
-			<li><a href="/categories/2-Android-Other/" title="2. Android Other">2. Android Other<sup>1</sup></a></li>
-		  
-		
-		  
-			<li><a href="/categories/3-Camera基础概念/" title="3. Camera基础概念">3. Camera基础概念<sup>7</sup></a></li>
-		  
-		
-		  
-			<li><a href="/categories/4-C-C/" title="4. C/C++">4. C/C++<sup>6</sup></a></li>
-		  
-		
-		  
-			<li><a href="/categories/5-Memory/" title="5. Memory">5. Memory<sup>1</sup></a></li>
-		  
-		
-		  
-			<li><a href="/categories/建站/" title="建站">建站<sup>5</sup></a></li>
-		  
-		
-		</ul>
-</div>
-
-
-  
-<div class="tagslist">
-	<p class="asidetitle">标签</p>
-		<ul class="clearfix">
-		
-			
-				<li><a href="/tags/Android-Camera/" title="Android Camera">Android Camera<sup>23</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Camera系统/" title="Camera系统">Camera系统<sup>23</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Camera基础概念/" title="Camera基础概念">Camera基础概念<sup>7</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/C-C/" title="C/C++">C/C++<sup>6</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/MTKCamera/" title="MTKCamera">MTKCamera<sup>4</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/内存/" title="内存">内存<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/Android/" title="Android">Android<sup>2</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/CTS/" title="CTS">CTS<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/测试/" title="测试">测试<sup>1</sup></a></li>
-			
-		
-			
-				<li><a href="/tags/性能/" title="性能">性能<sup>1</sup></a></li>
-			
-		
-		</ul>
-</div>
-
-
-  <div class="linkslist">
-  <p class="asidetitle">友情链接</p>
-    <ul>
-        
-          <li>
-            
-            	<a href="https://coderq.com" target="_blank" title="一个面向程序员交流分享的新一代社区">码农圈</a>
-            
-          </li>
-        
-    </ul>
-</div>
-
-</aside>
-</div>
     </div>
-    <footer><div id="footer" >
-	
-	
-	<div class="social-font" class="clearfix">
-		
-		
-		
-		
-		
-		
-		
-		
-		
-		
-	</div>
-			
-		
 
-		<p class="copyright">
-		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2024 
-		
-		<a href="/about" target="_blank" title="空白">空白</a>
-		
-		
-		</p>
-</div>
-</footer>
-    <script src="/js/jquery-2.0.3.min.js"></script>
-<script src="/js/jquery.imagesloaded.min.js"></script>
-<script src="/js/gallery.js"></script>
-<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+    
+    
+    
 
-<script type="text/javascript">
-$(document).ready(function(){ 
-  $('.navbar').click(function(){
-    $('header nav').toggleClass('shownav');
-  });
-  var myWidth = 0;
-  function getSize(){
-    if( typeof( window.innerWidth ) == 'number' ) {
-      myWidth = window.innerWidth;
-    } else if( document.documentElement && document.documentElement.clientWidth) {
-      myWidth = document.documentElement.clientWidth;
-    };
-  };
-  var m = $('#main'),
-      a = $('#asidepart'),
-      c = $('.closeaside'),
-      o = $('.openaside');
-  c.click(function(){
-    a.addClass('fadeOut').css('display', 'none');
-    o.css('display', 'block').addClass('fadeIn');
-    m.addClass('moveMain');
-  });
-  o.click(function(){
-    o.css('display', 'none').removeClass('beforeFadeIn');
-    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
-    m.removeClass('moveMain');
-  });
-  $(window).scroll(function(){
-    o.css("top",Math.max(80,260-$(this).scrollTop()));
-  });
-  
-  $(window).resize(function(){
-    getSize(); 
-    if (myWidth >= 1024) {
-      $('header nav').removeClass('shownav');
-    }else{
-      m.removeClass('moveMain');
-      a.css('display', 'block').removeClass('fadeOut');
-      o.css('display', 'none');
-      
-      $('#toc.toc-aside').css('display', 'none');
+    <footer class="post-footer">
+          <div class="post-tags">
+              <a href="/tags/C-C/" rel="tag"><i class="fa fa-tag"></i> C/C++</a>
+          </div>
+
         
-    }
-  });
-});
-</script>
 
-<script type="text/javascript">
-$(document).ready(function(){ 
-  var ai = $('.article-content>iframe'),
-      ae = $('.article-content>embed'),
-      t  = $('#toc'),
-      ta = $('#toc.toc-aside'),
-      o  = $('.openaside'),
-      c  = $('.closeaside');
-  if(ai.length>0){
-    ai.wrap('<div class="video-container" />');
-  };
-  if(ae.length>0){
-   ae.wrap('<div class="video-container" />');
-  };
-  c.click(function(){
-    ta.css('display', 'block').addClass('fadeIn');
-  });
-  o.click(function(){
-    ta.css('display', 'none');
-  });
-  $(window).scroll(function(){
-    ta.css("top",Math.max(140,320-$(this).scrollTop()));
-  });
-});
-</script>
-
-
-<script type="text/javascript">
-$(document).ready(function(){ 
-  var $this = $('.share'),
-      url = $this.attr('data-url'),
-      encodedUrl = encodeURIComponent(url),
-      title = $this.attr('data-title'),
-      tsina = $this.attr('data-tsina'),
-      description = $this.attr('description');
-  var html = [
-  '<div class="hoverqrcode clearfix"></div>',
-  '<a class="overlay" id="qrcode"></a>',
-  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
-  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
-  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
-  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
-  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
-  '<span title="Share to"></span>'
-  ].join('');
-  $this.append(html);
-
-  $('.hoverqrcode').hide();
-
-  var myWidth = 0;
-  function updatehoverqrcode(){
-    if( typeof( window.innerWidth ) == 'number' ) {
-      myWidth = window.innerWidth;
-    } else if( document.documentElement && document.documentElement.clientWidth) {
-      myWidth = document.documentElement.clientWidth;
-    };
-    var qrsize = myWidth > 1024 ? 200:100;
-    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
-    var p = $('.article-share-qrcode').position();
-    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
-                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
-                          .qrcode(options);
-  };
-  $(window).resize(function(){
-    $('.hoverqrcode').hide();
-  });
-  $('.article-share-qrcode').click(function(){
-    updatehoverqrcode();
-    $('.hoverqrcode').toggle();
-  });
-  $('.article-share-qrcode').hover(function(){}, function(){
-      $('.hoverqrcode').hide();
-  });
-});   
-</script>
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/10/30/2024-10-30-CPP-Basics-C-to-Cpp/" rel="prev" title="C++从入门到进阶之一-从C到C++">
+                  <i class="fa fa-angle-left"></i> C++从入门到进阶之一-从C到C++
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/11/18/2024-11-18-CPP-Basics-about-STL/" rel="next" title="C++从入门到进阶之三-STL等高阶话题">
+                  C++从入门到进阶之三-STL等高阶话题 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
 
 
 
 
 
 
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">空白</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">NaNm</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">NaN:aN</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
+  </div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
 
 
 
 
-
-<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
-<script src="/fancybox/jquery.fancybox.pack.js"></script>
-<script type="text/javascript">
-$(document).ready(function(){ 
-  $('.article-content').each(function(i){
-    $(this).find('img').each(function(){
-      if ($(this).parent().hasClass('fancybox')) return;
-      var alt = this.alt;
-      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
-      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
-    });
-    $(this).find('.fancybox').each(function(){
-      $(this).attr('rel', 'article' + i);
-    });
-  });
-  if($.fancybox){
-    $('.fancybox').fancybox();
-  }
-}); 
-</script>
+  <script src="/js/third-party/fancybox.js"></script>
 
 
 
-<!-- Analytics Begin -->
+  
+  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 
 
-<script>
-var _hmt = _hmt || [];
-(function() {
-  var hm = document.createElement("script");
-  hm.src = "//hm.baidu.com/hm.js?f0ae4262694bb7295d78b134eeeae3b7";
-  var s = document.getElementsByTagName("script")[0]; 
-  s.parentNode.insertBefore(hm, s);
-})();
-</script>
 
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.3.0/quicklink.umd.js" integrity="sha256-yvJQOINiH9fWemHn0vCA5lsHWJaHs6/ZmO+1Ft04SvM=" crossorigin="anonymous"></script>
+  <script class="next-config" data-name="quicklink" type="application/json">{"enable":true,"home":true,"archive":true,"delay":true,"timeout":3000,"priority":true,"url":"https://shenweikun.github.io/2024/11/17/2024-11-17-CPP-Basics-C-and-ObjectOrientation/"}</script>
+  <script src="/js/third-party/quicklink.js"></script>
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"shenweikun/helloworld","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
 
-
-<!-- Analytics End -->
-
-<!-- Totop Begin -->
-
-	<div id="totop">
-	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
-	</div>
-	<script src="/js/totop.js"></script>
-
-<!-- Totop End -->
-
-<!-- MathJax Begin -->
-<!-- mathjax config similar to math.stackexchange -->
-
-
-<!-- MathJax End -->
-
-<!-- Tiny_search Begin -->
-
-<!-- Tiny_search End -->
-
-  </body>
+<script src="/live2dw/lib/L2Dwidget.min.js?094cbace49a39548bed64abff5988b05"></script><script>L2Dwidget.init({"log":false,"pluginJsPath":"lib/","pluginModelPath":"assets/","pluginRootPath":"live2dw/","tagMode":false});</script></body>
 </html>
