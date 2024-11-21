@@ -1,25 +1,16 @@
-<!DOCTYPE html>
+
+ <!DOCTYPE HTML>
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width">
-<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 5.4.0">
+  
+    <title>深入理解Android相机体系结构之十：安卓相机架构总结 | Weikun&#39;s Notes</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1,user-scalable=no">
+    
+    <meta name="author" content="空白">
+    
 
-  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
-  <link rel="mask-icon" href="/images/logo.svg" color="#222">
-
-<link rel="stylesheet" href="/css/main.css">
-
-
-
-<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.1.1/animate.min.css" integrity="sha256-PR7ttpcvz8qrF57fur/yAx1qXMFJeJFiA6pSzWi0OIE=" crossorigin="anonymous">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
-
-<script class="next-config" data-name="main" type="application/json">{"hostname":"shenweikun.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.21.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":false,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":true,"async":false,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
-
+    
     <meta name="description" content="Android 相机体系庞大且复杂，在我刚开始接触到该框架的时候，如盲人摸象一般，一点一点地在代码的世界中探索，在很长的一段时间内，都只能局限于某一个特定的区域，而且在解决问题的过程中，虽然通过对代码的深入梳理，最终都会顺利解决难题，但是到最后依然缺乏一个对于整个框架的理解，正如管中窥豹一般，只见细节而无法把握全貌。但是进入现在的公司之后，通过与相机前辈的沟通，我发现框架思维能力尤为重要，针对整个">
 <meta property="og:type" content="article">
 <meta property="og:title" content="深入理解Android相机体系结构之十：安卓相机架构总结">
@@ -34,375 +25,484 @@
 <meta property="article:tag" content="Camera系统">
 <meta name="twitter:card" content="summary">
 
-
-<link rel="canonical" href="https://shenweikun.github.io/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-10/">
-
-
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://shenweikun.github.io/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-10/","path":"2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-10/","title":"深入理解Android相机体系结构之十：安卓相机架构总结"}</script>
-
-<script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>深入理解Android相机体系结构之十：安卓相机架构总结 | Weikun's Notes</title>
-  
-
-
-
-
-
-
-
-
-  <noscript>
-    <link rel="stylesheet" href="/css/noscript.css">
-  </noscript>
-</head>
-
-<body itemscope itemtype="http://schema.org/WebPage" class="use-motion">
-  <div class="headband"></div>
-
-  <main class="main">
-    <div class="column">
-      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
-  <div class="site-nav-toggle">
-    <div class="toggle" aria-label="切换导航栏" role="button">
-        <span class="toggle-line"></span>
-        <span class="toggle-line"></span>
-        <span class="toggle-line"></span>
-    </div>
-  </div>
-
-  <div class="site-meta">
-
-    <a href="/" class="brand" rel="start">
-      <i class="logo-line"></i>
-      <p class="site-title">Weikun's Notes</p>
-      <i class="logo-line"></i>
-    </a>
-      <p class="site-subtitle" itemprop="description">怀揣代码中的唏嘘，记录生活中的点滴</p>
-  </div>
-
-  <div class="site-nav-right">
-    <div class="toggle popup-trigger" aria-label="搜索" role="button">
-        <i class="fa fa-search fa-fw fa-lg"></i>
-    </div>
-  </div>
-</div>
-
-
-
-<nav class="site-nav">
-  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
-      <li class="menu-item menu-item-search">
-        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
-        </a>
-      </li>
-  </ul>
-</nav>
-
-
-
-  <div class="search-pop-overlay">
-    <div class="popup search-popup">
-      <div class="search-header">
-        <span class="search-icon">
-          <i class="fa fa-search"></i>
-        </span>
-        <div class="search-input-container">
-          <input autocomplete="off" autocapitalize="off" maxlength="80"
-                placeholder="搜索..." spellcheck="false"
-                type="search" class="search-input">
-        </div>
-        <span class="popup-btn-close" role="button">
-          <i class="fa fa-times-circle"></i>
-        </span>
-      </div>
-      <div class="search-result-container">
-        <div class="search-result-icon">
-          <i class="fa fa-spinner fa-pulse fa-5x"></i>
-        </div>
-      </div>
-    </div>
-  </div>
-
-</header>
-        
-  
-  <aside class="sidebar">
-
-    <div class="sidebar-inner sidebar-overview-active">
-      <ul class="sidebar-nav">
-        <li class="sidebar-nav-toc">
-          文章目录
-        </li>
-        <li class="sidebar-nav-overview">
-          站点概览
-        </li>
-      </ul>
-
-      <div class="sidebar-panel-container">
-        <!--noindex-->
-        <div class="post-toc-wrap sidebar-panel">
-        </div>
-        <!--/noindex-->
-
-        <div class="site-overview-wrap sidebar-panel">
-          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
-  <p class="site-author-name" itemprop="name">空白</p>
-  <div class="site-description" itemprop="description">记录生活与职业中的点滴</div>
-</div>
-<div class="site-state-wrap animated">
-  <nav class="site-state">
-      <div class="site-state-item site-state-posts">
-        <a href="/archives/">
-          <span class="site-state-item-count">37</span>
-          <span class="site-state-item-name">日志</span>
-        </a>
-      </div>
-      <div class="site-state-item site-state-categories">
-          <a href="/categories/">
-        <span class="site-state-item-count">6</span>
-        <span class="site-state-item-name">分类</span></a>
-      </div>
-      <div class="site-state-item site-state-tags">
-          <a href="/tags/">
-        <span class="site-state-item-count">10</span>
-        <span class="site-state-item-name">标签</span></a>
-      </div>
-  </nav>
-</div>
-
-        </div>
-      </div>
-    </div>
-
     
-  </aside>
+    <link rel="alternative" href="/atom.xml" title="Weikun&#39;s Notes" type="application/atom+xml">
+    
+    
+    
+    
+<link rel="stylesheet" href="/css/style.css">
+<link rel="stylesheet" href="/%02.css">
+<link rel="stylesheet" href="/.css">
 
+<meta name="generator" content="Hexo 5.4.0"></head>
 
-    </div>
-
-    <div class="main-inner post posts-expand">
-
-
-  
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://shenweikun.github.io/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-10/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="空白">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Weikun's Notes">
-      <meta itemprop="description" content="记录生活与职业中的点滴">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="深入理解Android相机体系结构之十：安卓相机架构总结 | Weikun's Notes">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h1 class="post-title" itemprop="name headline">
-          深入理解Android相机体系结构之十：安卓相机架构总结
-        </h1>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
+  <body>
+    <header>
       
-
-      <time title="创建时间：2024-11-21 00:26:07 / 修改时间：02:10:02" itemprop="dateCreated datePublished" datetime="2024-11-21T00:26:07+08:00">2024-11-21</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/1-Android-Camera/" itemprop="url" rel="index"><span itemprop="name">1. Android Camera</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
-      <span class="post-meta-item-icon">
-        <i class="far fa-eye"></i>
-      </span>
-      <span class="post-meta-item-text">阅读次数：</span>
-      <span id="busuanzi_value_page_pv"></span>
-    </span>
-    <span class="post-meta-break"></span>
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span></span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>NaN:aN</span>
-    </span>
+<div>
+		
+			<div id="imglogo">
+				<a href="/"><img src="/img/logo.png" alt="Weikun&#39;s Notes" title="Weikun&#39;s Notes"/></a>
+			</div>
+			
+			<div id="textlogo">
+				<h1 class="site-name"><a href="/" title="Weikun&#39;s Notes">Weikun&#39;s Notes</a></h1>
+				<h2 class="blog-motto">怀揣代码中的唏嘘，记录生活中的点滴</h2>
+			</div>
+			<div class="navbar"><a class="navbutton navmobile" href="#" title="菜单">
+			</a></div>
+			<nav class="animated">
+				<ul>
+					<ul>
+					 
+						<li><a href="/">主页</a></li>
+					
+						<li><a href="/archives">归档</a></li>
+					
+						<li><a href="/about">关于</a></li>
+					
+					<li>
+ 					
+					<form class="search" action="//google.com/search" method="get" accept-charset="utf-8">
+						<label>Search</label>
+						<input type="search" id="search" name="q" autocomplete="off" maxlength="20" placeholder="搜索" />
+						<input type="hidden" name="q" value="site:shenweikun.github.io">
+					</form>
+					
+					</li>
+				</ul>
+			</nav>			
 </div>
-
-        </div>
-      </header>
-
+    </header>
+    <div id="container">
+      <div id="main" class="post" itemscope itemprop="blogPost">
+  
+	<article itemprop="articleBody"> 
+		<header class="article-info clearfix">
+  <h1 itemprop="name">
     
+      <a href="/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-10/" title="深入理解Android相机体系结构之十：安卓相机架构总结" itemprop="url">深入理解Android相机体系结构之十：安卓相机架构总结</a>
+  </h1>
+  <p class="article-author">By
+       
+		<a href="/about" title="空白" target="_blank" itemprop="author">空白</a>
+		
+  <p class="article-time">
+    <time datetime="2024-11-20T16:26:07.000Z" itemprop="datePublished"> 发表于 2024-11-21</time>
     
-    
-    <div class="post-body" itemprop="articleBody"><p>Android 相机体系庞大且复杂，在我刚开始接触到该框架的时候，如盲人摸象一般，一点一点地在代码的世界中探索，在很长的一段时间内，都只能局限于某一个特定的区域，而且在解决问题的过程中，虽然通过对代码的深入梳理，最终都会顺利解决难题，但是到最后依然缺乏一个对于整个框架的理解，正如管中窥豹一般，只见细节而无法把握全貌。但是进入现在的公司之后，通过与相机前辈的沟通，我发现框架思维能力尤为重要，针对整个框架结构需要做到掌控全局，这样在遇到问题的时候便可以迅速定位，此时再进行代码层面的深入研究，发现问题根源，进而达到最终解决问题的目的。</p>
+  </p>
+</header>
+	<div class="article-content">
+		
+		<div id="toc" class="toc-article">
+			<strong class="toc-title">文章目录</strong>
+		
+			
+		
+		</div>
+		
+		<p>Android 相机体系庞大且复杂，在我刚开始接触到该框架的时候，如盲人摸象一般，一点一点地在代码的世界中探索，在很长的一段时间内，都只能局限于某一个特定的区域，而且在解决问题的过程中，虽然通过对代码的深入梳理，最终都会顺利解决难题，但是到最后依然缺乏一个对于整个框架的理解，正如管中窥豹一般，只见细节而无法把握全貌。但是进入现在的公司之后，通过与相机前辈的沟通，我发现框架思维能力尤为重要，针对整个框架结构需要做到掌控全局，这样在遇到问题的时候便可以迅速定位，此时再进行代码层面的深入研究，发现问题根源，进而达到最终解决问题的目的。</p>
 <p>Android相机体系随处可见接口与实现相分离的设计思想，而之前提及的对于体系结构的梳理正是按照其接口的逻辑定义来完成，再结合其接口具体实现，进而完善整个框架体系的代码地图的构建，而在本人六年多的相机开发过程中，经历了多次的Android 相机的框架调整，接口演变，接下来以个人经历为主线，简单为整个相机架构做一个总结。</p>
 <p>起初，首先接触到的相机框架部分便是驱动，那时接触的是高通MSM8953平台，该平台还是采用的QCamera &amp; MM-Camera框架，底层驱动并没有负责复杂业务逻辑控制，而是主要用于控制上下电，以及数据流的开启以及停止等，并且依然使用的是vb2进行图像帧缓冲区的管理，但是现如今的7150，其驱动部分俨然发生了翻天覆地的变化，高通为了配合UMD的业务处理，为驱动设计了一套KMD的框架，包含了复杂的业务处理流程，并且数据的管理也摒弃了vb2，采用了新的管理手段，赋予了驱动更多的职能。</p>
 <p>之后由于工作需要，进一步将工作重心过渡到Camera HAL层，开发的平台依然是8953平台上，当时采用还是QCamera &amp; MM-Camera框架，在该平台上见证了HAL接口的演变，首先接触最多的便是HAL1接口，该接口使用起来比较简单，通过几个特定接口分别实现预览、拍照以及录像的功能，此时，谷歌已经意识到该接口具有一定的局限，所以自然而然地进行接口的升级，提出了HAL2接口，但是由于接口定义存在问题，所有很快谷歌便摒弃了该接口，迅速推出HAL3接口，并且一直沿用至今。HAL3接口相比于HAL1，优势明显，通过将所有的采集流程高度抽象为一个统一逻辑，所有的场景都可以通过这一统一逻辑进行扩展，使该接口具有很强的灵活性和扩展性，所以通过这几代HAL接口的演变，不难得出一个结论，那便是接口的定义需要高度抽象，而抽象的目的就是为了更好的灵活性和可扩展性，就单单这一点而言，HAL3接口可以说是成功的。</p>
 <p>在后续HAL层的开发过程中，也见证了HIDL接口的诞生，在进行Android 8.0系统的升级过程中，发现谷歌将Camera Hal Module从Camera Service 解耦出来，放入一个独立的进程Camera Provider中进行管理，而该进程负责向外暴露HIDL接口，对内完成对其的实现，并且开始针对system分区以及vendor分区进行了严格的权限控制，该目的显而易见，那边是将平台厂商的实现与谷歌Framework相分离，这样便可以进行快速的迭代升级。</p>
 <p>进入现在的公司之后，工作内容进一步扩大，涉及到了App部分，而这部分在之前也有所接触，但是并不深入，那个时候还是使用Camera Api v1接口，其定义和HAL1类似，但为了增加其灵活性和扩展性，之后谷歌提出了Camera Api v2接口，现在主要接触的便是该接口，通过简单的几个控制语句便可以实现图像的采集，使用起来比较简单，进一步降低了开发者的门槛，这也从侧面体现出了该接口定义的巧妙。同时，对于Camera Api v2的实现，是通过Camera Framework来完成的，而该层也有着一次不小的演变，刚开始Framework层并不是直接通过AIDL接口与Camera Service进行通信，而是通过一个JNI层来完成从Java到Native的转换，而Native部分作为客户端，保持对Service的通信。这种设计，很显然会比较臃肿，并且代码难以维护，所以之后由于AIDL接口的提出，谷歌直接将其加入到相机框架中，用于保持Framework与Service的通信，进而摈弃了JNI层，进一步减少了不必要的层级结构，保持了整个体系简洁性。</p>
 <p>整个相机体系，经历了多次的发展，最终形成了而今的框架结构，一路走来，不难发现都是对于接口的升级，而其升级主要是更新其逻辑定义，完善其具体实现。</p>
+  
+	</div>
+		<footer class="article-footer clearfix">
+<div class="article-catetags">
 
-    </div>
+<div class="article-categories">
+  <span></span>
+  <a class="article-category-link" href="/categories/1-Android-Camera/">1. Android Camera</a>
+</div>
 
-    
-    
-    
 
-    <footer class="post-footer">
-          <div class="post-tags">
-              <a href="/tags/Android-Camera/" rel="tag"><i class="fa fa-tag"></i> Android Camera</a>
-              <a href="/tags/Camera%E7%B3%BB%E7%BB%9F/" rel="tag"><i class="fa fa-tag"></i> Camera系统</a>
-          </div>
+  <div class="article-tags">
+  
+  <span></span> <a href="/tags/Android-Camera/">Android Camera</a><a href="/tags/Camera系统/">Camera系统</a>
+  </div>
 
+</div>
+
+
+
+	<div class="article-share" id="share">
+	
+	  <div data-url="https://shenweikun.github.io/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-10/" data-title="深入理解Android相机体系结构之十：安卓相机架构总结 | Weikun&#39;s Notes" data-tsina="" class="share clearfix">
+	  </div>
+	
+	</div>
+
+
+</footer>
+
+   	       
+	</article>
+	
+<nav class="article-nav clearfix">
+ 
+ <div class="prev" >
+ <a href="/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-11/" title="深入理解Android相机体系结构之十一：手机相机的未来与发展">
+  <strong>上一篇：</strong><br/>
+  <span>
+  深入理解Android相机体系结构之十一：手机相机的未来与发展</span>
+</a>
+</div>
+
+
+<div class="next">
+<a href="/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-9/"  title="深入理解Android相机体系结构之九：相机硬件层">
+ <strong>下一篇：</strong><br/> 
+ <span>深入理解Android相机体系结构之九：相机硬件层
+</span>
+</a>
+</div>
+
+</nav>
+
+	
+
+
+
+</div>  
+      <div class="openaside"><a class="navbutton" href="#" title="显示侧边栏"></a></div>
+
+  <div id="toc" class="toc-aside">
+  <strong class="toc-title">文章目录</strong>
+ 
+ 
+ 
+  </div>
+
+<div id="asidepart">
+<div class="closeaside"><a class="closebutton" href="#" title="隐藏侧边栏"></a></div>
+<aside class="clearfix">
+
+  
+<div class="categorieslist">
+	<p class="asidetitle">分类</p>
+		<ul>
+		
+		  
+			<li><a href="/categories/1-Android-Camera/" title="1. Android Camera">1. Android Camera<sup>16</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/2-Android-Other/" title="2. Android Other">2. Android Other<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/3-Camera基础概念/" title="3. Camera基础概念">3. Camera基础概念<sup>7</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/4-C-C/" title="4. C/C++">4. C/C++<sup>6</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/5-Memory/" title="5. Memory">5. Memory<sup>1</sup></a></li>
+		  
+		
+		  
+			<li><a href="/categories/建站/" title="建站">建站<sup>5</sup></a></li>
+		  
+		
+		</ul>
+</div>
+
+
+  
+<div class="tagslist">
+	<p class="asidetitle">标签</p>
+		<ul class="clearfix">
+		
+			
+				<li><a href="/tags/Android-Camera/" title="Android Camera">Android Camera<sup>23</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Camera系统/" title="Camera系统">Camera系统<sup>23</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Camera基础概念/" title="Camera基础概念">Camera基础概念<sup>7</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/C-C/" title="C/C++">C/C++<sup>6</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/MTKCamera/" title="MTKCamera">MTKCamera<sup>4</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/内存/" title="内存">内存<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/Android/" title="Android">Android<sup>2</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/CTS/" title="CTS">CTS<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/测试/" title="测试">测试<sup>1</sup></a></li>
+			
+		
+			
+				<li><a href="/tags/性能/" title="性能">性能<sup>1</sup></a></li>
+			
+		
+		</ul>
+</div>
+
+
+  <div class="linkslist">
+  <p class="asidetitle">友情链接</p>
+    <ul>
         
-
-          <div class="post-nav">
-            <div class="post-nav-item">
-                <a href="/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-9/" rel="prev" title="深入理解Android相机体系结构之九：相机硬件层">
-                  <i class="fa fa-angle-left"></i> 深入理解Android相机体系结构之九：相机硬件层
-                </a>
-            </div>
-            <div class="post-nav-item">
-                <a href="/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-11/" rel="next" title="深入理解Android相机体系结构之十一：手机相机的未来与发展">
-                  深入理解Android相机体系结构之十一：手机相机的未来与发展 <i class="fa fa-angle-right"></i>
-                </a>
-            </div>
-          </div>
-    </footer>
-  </article>
+          <li>
+            
+            	<a href="https://coderq.com" target="_blank" title="一个面向程序员交流分享的新一代社区">码农圈</a>
+            
+          </li>
+        
+    </ul>
 </div>
 
-
-
-
-
-
-    <div class="comments utterances-container"></div>
+</aside>
 </div>
-  </main>
-
-  <footer class="footer">
-    <div class="footer-inner">
-
-  <div class="copyright">
-    &copy; 
-    <span itemprop="copyrightYear">2024</span>
-    <span class="with-love">
-      <i class="fa fa-heart"></i>
-    </span>
-    <span class="author" itemprop="copyrightHolder">空白</span>
-  </div>
-<div class="wordcount">
-  <span class="post-meta-item">
-    <span class="post-meta-item-icon">
-      <i class="fa fa-chart-line"></i>
-    </span>
-    <span title="站点总字数">NaNm</span>
-  </span>
-  <span class="post-meta-item">
-    <span class="post-meta-item-icon">
-      <i class="fa fa-coffee"></i>
-    </span>
-    <span title="站点阅读时长">NaN:aN</span>
-  </span>
-</div>
-<div class="busuanzi-count">
-    <span class="post-meta-item" id="busuanzi_container_site_uv">
-      <span class="post-meta-item-icon">
-        <i class="fa fa-user"></i>
-      </span>
-      <span class="site-uv" title="总访客量">
-        <span id="busuanzi_value_site_uv"></span>
-      </span>
-    </span>
-    <span class="post-meta-item" id="busuanzi_container_site_pv">
-      <span class="post-meta-item-icon">
-        <i class="fa fa-eye"></i>
-      </span>
-      <span class="site-pv" title="总访问量">
-        <span id="busuanzi_value_site_pv"></span>
-      </span>
-    </span>
-</div>
-  <div class="powered-by">由 <a href="https://hexo.io/" rel="noopener" target="_blank">Hexo</a> & <a href="https://theme-next.js.org/" rel="noopener" target="_blank">NexT.Gemini</a> 强力驱动
-  </div>
-
     </div>
-  </footer>
+    <footer><div id="footer" >
+	
+	
+	<div class="social-font" class="clearfix">
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+	</div>
+			
+		
 
+		<p class="copyright">
+		Powered by <a href="http://hexo.io" target="_blank" title="hexo">hexo</a> and Theme by <a href="https://github.com/wuchong/jacman" target="_blank" title="Jacman">Jacman</a> © 2024 
+		
+		<a href="/about" target="_blank" title="空白">空白</a>
+		
+		
+		</p>
+</div>
+</footer>
+    <script src="/js/jquery-2.0.3.min.js"></script>
+<script src="/js/jquery.imagesloaded.min.js"></script>
+<script src="/js/gallery.js"></script>
+<script src="/js/jquery.qrcode-0.12.0.min.js"></script>
+
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.navbar').click(function(){
+    $('header nav').toggleClass('shownav');
+  });
+  var myWidth = 0;
+  function getSize(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+  };
+  var m = $('#main'),
+      a = $('#asidepart'),
+      c = $('.closeaside'),
+      o = $('.openaside');
+  c.click(function(){
+    a.addClass('fadeOut').css('display', 'none');
+    o.css('display', 'block').addClass('fadeIn');
+    m.addClass('moveMain');
+  });
+  o.click(function(){
+    o.css('display', 'none').removeClass('beforeFadeIn');
+    a.css('display', 'block').removeClass('fadeOut').addClass('fadeIn');      
+    m.removeClass('moveMain');
+  });
+  $(window).scroll(function(){
+    o.css("top",Math.max(80,260-$(this).scrollTop()));
+  });
   
-  <div class="toggle sidebar-toggle" role="button">
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-    <span class="toggle-line"></span>
-  </div>
-  <div class="sidebar-dimmer"></div>
-  <div class="back-to-top" role="button" aria-label="返回顶部">
-    <i class="fa fa-arrow-up fa-lg"></i>
-    <span>0%</span>
-  </div>
+  $(window).resize(function(){
+    getSize(); 
+    if (myWidth >= 1024) {
+      $('header nav').removeClass('shownav');
+    }else{
+      m.removeClass('moveMain');
+      a.css('display', 'block').removeClass('fadeOut');
+      o.css('display', 'none');
+      
+      $('#toc.toc-aside').css('display', 'none');
+        
+    }
+  });
+});
+</script>
 
-<noscript>
-  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
-</noscript>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var ai = $('.article-content>iframe'),
+      ae = $('.article-content>embed'),
+      t  = $('#toc'),
+      ta = $('#toc.toc-aside'),
+      o  = $('.openaside'),
+      c  = $('.closeaside');
+  if(ai.length>0){
+    ai.wrap('<div class="video-container" />');
+  };
+  if(ae.length>0){
+   ae.wrap('<div class="video-container" />');
+  };
+  c.click(function(){
+    ta.css('display', 'block').addClass('fadeIn');
+  });
+  o.click(function(){
+    ta.css('display', 'none');
+  });
+  $(window).scroll(function(){
+    ta.css("top",Math.max(140,320-$(this).scrollTop()));
+  });
+});
+</script>
 
 
-  
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous"></script>
-<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/motion.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  var $this = $('.share'),
+      url = $this.attr('data-url'),
+      encodedUrl = encodeURIComponent(url),
+      title = $this.attr('data-title'),
+      tsina = $this.attr('data-tsina'),
+      description = $this.attr('description');
+  var html = [
+  '<div class="hoverqrcode clearfix"></div>',
+  '<a class="overlay" id="qrcode"></a>',
+  '<a href="https://www.facebook.com/sharer.php?u=' + encodedUrl + '" class="article-share-facebook" target="_blank" title="Facebook"></a>',
+  '<a href="https://twitter.com/intent/tweet?url=' + encodedUrl + '" class="article-share-twitter" target="_blank" title="Twitter"></a>',
+  '<a href="#qrcode" class="article-share-qrcode" title="微信"></a>',
+  '<a href="http://widget.renren.com/dialog/share?resourceUrl=' + encodedUrl + '&srcUrl=' + encodedUrl + '&title=' + title +'" class="article-share-renren" target="_blank" title="人人"></a>',
+  '<a href="http://service.weibo.com/share/share.php?title='+title+'&url='+encodedUrl +'&ralateUid='+ tsina +'&searchPic=true&style=number' +'" class="article-share-weibo" target="_blank" title="微博"></a>',
+  '<span title="Share to"></span>'
+  ].join('');
+  $this.append(html);
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
-<script src="/js/third-party/search/local-search.js"></script>
+  $('.hoverqrcode').hide();
+
+  var myWidth = 0;
+  function updatehoverqrcode(){
+    if( typeof( window.innerWidth ) == 'number' ) {
+      myWidth = window.innerWidth;
+    } else if( document.documentElement && document.documentElement.clientWidth) {
+      myWidth = document.documentElement.clientWidth;
+    };
+    var qrsize = myWidth > 1024 ? 200:100;
+    var options = {render: 'image', size: qrsize, fill: '#2ca6cb', text: url, radius: 0.5, quiet: 1};
+    var p = $('.article-share-qrcode').position();
+    $('.hoverqrcode').empty().css('width', qrsize).css('height', qrsize)
+                          .css('left', p.left-qrsize/2+20).css('top', p.top-qrsize-10)
+                          .qrcode(options);
+  };
+  $(window).resize(function(){
+    $('.hoverqrcode').hide();
+  });
+  $('.article-share-qrcode').click(function(){
+    updatehoverqrcode();
+    $('.hoverqrcode').toggle();
+  });
+  $('.article-share-qrcode').hover(function(){}, function(){
+      $('.hoverqrcode').hide();
+  });
+});   
+</script>
 
 
 
 
-  <script src="/js/third-party/fancybox.js"></script>
-
-
-
-  
-  <script async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
 
 
 
 
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/quicklink/2.3.0/quicklink.umd.js" integrity="sha256-yvJQOINiH9fWemHn0vCA5lsHWJaHs6/ZmO+1Ft04SvM=" crossorigin="anonymous"></script>
-  <script class="next-config" data-name="quicklink" type="application/json">{"enable":true,"home":true,"archive":true,"delay":true,"timeout":3000,"priority":true,"url":"https://shenweikun.github.io/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-10/"}</script>
-  <script src="/js/third-party/quicklink.js"></script>
-<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"shenweikun/helloworld","issue_term":"pathname","theme":"github-light"}</script>
-<script src="/js/third-party/comments/utterances.js"></script>
 
-</body>
+
+
+<link rel="stylesheet" href="/fancybox/jquery.fancybox.css" media="screen" type="text/css">
+<script src="/fancybox/jquery.fancybox.pack.js"></script>
+<script type="text/javascript">
+$(document).ready(function(){ 
+  $('.article-content').each(function(i){
+    $(this).find('img').each(function(){
+      if ($(this).parent().hasClass('fancybox')) return;
+      var alt = this.alt;
+      if (alt) $(this).after('<span class="caption">' + alt + '</span>');
+      $(this).wrap('<a href="' + this.src + '" title="' + alt + '" class="fancybox"></a>');
+    });
+    $(this).find('.fancybox').each(function(){
+      $(this).attr('rel', 'article' + i);
+    });
+  });
+  if($.fancybox){
+    $('.fancybox').fancybox();
+  }
+}); 
+</script>
+
+
+
+<!-- Analytics Begin -->
+
+
+
+<script>
+var _hmt = _hmt || [];
+(function() {
+  var hm = document.createElement("script");
+  hm.src = "//hm.baidu.com/hm.js?f0ae4262694bb7295d78b134eeeae3b7";
+  var s = document.getElementsByTagName("script")[0]; 
+  s.parentNode.insertBefore(hm, s);
+})();
+</script>
+
+
+
+<!-- Analytics End -->
+
+<!-- Totop Begin -->
+
+	<div id="totop">
+	<a title="返回顶部"><img src="/img/scrollup.png"/></a>
+	</div>
+	<script src="/js/totop.js"></script>
+
+<!-- Totop End -->
+
+<!-- MathJax Begin -->
+<!-- mathjax config similar to math.stackexchange -->
+
+
+<!-- MathJax End -->
+
+<!-- Tiny_search Begin -->
+
+<!-- Tiny_search End -->
+
+  </body>
 </html>
