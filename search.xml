@@ -1,6 +1,49 @@
 <?xml version="1.0" encoding="utf-8"?>
 <search>
   <entry>
+    <title>Camera CTS 介绍</title>
+    <url>/2021/10/17/2021-10-17-CTS-Introduction/</url>
+    <content><![CDATA[<p>CTS测试全称为系列兼容测试（Compatibility Test Suite）,CTS是谷歌为了测试是否符合Google定义的兼容性规范，从而基于Android的应用程序能在基于同一个API版本的设备上面运行。<br>通过CTS测试的设备可以获得谷歌的商标，并且享受Android Market的权限。</p>
+<span id="more"></span>  
+<h4 id="Camera-CTS简介"><a href="#Camera-CTS简介" class="headerlink" title="Camera CTS简介"></a>Camera CTS简介</h4><p>相机CTS测试分为5部分：CTS、GSI、VTS、CTS-verifier，其中CTS-Verifier包含ITS。<br>CTS、GSI、VTS是自动化测试，执行测试命令就行，CTS-Verifier是手动测试，其中ITS对测试环境和操作要求较高。GSI、VTS测试要刷谷谷歌image，其他不需要。</p>
+<h4 id="CTS测试环境搭建"><a href="#CTS测试环境搭建" class="headerlink" title="CTS测试环境搭建"></a>CTS测试环境搭建</h4><p>Windows CTS测试环境配置（细节参考百度）<br>1.安装adb并配置环境变量<br>2.安装JDK并配置环境变量<br>3.下载CTS工具包<br>4.将CTS Windows脚本放在tools目录下，执行cts-tradefed脚本</p>
+<h4 id="CTS测试命令"><a href="#CTS测试命令" class="headerlink" title="CTS测试命令"></a>CTS测试命令</h4><h5 id="CTS测试"><a href="#CTS测试" class="headerlink" title="CTS测试"></a>CTS测试</h5><p>手机设置不锁屏，息屏时间最大值；<br>部分手机厂商的手机系统会有权限限制，需要在开发者选项中关闭权限控制，例如：开发者选项勾选“禁止权限监控”（OPPO），“启用MIUI优化”（小米）。<br>运行android-cts/tools目录下的cts-tradefed脚本，输入命令测试：<br>全局camera cts测试:</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">run cts -m CtsCameraTestCases</span><br></pre></td></tr></table></figure>
+<p>测试camera cts中某一个模块:</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">run cts -m CtsCameraTestCases -t android.hardware.camera2.cts.CaptureRequestTest</span><br></pre></td></tr></table></figure>
+<p>测试camera cts中的某一具体项:</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">run cts -m CtsCameraTestCases -t android.hardware.camera2.cts.CaptureRequestTest#testAeModeAndLock</span><br></pre></td></tr></table></figure>
+<p>debug时可加上-a选项，缩短测试时间，如-a arm64-v8a，则其他如armeabi-v7a就不会测试。<br>-s 手机序列，多设备运行使用，指定设备ID</p>
+<h5 id="GSI-VTS测试"><a href="#GSI-VTS测试" class="headerlink" title="GSI/VTS测试"></a>GSI/VTS测试</h5><p>GSI/VTS测试要刷Google system image，image可以去官网下载。<br>Android原生Q刷google image方法：<br>手机已解锁</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">adb reboot bootloader</span><br><span class="line">fastboot flash boot boot-debug.img</span><br><span class="line">fastboot reboot fastboot</span><br><span class="line">fastboot flash system system.img</span><br><span class="line">fashboot reboot bootloader</span><br><span class="line">fastboot -w</span><br><span class="line">fastboot reboot</span><br></pre></td></tr></table></figure>
+<p>重启后，进入相机允许权限提示框，运行VTS包android-vts/tools/vts-tradefed脚本，进行测试:<br>全局 VTS 测试：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">./vts-tradefed</span><br><span class="line">run vts</span><br></pre></td></tr></table></figure>
+<p>测试Camera GSI/VTS中某一个模块:</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">./vts-tradefed</span><br><span class="line">run vts -m VtsHalCameraProviderV2_4Target -s 手机序列号 <span class="comment">//测试Camera ProviderV2_4的VTS</span></span><br><span class="line">run cts-on-gsi -m CtsCameraTestCases -s 手机序列 <span class="comment">//测试Camera GSI</span></span><br></pre></td></tr></table></figure>
+<p>测试Camera GSI/VTS中的某一具体项:</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">./vts-tradefed</span><br><span class="line">run vts -m VtsHalAudioV2_0Target -t RecommendedOutputStreamConfigSupport</span><br></pre></td></tr></table></figure>
+<h5 id="CTS-verifier及ITS测试："><a href="#CTS-verifier及ITS测试：" class="headerlink" title="CTS verifier及ITS测试："></a>CTS verifier及ITS测试：</h5><p>将cts Verifier包中CtsVerifier.apk安装到手机上，打开CtsVerifier可看到camera有关测试项。<br>ITS测试参考：<br>官方文档介绍：android/cts/apps/CameraITS/CameraITS.pdf<br>ubuntu ITS测试命令：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="number">1.</span> 通过adb install -r CtsVerifier.apk 安装CtsVerifier.apk</span><br><span class="line"><span class="number">2.</span> cd android-cts-verifier/CameraITS目录</span><br><span class="line"><span class="number">3.</span> source build/envsetup.sh</span><br></pre></td></tr></table></figure>
+<p>全局测试：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">python tools/run_all_tests.py</span><br></pre></td></tr></table></figure>
+<p>全测后置camera 0全场景测试：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">python tools/run_all_tests.py camera=<span class="number">0</span> scenes=scene0 device=设备ID</span><br></pre></td></tr></table></figure>
+<p>单独模块测试：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">python tests/scene1/test_raw_exposure.py camera=<span class="number">0</span> scenes=scene1 device=设备ID</span><br><span class="line"><span class="comment">//或者在CameraITS/scene1目录只保留目标项，再执行：</span></span><br><span class="line">python tools/run_all_tests.py camera=<span class="number">0</span> scenes=<span class="number">1</span> device=设备ID</span><br></pre></td></tr></table></figure>
+
+]]></content>
+      <categories>
+        <category>3. Camera基础概念</category>
+      </categories>
+      <tags>
+        <tag>CTS</tag>
+        <tag>测试</tag>
+        <tag>Camera基础概念</tag>
+        <tag>Android Camera</tag>
+        <tag>Camera系统</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>hexo+github搭建个人博客</title>
     <url>/2018/02/07/2018-02-07-hexo-github%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/</url>
     <content><![CDATA[<p>最近年关将至，手头上的工作也落实得七七八八，总而言之就是很闲的意思。于是乎，开始搭建一个属于自己的个人博客。搭建个人博客的想法并不是突发奇想，而是一直都存在，不过苦于没有时间和精力，便一直搁置着。趁着这段空闲的时间，就来实现一下自己的小梦想啦。</p>
@@ -121,71 +164,6 @@ xxx.c文件<figure class="highlight c++"><table><tr><td class="code"><pre><span 
       </categories>
       <tags>
         <tag>C/C++</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Camera概念篇-标准光源</title>
-    <url>/2021/10/25/2021-10-24-Camera-concept-illuminant/</url>
-    <content><![CDATA[<p>标准光源（Standard Light Sources）是指模拟各种环境光线下的人造光源，让生产工厂或实验室非现场也能获得与这些特定环境下的光源基本一致的照明效果。标准光源通常安装在标准光源箱内，主要用于检测物品的颜色偏差，自动白平衡等校准需要用到各类标准光源。</p>
-<span id="more"></span>
-<h4 id="光源色温"><a href="#光源色温" class="headerlink" title="光源色温"></a>光源色温</h4><p>光源有高、中、低三种色温，具体有D50,D65,D35,D75,A,F,TL84,TL83,965,CWF,U30 HOR（Horizon）,UV等。</p>
-<p>1.低色温（2700K－3500K）：含有较多的红光、橙光。犹如早晨八时左右的太阳光，给人以温暖、温磬的美感。<br>2.中色温（3500K－5000K）：所含的红光、蓝光等光色较均衡，犹如上午八时以后，十时以前的太阳光。给人以温和、舒适的美感。<br>3.高色温（5000K－7000K）：含有较多的蓝光，象上午十时以后，下午二时以前的太阳光。给人以明亮、清晰的美感。<br>注：光源以K（开尔文）为单位，（K数为高越偏蓝调）色温（Color Temperature），单位：开尔文[Kelvin]定义：当光源所发出的颜色与“黑体”在某一温度下辐射的颜色相同时，“黑体”的温度就称为该光源的色温。“黑体”的温度越高，光谱中蓝色的成份则越多，而红色的成份则越少。色温是衡量一种光源“有多么热”或者“有多么冷”的指标，也是表示一种光源“白得程度”、“黄得程度”或者“蓝得程度”的指标。</p>
-<h4 id="色温场景"><a href="#色温场景" class="headerlink" title="色温场景"></a>色温场景</h4><p>1.暖色光：暖色光的色温在3300K以下，暖色光与白炽灯相近，红光成分较多，能给人温暖、健康、舒适的感觉。适用于家庭、住宅、宿舍、宾馆等场所或温度较低的地方。<br>2.冷白色光：又叫中性色，它的色温在3300K~5300K之间，中性色由于光线柔和，使人有愉快、舒适、安详的感觉。适用于商店、医院、办公室、饭店、餐厅、候车室等场所。<br>3.冷色光：又叫日光色，它的色温在5300K以上，光源接近自然光，有明亮的感觉，使人精力集中。适用于办公室、会议室、教室、绘图室、设计室、图书馆的阅览室、展览橱窗等场所。</p>
-<h4 id="低色温光源"><a href="#低色温光源" class="headerlink" title="低色温光源"></a>低色温光源</h4><p>H：色温2300K，模拟水平日光（Horizon）；<br>F：色温2700K，模拟家庭酒店暖色灯光、比色参考光源，夕阳光、黃光源、落日黃，多为英式灯箱使用；<br>A：色温2856K，美式厨窗射灯，功率60W，多为美式灯箱使用；<br>WF：色温2500-3000K，暖荧光灯（Warm Fluorescent），通用室内荧光灯；<br>Inca灯：色温2856K，模拟美式展示厅射灯，特殊钨丝灯；<br>U30：色温3000K，模拟美国暖白商店光源(Warm White Fluorescent)，功率20W；<br>TL83：色温3000K，欧洲标准暖白商店光源 (Warm White )，功率18W；<br>T：色温2600-3200K，钨丝灯（Tungsten）（40W 2600K，100W 2850K）；<br>U35：色温3500K，模拟指定的商店灯光光源；</p>
-<h4 id="中色温光源"><a href="#中色温光源" class="headerlink" title="中色温光源"></a>中色温光源</h4><p>CWF：色温4150K，模拟美国冷白商店光源（Cold White Fluorescent），功率20W；<br>TL84：色温4000K（3750K），模拟欧洲、日本、中国商店灯光；<br>F：同TL84光源，荧光灯（Fluorescent）；</p>
-<h4 id="高色温光源"><a href="#高色温光源" class="headerlink" title="高色温光源"></a>高色温光源</h4><p>D为Daylight，日光，色温5200K;<br>S：色温7000K，阴影，Shade;<br>D50：色温5000K，模拟太阳光；<br>D65：色温6500K，国际标准人工日光(Artificial Daylight)，模拟蓝天日光；<br>D75：色温7500K，模拟北方平均太阳光，同S；<br>DF：同D65，Daylight Fluorescent;<br>DNP：色温5100K，透射式灯箱；</p>
-<h4 id="其它光源"><a href="#其它光源" class="headerlink" title="其它光源"></a>其它光源</h4><p>UV：波长365nm，紫外灯光源(Ultra-Violet)，功率20W</p>
-]]></content>
-      <categories>
-        <category>3. Camera基础概念</category>
-      </categories>
-      <tags>
-        <tag>Camera基础概念</tag>
-        <tag>Android Camera</tag>
-        <tag>Camera系统</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Camera CTS 介绍</title>
-    <url>/2021/10/17/2021-10-17-CTS-Introduction/</url>
-    <content><![CDATA[<p>CTS测试全称为系列兼容测试（Compatibility Test Suite）,CTS是谷歌为了测试是否符合Google定义的兼容性规范，从而基于Android的应用程序能在基于同一个API版本的设备上面运行。<br>通过CTS测试的设备可以获得谷歌的商标，并且享受Android Market的权限。</p>
-<span id="more"></span>  
-<h4 id="Camera-CTS简介"><a href="#Camera-CTS简介" class="headerlink" title="Camera CTS简介"></a>Camera CTS简介</h4><p>相机CTS测试分为5部分：CTS、GSI、VTS、CTS-verifier，其中CTS-Verifier包含ITS。<br>CTS、GSI、VTS是自动化测试，执行测试命令就行，CTS-Verifier是手动测试，其中ITS对测试环境和操作要求较高。GSI、VTS测试要刷谷谷歌image，其他不需要。</p>
-<h4 id="CTS测试环境搭建"><a href="#CTS测试环境搭建" class="headerlink" title="CTS测试环境搭建"></a>CTS测试环境搭建</h4><p>Windows CTS测试环境配置（细节参考百度）<br>1.安装adb并配置环境变量<br>2.安装JDK并配置环境变量<br>3.下载CTS工具包<br>4.将CTS Windows脚本放在tools目录下，执行cts-tradefed脚本</p>
-<h4 id="CTS测试命令"><a href="#CTS测试命令" class="headerlink" title="CTS测试命令"></a>CTS测试命令</h4><h5 id="CTS测试"><a href="#CTS测试" class="headerlink" title="CTS测试"></a>CTS测试</h5><p>手机设置不锁屏，息屏时间最大值；<br>部分手机厂商的手机系统会有权限限制，需要在开发者选项中关闭权限控制，例如：开发者选项勾选“禁止权限监控”（OPPO），“启用MIUI优化”（小米）。<br>运行android-cts/tools目录下的cts-tradefed脚本，输入命令测试：<br>全局camera cts测试:</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">run cts -m CtsCameraTestCases</span><br></pre></td></tr></table></figure>
-<p>测试camera cts中某一个模块:</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">run cts -m CtsCameraTestCases -t android.hardware.camera2.cts.CaptureRequestTest</span><br></pre></td></tr></table></figure>
-<p>测试camera cts中的某一具体项:</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">run cts -m CtsCameraTestCases -t android.hardware.camera2.cts.CaptureRequestTest#testAeModeAndLock</span><br></pre></td></tr></table></figure>
-<p>debug时可加上-a选项，缩短测试时间，如-a arm64-v8a，则其他如armeabi-v7a就不会测试。<br>-s 手机序列，多设备运行使用，指定设备ID</p>
-<h5 id="GSI-VTS测试"><a href="#GSI-VTS测试" class="headerlink" title="GSI/VTS测试"></a>GSI/VTS测试</h5><p>GSI/VTS测试要刷Google system image，image可以去官网下载。<br>Android原生Q刷google image方法：<br>手机已解锁</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">adb reboot bootloader</span><br><span class="line">fastboot flash boot boot-debug.img</span><br><span class="line">fastboot reboot fastboot</span><br><span class="line">fastboot flash system system.img</span><br><span class="line">fashboot reboot bootloader</span><br><span class="line">fastboot -w</span><br><span class="line">fastboot reboot</span><br></pre></td></tr></table></figure>
-<p>重启后，进入相机允许权限提示框，运行VTS包android-vts/tools/vts-tradefed脚本，进行测试:<br>全局 VTS 测试：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">./vts-tradefed</span><br><span class="line">run vts</span><br></pre></td></tr></table></figure>
-<p>测试Camera GSI/VTS中某一个模块:</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">./vts-tradefed</span><br><span class="line">run vts -m VtsHalCameraProviderV2_4Target -s 手机序列号 <span class="comment">//测试Camera ProviderV2_4的VTS</span></span><br><span class="line">run cts-on-gsi -m CtsCameraTestCases -s 手机序列 <span class="comment">//测试Camera GSI</span></span><br></pre></td></tr></table></figure>
-<p>测试Camera GSI/VTS中的某一具体项:</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">./vts-tradefed</span><br><span class="line">run vts -m VtsHalAudioV2_0Target -t RecommendedOutputStreamConfigSupport</span><br></pre></td></tr></table></figure>
-<h5 id="CTS-verifier及ITS测试："><a href="#CTS-verifier及ITS测试：" class="headerlink" title="CTS verifier及ITS测试："></a>CTS verifier及ITS测试：</h5><p>将cts Verifier包中CtsVerifier.apk安装到手机上，打开CtsVerifier可看到camera有关测试项。<br>ITS测试参考：<br>官方文档介绍：android/cts/apps/CameraITS/CameraITS.pdf<br>ubuntu ITS测试命令：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="number">1.</span> 通过adb install -r CtsVerifier.apk 安装CtsVerifier.apk</span><br><span class="line"><span class="number">2.</span> cd android-cts-verifier/CameraITS目录</span><br><span class="line"><span class="number">3.</span> source build/envsetup.sh</span><br></pre></td></tr></table></figure>
-<p>全局测试：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">python tools/run_all_tests.py</span><br></pre></td></tr></table></figure>
-<p>全测后置camera 0全场景测试：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">python tools/run_all_tests.py camera=<span class="number">0</span> scenes=scene0 device=设备ID</span><br></pre></td></tr></table></figure>
-<p>单独模块测试：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">python tests/scene1/test_raw_exposure.py camera=<span class="number">0</span> scenes=scene1 device=设备ID</span><br><span class="line"><span class="comment">//或者在CameraITS/scene1目录只保留目标项，再执行：</span></span><br><span class="line">python tools/run_all_tests.py camera=<span class="number">0</span> scenes=<span class="number">1</span> device=设备ID</span><br></pre></td></tr></table></figure>
-
-]]></content>
-      <categories>
-        <category>3. Camera基础概念</category>
-      </categories>
-      <tags>
-        <tag>Camera基础概念</tag>
-        <tag>Android Camera</tag>
-        <tag>Camera系统</tag>
-        <tag>CTS</tag>
-        <tag>测试</tag>
       </tags>
   </entry>
   <entry>
@@ -310,6 +288,28 @@ xxx.c文件<figure class="highlight c++"><table><tr><td class="code"><pre><span 
       </tags>
   </entry>
   <entry>
+    <title>Camera概念篇-标准光源</title>
+    <url>/2021/10/25/2021-10-24-Camera-concept-illuminant/</url>
+    <content><![CDATA[<p>标准光源（Standard Light Sources）是指模拟各种环境光线下的人造光源，让生产工厂或实验室非现场也能获得与这些特定环境下的光源基本一致的照明效果。标准光源通常安装在标准光源箱内，主要用于检测物品的颜色偏差，自动白平衡等校准需要用到各类标准光源。</p>
+<span id="more"></span>
+<h4 id="光源色温"><a href="#光源色温" class="headerlink" title="光源色温"></a>光源色温</h4><p>光源有高、中、低三种色温，具体有D50,D65,D35,D75,A,F,TL84,TL83,965,CWF,U30 HOR（Horizon）,UV等。</p>
+<p>1.低色温（2700K－3500K）：含有较多的红光、橙光。犹如早晨八时左右的太阳光，给人以温暖、温磬的美感。<br>2.中色温（3500K－5000K）：所含的红光、蓝光等光色较均衡，犹如上午八时以后，十时以前的太阳光。给人以温和、舒适的美感。<br>3.高色温（5000K－7000K）：含有较多的蓝光，象上午十时以后，下午二时以前的太阳光。给人以明亮、清晰的美感。<br>注：光源以K（开尔文）为单位，（K数为高越偏蓝调）色温（Color Temperature），单位：开尔文[Kelvin]定义：当光源所发出的颜色与“黑体”在某一温度下辐射的颜色相同时，“黑体”的温度就称为该光源的色温。“黑体”的温度越高，光谱中蓝色的成份则越多，而红色的成份则越少。色温是衡量一种光源“有多么热”或者“有多么冷”的指标，也是表示一种光源“白得程度”、“黄得程度”或者“蓝得程度”的指标。</p>
+<h4 id="色温场景"><a href="#色温场景" class="headerlink" title="色温场景"></a>色温场景</h4><p>1.暖色光：暖色光的色温在3300K以下，暖色光与白炽灯相近，红光成分较多，能给人温暖、健康、舒适的感觉。适用于家庭、住宅、宿舍、宾馆等场所或温度较低的地方。<br>2.冷白色光：又叫中性色，它的色温在3300K~5300K之间，中性色由于光线柔和，使人有愉快、舒适、安详的感觉。适用于商店、医院、办公室、饭店、餐厅、候车室等场所。<br>3.冷色光：又叫日光色，它的色温在5300K以上，光源接近自然光，有明亮的感觉，使人精力集中。适用于办公室、会议室、教室、绘图室、设计室、图书馆的阅览室、展览橱窗等场所。</p>
+<h4 id="低色温光源"><a href="#低色温光源" class="headerlink" title="低色温光源"></a>低色温光源</h4><p>H：色温2300K，模拟水平日光（Horizon）；<br>F：色温2700K，模拟家庭酒店暖色灯光、比色参考光源，夕阳光、黃光源、落日黃，多为英式灯箱使用；<br>A：色温2856K，美式厨窗射灯，功率60W，多为美式灯箱使用；<br>WF：色温2500-3000K，暖荧光灯（Warm Fluorescent），通用室内荧光灯；<br>Inca灯：色温2856K，模拟美式展示厅射灯，特殊钨丝灯；<br>U30：色温3000K，模拟美国暖白商店光源(Warm White Fluorescent)，功率20W；<br>TL83：色温3000K，欧洲标准暖白商店光源 (Warm White )，功率18W；<br>T：色温2600-3200K，钨丝灯（Tungsten）（40W 2600K，100W 2850K）；<br>U35：色温3500K，模拟指定的商店灯光光源；</p>
+<h4 id="中色温光源"><a href="#中色温光源" class="headerlink" title="中色温光源"></a>中色温光源</h4><p>CWF：色温4150K，模拟美国冷白商店光源（Cold White Fluorescent），功率20W；<br>TL84：色温4000K（3750K），模拟欧洲、日本、中国商店灯光；<br>F：同TL84光源，荧光灯（Fluorescent）；</p>
+<h4 id="高色温光源"><a href="#高色温光源" class="headerlink" title="高色温光源"></a>高色温光源</h4><p>D为Daylight，日光，色温5200K;<br>S：色温7000K，阴影，Shade;<br>D50：色温5000K，模拟太阳光；<br>D65：色温6500K，国际标准人工日光(Artificial Daylight)，模拟蓝天日光；<br>D75：色温7500K，模拟北方平均太阳光，同S；<br>DF：同D65，Daylight Fluorescent;<br>DNP：色温5100K，透射式灯箱；</p>
+<h4 id="其它光源"><a href="#其它光源" class="headerlink" title="其它光源"></a>其它光源</h4><p>UV：波长365nm，紫外灯光源(Ultra-Violet)，功率20W</p>
+]]></content>
+      <categories>
+        <category>3. Camera基础概念</category>
+      </categories>
+      <tags>
+        <tag>Camera基础概念</tag>
+        <tag>Android Camera</tag>
+        <tag>Camera系统</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>Camera概念篇-Sensor介绍</title>
     <url>/2021/10/24/2021-10-24-Camera-concept-sensorIntroduction/</url>
     <content><![CDATA[<p>本部分主要介绍MTK平台支持的Image Sensor类型，硬件接口以及常见基本概念。</p>
@@ -325,6 +325,34 @@ xxx.c文件<figure class="highlight c++"><table><tr><td class="code"><pre><span 
 <h5 id="f-MCLK"><a href="#f-MCLK" class="headerlink" title="f) MCLK"></a>f) MCLK</h5><p>Soc提供给Sensor的外部clock。</p>
 <h5 id="g-PCLK"><a href="#g-PCLK" class="headerlink" title="g) PCLK"></a>g) PCLK</h5><p>Parallel接口的Sensor输出的clock，该clock变化一次，data更新一次。</p>
 <h5 id="h-mipi-信号"><a href="#h-mipi-信号" class="headerlink" title="h) mipi 信号"></a>h) mipi 信号</h5><p>mipi信号包括mipi clock和mipi data，该信号是高速信号，用来传输mipi数据包。</p>
+]]></content>
+      <categories>
+        <category>3. Camera基础概念</category>
+      </categories>
+      <tags>
+        <tag>Camera基础概念</tag>
+        <tag>Android Camera</tag>
+        <tag>Camera系统</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Camera概念篇-相机原理</title>
+    <url>/2021/10/25/2021-10-25-Camera-concept-Camera-HW/</url>
+    <content><![CDATA[<p>在了解如何调试相机前，首先需要对相机有一些基本认识，这里从网上总结了相关描述。</p>
+<span id="more"></span>
+<h4 id="物理结构"><a href="#物理结构" class="headerlink" title="物理结构"></a>物理结构</h4><p><img src="Image.png"><br>1.FPC: Flexible Printed Circuit 可挠性印刷电路板<br>2.Sensor:图象传感器<br>3.IR:红外滤波片<br>4.Holder:基座<br>5.Lens:镜头</p>
+<h4 id="成像原理"><a href="#成像原理" class="headerlink" title="成像原理"></a>成像原理</h4><p>景物通过镜头（LENS）生成的光学图像投射到图像传感器(Sensor)表面上，然后转为模拟的电信号，经过 A/D（模数转换）转换后变为数字图像信号，再送到数字信号处理芯片（DSP）中加工处理，再通过 IO 接口传输到 CPU 中处理，通过 LCD 就可以看到图像了。<br><img src="Image1.png"><br>　　图像传感器（SENSOR）是一种半导体芯片，其表面包含有几十万到几百万的光电二极管。光电二极管受到光照射时，就会产生电荷。目前的SENSOR类型有两种：</p>
+<p>CCD（Charge Couple Device)，电荷耦合器件，它是目前高像素类sensor中比较成熟的成像器件，是以一行为单位的电流信号。</p>
+<p>CMOS（Complementary Metal Oxide Semiconductor），互补金属氧化物半导体。CMOS的信号是以点为单位的电荷信号，更为敏感，速度也更快，更为省电。</p>
+<p>ISP 的性能是决定影像流畅的关键，JPEG encoder 的性能也是关键指标之一。而 JPEG encoder又分为硬件JPEG压缩方式和软件RGB压缩方式。</p>
+<p>DSP控制芯片的作用是：将感光芯片获取的数据及时快速地传到baseband中并刷新感光芯片，因此控制芯片的好坏，直接决定画面品质（比如色彩饱和度、清晰度）与流畅度。</p>
+<h4 id="图像数据输出格式"><a href="#图像数据输出格式" class="headerlink" title="图像数据输出格式"></a>图像数据输出格式</h4><p>常见的数据输出格式有：Raw data格式、YUV格式、RGB格式。</p>
+<p>RGB格式：采用这种编码方法，每种颜色都可用三个变量来表示红色、绿色以及蓝色的强度。每一个像素有三原色R红色、G绿色、B蓝色组成。</p>
+<p>YUV格式:其中“Y”表示明亮度(Luminance或Luma),就是灰阶值；而“U”和“V”表示色度(Chrominance或Chroma),是描述影像色彩及饱和度，用于指定像素的颜色。</p>
+<p>RAW DATA格式:是CCD或CMOS在将光信号转换为电信号时的电平高低的原始记录，单纯地将没有进行任何处理的图像数据，即摄像元件直接得到的电信号进行数字化处理而得到的。<br><img src="Image2.png"><br>支持YUV/RGB格式的模组，一般会在模组上集成ISP（Image Single Processor），经过A/D转换过的原始数据经过ISP处理生成YUV标准格式传到BB。一般来说，这种设计适用于低像素Camera的要求，会在主板上省去一个DSP，可降低成本。在调试过程中，YUV/RGB格式的摄像头，其所有参数都可在kernel层通过寄存器来控制。调试一般由sensor的原厂支持。</p>
+<p>支持RawData格式的模组，由于感光区域的需求，不会再模组内集成ISP以最大程度的增大感光区域的面积，提高照片质量。模组把原始的数字信号传给BB上的DSP进行处理，MTK自带的DSP一般包含ISP、JPEG encoder和DSP控制芯片。在调试的时候图像的效果需要MTK在HAL层的参数进行支持。</p>
+<h4 id="LED-Flash（闪光灯）"><a href="#LED-Flash（闪光灯）" class="headerlink" title="LED Flash（闪光灯）"></a>LED Flash（闪光灯）</h4><p>LED Flash利用发光二极管取代一般相机的xenon flash，可对主体进行补光；和xenon最大的差异在于LED Flash可以做到长时间发光，若使用低电流，甚至可以持续发光。</p>
+<p>（一）闪光灯模式<br>LED Flash使用模式可以分为Flash Mode（闪光灯，辅光较强，时间较短）和Torch Mode（手电筒，辅光较弱，持续发光）。<br><img src="Image3.png"><br>（二）MTK闪光过程<br><img src="Image4.png"><br>Pre-Flash的目的为测光，时间较长，强度较弱，使用15帧。<br>Main-Flash的目的为辅光，时间较短，强度较强，使用2帧。<br>Pre-Flash和Main-Flash的强度比例需要校准（MTK提供）。<br>（三）MTK保护机制<br>由于Main-Flash的作用时间有最大值的限制，因此MTK加入了Flash保护机制。<br>假设：<br>　　T：原本曝光时间<br>　　R：Flash限制曝光时间<br>　　S：原本ISO<br>　　Sn：最终ISO<br>　　Tn:最终曝光时间<br>如果：<br>　　T&gt;R<br>那么（提高ISO来补偿少掉的曝光时间）：<br>　　Sn = S*T/R<br>　　Tn = R<br>否则（保持ISO和曝光时间）：<br>　　Sn = S<br>　　Tn = T</p>
 ]]></content>
       <categories>
         <category>3. Camera基础概念</category>
@@ -354,34 +382,6 @@ xxx.c文件<figure class="highlight c++"><table><tr><td class="code"><pre><span 
         <category>1. Android Camera</category>
       </categories>
       <tags>
-        <tag>Android Camera</tag>
-        <tag>Camera系统</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>Camera概念篇-相机原理</title>
-    <url>/2021/10/25/2021-10-25-Camera-concept-Camera-HW/</url>
-    <content><![CDATA[<p>在了解如何调试相机前，首先需要对相机有一些基本认识，这里从网上总结了相关描述。</p>
-<span id="more"></span>
-<h4 id="物理结构"><a href="#物理结构" class="headerlink" title="物理结构"></a>物理结构</h4><p><img src="Image.png"><br>1.FPC: Flexible Printed Circuit 可挠性印刷电路板<br>2.Sensor:图象传感器<br>3.IR:红外滤波片<br>4.Holder:基座<br>5.Lens:镜头</p>
-<h4 id="成像原理"><a href="#成像原理" class="headerlink" title="成像原理"></a>成像原理</h4><p>景物通过镜头（LENS）生成的光学图像投射到图像传感器(Sensor)表面上，然后转为模拟的电信号，经过 A/D（模数转换）转换后变为数字图像信号，再送到数字信号处理芯片（DSP）中加工处理，再通过 IO 接口传输到 CPU 中处理，通过 LCD 就可以看到图像了。<br><img src="Image1.png"><br>　　图像传感器（SENSOR）是一种半导体芯片，其表面包含有几十万到几百万的光电二极管。光电二极管受到光照射时，就会产生电荷。目前的SENSOR类型有两种：</p>
-<p>CCD（Charge Couple Device)，电荷耦合器件，它是目前高像素类sensor中比较成熟的成像器件，是以一行为单位的电流信号。</p>
-<p>CMOS（Complementary Metal Oxide Semiconductor），互补金属氧化物半导体。CMOS的信号是以点为单位的电荷信号，更为敏感，速度也更快，更为省电。</p>
-<p>ISP 的性能是决定影像流畅的关键，JPEG encoder 的性能也是关键指标之一。而 JPEG encoder又分为硬件JPEG压缩方式和软件RGB压缩方式。</p>
-<p>DSP控制芯片的作用是：将感光芯片获取的数据及时快速地传到baseband中并刷新感光芯片，因此控制芯片的好坏，直接决定画面品质（比如色彩饱和度、清晰度）与流畅度。</p>
-<h4 id="图像数据输出格式"><a href="#图像数据输出格式" class="headerlink" title="图像数据输出格式"></a>图像数据输出格式</h4><p>常见的数据输出格式有：Raw data格式、YUV格式、RGB格式。</p>
-<p>RGB格式：采用这种编码方法，每种颜色都可用三个变量来表示红色、绿色以及蓝色的强度。每一个像素有三原色R红色、G绿色、B蓝色组成。</p>
-<p>YUV格式:其中“Y”表示明亮度(Luminance或Luma),就是灰阶值；而“U”和“V”表示色度(Chrominance或Chroma),是描述影像色彩及饱和度，用于指定像素的颜色。</p>
-<p>RAW DATA格式:是CCD或CMOS在将光信号转换为电信号时的电平高低的原始记录，单纯地将没有进行任何处理的图像数据，即摄像元件直接得到的电信号进行数字化处理而得到的。<br><img src="Image2.png"><br>支持YUV/RGB格式的模组，一般会在模组上集成ISP（Image Single Processor），经过A/D转换过的原始数据经过ISP处理生成YUV标准格式传到BB。一般来说，这种设计适用于低像素Camera的要求，会在主板上省去一个DSP，可降低成本。在调试过程中，YUV/RGB格式的摄像头，其所有参数都可在kernel层通过寄存器来控制。调试一般由sensor的原厂支持。</p>
-<p>支持RawData格式的模组，由于感光区域的需求，不会再模组内集成ISP以最大程度的增大感光区域的面积，提高照片质量。模组把原始的数字信号传给BB上的DSP进行处理，MTK自带的DSP一般包含ISP、JPEG encoder和DSP控制芯片。在调试的时候图像的效果需要MTK在HAL层的参数进行支持。</p>
-<h4 id="LED-Flash（闪光灯）"><a href="#LED-Flash（闪光灯）" class="headerlink" title="LED Flash（闪光灯）"></a>LED Flash（闪光灯）</h4><p>LED Flash利用发光二极管取代一般相机的xenon flash，可对主体进行补光；和xenon最大的差异在于LED Flash可以做到长时间发光，若使用低电流，甚至可以持续发光。</p>
-<p>（一）闪光灯模式<br>LED Flash使用模式可以分为Flash Mode（闪光灯，辅光较强，时间较短）和Torch Mode（手电筒，辅光较弱，持续发光）。<br><img src="Image3.png"><br>（二）MTK闪光过程<br><img src="Image4.png"><br>Pre-Flash的目的为测光，时间较长，强度较弱，使用15帧。<br>Main-Flash的目的为辅光，时间较短，强度较强，使用2帧。<br>Pre-Flash和Main-Flash的强度比例需要校准（MTK提供）。<br>（三）MTK保护机制<br>由于Main-Flash的作用时间有最大值的限制，因此MTK加入了Flash保护机制。<br>假设：<br>　　T：原本曝光时间<br>　　R：Flash限制曝光时间<br>　　S：原本ISO<br>　　Sn：最终ISO<br>　　Tn:最终曝光时间<br>如果：<br>　　T&gt;R<br>那么（提高ISO来补偿少掉的曝光时间）：<br>　　Sn = S*T/R<br>　　Tn = R<br>否则（保持ISO和曝光时间）：<br>　　Sn = S<br>　　Tn = T</p>
-]]></content>
-      <categories>
-        <category>3. Camera基础概念</category>
-      </categories>
-      <tags>
-        <tag>Camera基础概念</tag>
         <tag>Android Camera</tag>
         <tag>Camera系统</tag>
       </tags>
@@ -967,168 +967,6 @@ xxx.c文件<figure class="highlight c++"><table><tr><td class="code"><pre><span 
       </tags>
   </entry>
   <entry>
-    <title>MTKcam-ISP7-Camsys Hw-Lib</title>
-    <url>/2024/11/18/2024-11-20-MTKcam-ISP7-Camsys-Hw-Lib/</url>
-    <content><![CDATA[<h2 id="High-Level-view"><a href="#High-Level-view" class="headerlink" title="High-Level view"></a>High-Level view</h2><p><img src="High-Level-view.png"><br>CAMSYS_HW-Lib所在位置如上图红框所示，包含<strong>CamCtrl</strong>，<strong>PipeMgr</strong>，<strong>CamCoordinator</strong>，<strong>RequestRegulator</strong>四个模块，向上通过CamCtrl沟通P1Node，向下通过PipeMgr对接drivers，访问硬件，同时CamCtrl还可以沟通IHALIsp Adapter和3A control flows。<br><img src="image1.png"></p>
-<h3 id="CamCtrl"><a href="#CamCtrl" class="headerlink" title="CamCtrl:"></a>CamCtrl:</h3><p>文件目录：vendor/mediatek/proprietary/hardware/mtkcam-core/hw/camsys/cam_ctrl/<br>CamCtrl是P1Node/PipeMgr/3A HAL/ISP HAL的协调者。其主要有两个作用：</p>
-<ul>
-<li>搜集从P1 Node过来的request Info，然后queue给driver（使用PipeMgr并通过SensorPipe接口丢给MTK drivers):<br>request Info包含：</li>
-<li>Image Info. (from P1Node)，例如上层传下来的buffer size，format等</li>
-<li>Setting (from 3A-HAL)，例如需要给到driver的gain值，曝光等</li>
-<li>Tuning (from ISP-HAL)，例如从tuning参数中获取的信息等</li>
-<li>从driver中做deque(使用PipeMgr并通过SensorPipe接口),并将结果传递给用户：<ul>
-<li>Image buffer(to P1Node)</li>
-<li>STT buffer(to 3A HAL)，如AAO，AFO等统计信息</li>
-</ul>
-</li>
-</ul>
-<h3 id="PipeMgr-SensorPipe"><a href="#PipeMgr-SensorPipe" class="headerlink" title="PipeMgr/SensorPipe:"></a>PipeMgr/SensorPipe:</h3><p>文件目录：vendor/mediatek/proprietary/hardware/mtkcam-core/hw/camsys/pipe_mgr/<br>pipeMgr的作用：</p>
-<ul>
-<li>简化和封装V4L2-FW操作</li>
-<li>抽象化CamCtrl</li>
-<li>构建sensor map，映射driver中的设备文件<br>pipe_mgr兼容isp6，pipe_mgr目录下有isp6s和isp7两个目录。主要有如下几个类：<br><img src="image2.png"><br>PipeCapability类没在代码中找到定义。PiPeMgr和sensorPipe互为友元，PiPeMgr和RawPipe互为友元。剩下三个是PipeMgr的友元，可以访问PipeMgr的数据。</li>
-</ul>
-<h3 id="CamCoordinator"><a href="#CamCoordinator" class="headerlink" title="CamCoordinator:"></a>CamCoordinator:</h3><p>文件目录：vendor/mediatek/proprietary/hardware/mtkcam-core/hw/camsys/cam_coordinator/<br>CamCoordinator作用：</p>
-<ul>
-<li>Negotiate and Configure the CAMSYS topology</li>
-<li>Align MW-Frame and CAMSYS Request in multiple-sensor sources</li>
-</ul>
-<h3 id="RequestRegulator"><a href="#RequestRegulator" class="headerlink" title="RequestRegulator:"></a>RequestRegulator:</h3><p>文件目录：vendor/mediatek/proprietary/hardware/mtkcam-core/hw/camsys/request_regulator/<br>RequestRegulator的作用：</p>
-<ul>
-<li>防止request累积，因为enque给driver的request都需要被消费，不会被drop，所以当P1处理较慢就会形成堆积。</li>
-<li>监控和调整request消耗</li>
-<li>为Cam Ctrl提供不同的策略选择<br>  <img src="image3.png"><br>主要有ContSttRegulator，ImageRequestRegulator，SttRegulator三个类对IRequestRegulator接口的实现。</li>
-</ul>
-<h2 id="Instance-view"><a href="#Instance-view" class="headerlink" title="Instance view"></a>Instance view</h2><p>如下是从instance view的视角来看Camsys-HW-Lib各个模块间的关系:<br>   <img src="image4.png"><br>1.此图是一个multicam的例子，可以看到左右两边是对称的<br>2. PipeMgr针对不同的sensor有开出两个SensorPipe接口，不同Sensor的CamCtrl会使用的不同的SensorPipe接口实例<br>3.其他的如：P1Node、HalISP、Hal3A、RequestRegulator也都是每个实例服务对应的单颗sensor<br>4.而像CamCoordinator、PipeMgr、V4L2 Framework因为需要统筹整个系统的资源，所以是Topology的View<br>从这个图也可以看出，<strong>CamCtrl</strong>和<strong>P1Node</strong>等可以有多个实例，<strong>CamCoordinator</strong>和<strong>RequestRegulator</strong>只有单个实例，用于统筹<strong>CamCtrl和P1Node</strong>等模块</p>
-<h2 id="The-role-conception-of-module-layer"><a href="#The-role-conception-of-module-layer" class="headerlink" title="The role/conception of module-layer"></a>The role/conception of module-layer</h2><p>下图描述了从PipelineModel→ P1Node→ CamCtrl→ PipeMgr→ V4L2各层级作用和扮演的角色。<br>   <img src="image5.png"></p>
-<h2 id="Data-Processing"><a href="#Data-Processing" class="headerlink" title="Data Processing"></a>Data Processing</h2><p>   <img src="image6.png"><br>例如：pipelineModel会送一个request给P1Node，P1Node会送给CamCtrl，到了CamCtrl之后，它会跟P1Node拿image、跟ISP_HAL拿tuning、跟HAL3A拿setting，都准备好后就一整包使用同一个<strong>request-FD</strong>打包好后送给PipeMgr，之后再透过PipeMgr往V4L2 FrameWork进行设置，进而控制底层driver的行为。<br>ISP7 之前 P1Node 会跟 Hal3A、P1Driver、HalISP 都有交互,目前在 ISP7 上对 P1Node 有做解耦操作,P1Node 会跟 MW 对接,处理 feature 相关的部分,而跟其他模块交互的动作就交给了 CamCtrl,使 P1Node 的工作变得单纯,也使得 CamCtrl 可以不用关注 feature 相关的部分。</p>
-<p>参考文章：<br>[ISP7]CAMSYS_HW-Lib_P1Node_CamCtrl.pdf</p>
-]]></content>
-      <categories>
-        <category>1. Android Camera</category>
-      </categories>
-      <tags>
-        <tag>Android Camera</tag>
-        <tag>Camera系统</tag>
-        <tag>MTKCamera</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>MTKcam-ISP7-CamCtrl</title>
-    <url>/2024/11/19/2024-11-20-MTKcam-ISP7-CamCtrl/</url>
-    <content><![CDATA[<h2 id="CamCtrl简介："><a href="#CamCtrl简介：" class="headerlink" title="CamCtrl简介："></a>CamCtrl简介：</h2><p>文件目录：vendor/mediatek/proprietary/hardware/mtkcam-core/hw/camsys/cam_ctrl/<br>CamCtrl是P1Node/PipeMgr/3A HAL/ISP HAL的协调者。其主要有两个作用：</p>
-<ul>
-<li>搜集从P1 Node过来的request Info，然后queue给driver（使用PipeMgr并通过SensorPipe接口丢给MTK drivers):<br>request Info包含：</li>
-<li>Image Info. (from P1Node)，例如上层传下来的buffer size，format等</li>
-<li>Setting (from 3A-HAL)，例如需要给到driver的gain值，曝光等</li>
-<li>Tuning (from ISP-HAL)，例如从tuning参数中获取的信息等</li>
-<li>从driver中做deque(使用PipeMgr并通过SensorPipe接口),并将结果传递给用户：<ul>
-<li>Image buffer(to P1Node)</li>
-<li>STT buffer(to 3A HAL)，如AAO，AFO等统计信息</li>
-</ul>
-</li>
-</ul>
-<p>更多可以参考：<a href="https://shenweikun.github.io/2024/11/18/2024-11-20-MTKcam-ISP7-Camsys-Hw-Lib/">ISP7-Camsys Hw-Lib</a></p>
-<h2 id="CamCtrl基本流程"><a href="#CamCtrl基本流程" class="headerlink" title="CamCtrl基本流程:"></a>CamCtrl基本流程:</h2><p>   <img src="image1.png"><br>如上图，描述的是CamCtrl与其它模块相互交互时使用的function。不同颜色的线代表不同的线程，其中requestregulator thread是混色的，代表包含多个线程(实现同一功能)。同一颜色的不同标号代表一串事件的先后顺序。</p>
-<h3 id="request-thread"><a href="#request-thread" class="headerlink" title="request thread:"></a>request thread:</h3><ol>
-<li>当Pipeline model Queue一个request到P1 Node时，P1 Node会调用的Camtrl的tryEnQ()往Camtrl塞request</li>
-<li>随后CamCtrl会调用到3A-HAL的setControl()，把当前request带下来的metadata数据设置到3A-HAL中，让3A-HAL去做一些预处理。</li>
-<li>同时，CamCtrl还会调用到RequestRegulator中的enrollRequest()函数，通知RequestRegulator，CamCtrl收到了一帧request，并且已将其相关的metadata参数设置到了3A-HAL。此信息将用于控制request的节奏。</li>
-</ol>
-<h3 id="requestRegulator-thread"><a href="#requestRegulator-thread" class="headerlink" title="requestRegulator thread:"></a>requestRegulator thread:</h3><ol>
-<li>RequestRegulator有一个线程会通过CamCtrl去调用到Sensor-Pipe的wait-SOF()，去等待sof信号。</li>
-<li>当RequestRegulator收到sof信号后，会通过CamCtrl的cueFrameStart()去triggerFrameStart（我理解是触发接收下一个request）。</li>
-<li>CamCtrl调用RequestRegulator的available()去确认request的节奏，CamCtrl是否可以接收下一个request。</li>
-<li>若能接收下一个quest，CamCtrl会调用到P1 Node的requestSubmission()，告诉P1 Node可以继续tryEnQ()塞request下来了。</li>
-<li>于此同时,CamCtrl会通过P1 Node的setupSubmission(),去获取上一个request的image buffer。</li>
-</ol>
-<h3 id="deque-thread"><a href="#deque-thread" class="headerlink" title="deque thread:"></a>deque thread:</h3><ol>
-<li>P1 Node会调用CamCtrl的tryDeQ()。tryDeQ()是blocking code，所以只有当真正的driver那边吐出data，CamCtrl的tryDeQ才会被完成，这个时候P1 Node就可以拿到result的数据。</li>
-<li>CamCtrl的tryDeQ()实际会去调用Sensor-Pipe的deque()，然后等待driver deque数据出来。这个数据包括Image buffer和STT buffer。</li>
-<li>当Sensor-Pipe deque出数据之后，首先CamCtrl会调用3A-HAL 的setSttBuffer()，将统计数据设置到3A-HAL</li>
-<li>CamCtrl调用3A-HAL的getResult()，去获取3A的result meta。</li>
-<li>CamCtrl调用ISP-HAL的getResultByFrameID()，去获取ISP的result meta。</li>
-</ol>
-<h3 id="CamCtrl-thread-3A-thread"><a href="#CamCtrl-thread-3A-thread" class="headerlink" title="CamCtrl thread/3A thread:"></a>CamCtrl thread/3A thread:</h3><ol>
-<li>当deque thread的第3步，CamCtrl通过setSttBuffer将统计数据给到3A-HAL后，若3A-HAL使用完，会调用notifySettingReadyEvent()告诉CamCtrl有一个request的结果计算完成了。</li>
-<li>CamCtrl调用3A-HAL的getSetting()，拿到3A-HAL的计算结果。</li>
-<li>CamCtrl调用ISP-HAL的getCamSysMetaTuning()，拿到ISP-HAL的计算结果。</li>
-<li>前面2(getSetting())，3(getCamSysMetaTuning())，结合requestRegulator thread中的5(setupSubmission())，这里就获取到了3份数据（3A-HAL的计算结果，ISP-HAL的计算结果，Image Buffer），此时所有数据准备就绪，就可以通过CamCtrl去调用RequestRegulator的informReady()，通知RequestRegulator已经CamCtrl已经准备好了，可以enque了。</li>
-<li>RequestRegulator调用CamCtrl的hintForEnQ(),去通知CamCtrl做enque。</li>
-<li>CamCtrl去做enque。</li>
-<li>当CamCtrl做完enque之后，CamCtrl会调用RequestRegulator的informCount，去告诉RequestRegulator，我已经往driver做enque了。之所以要告诉RequestRegulator，是因为RequestRegulator要控制enque的节奏，避免driver中累积太多的request。</li>
-</ol>
-<p>参考：[ISP7]CAMSYS_HW-Lib_P1Node_CamCtrl.pdf</p>
-]]></content>
-      <categories>
-        <category>1. Android Camera</category>
-      </categories>
-      <tags>
-        <tag>Android Camera</tag>
-        <tag>Camera系统</tag>
-        <tag>MTKCamera</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>MTKcam-ISP7-P1 Node</title>
-    <url>/2024/11/19/2024-11-20-MTKcam-ISP7-P1-Node/</url>
-    <content><![CDATA[<h2 id="P1Node-Architecture-Overview"><a href="#P1Node-Architecture-Overview" class="headerlink" title="P1Node Architecture Overview"></a>P1Node Architecture Overview</h2><p>   <img src="image1.png"><br>如上图所示，在旧版的ISP6中，P1Node会直接与HAL3A，NormalPipe，HalIsp进行交互，但是在新的ISP7架构中，引入了CamCtrl作为协调者，统一协调Camsys Hw-Lib，P1Node与CAMCtrl进行交互。关于Camsys Hw-Lib的介绍可以看文档： <a href="https://shenweikun.github.io/2024/11/18/2024-11-20-MTKcam-ISP7-Camsys-Hw-Lib/">ISP7-Camsys Hw-Lib</a><br>由此，P1 Node的工作变得更加清晰简单。</p>
-<h2 id="P1Node-Basic-Flow"><a href="#P1Node-Basic-Flow" class="headerlink" title="P1Node Basic Flow"></a>P1Node Basic Flow</h2><p>   <img src="image2.png"><br>如图是P1Node处理request的Basic Flow：</p>
-<ol>
-<li>首先P1Node会先实作一些callback，可让CamCtrl回调，主要实作是requestsubmission和setupsubmission。CamCtrl 透过 requestSubmission 去通知 P1Node 送 request 下来,此时 P1Node 会通知 Pipeline 送 request 下来,之后 Pipeline 就会调用 P1Node 的 queue 丢 request 下来,接着P1Node 会 call 到 CamCtrl 的 tryEnQ 将 request 送下来。</li>
-<li>接下来 CamCtrl 会调用 setupSubmission,主要是告之 P1Node 已经送了 request 下来,CamCtrl 这边也拿到了对应的设定,让 P1Node 将对应的 buffer 给 acquire 出来,并通知 P1Node 设定 buffer 的address 给 CamCtrl。</li>
-<li>P1Node 有一个 deque thread,这个 thread 会 call CamCtrl 的 tryDeQ,tryDeQ 是 blocking code,所以只有当真正 driver 那边有吐 data,CamCtrl 的 tryDeQ 才会放开,这个时候 P1Node 就可以拿到result 的数据。</li>
-<li>P1Node 还有一个 deliver thread,deliver thread 会透过 pipeline 的接口进行 dispatch。</li>
-</ol>
-<h3 id="Nornal-Request："><a href="#Nornal-Request：" class="headerlink" title="Nornal Request："></a>Nornal Request：</h3><p>   <img src="image3.png"><br>上面是描述Normal Request的例子：</p>
-<ol>
-<li>假设MW透过P1Node的queue接口送request下来，P1Node 会先执行 parseFrame 产生 <strong>S_Queue</strong>，在S_Queue 的时候主要是去 call CamCtrl 的 tryEnQ(图中 S_Queue 后面的 hwOps_try_enque()表达的是它会 call try enque,其他的状态后面表示被相应的事件来 trigger)。</li>
-<li>tryEnQ 主要是先告知 CamCtrl 有 request 进来,并将一些 setting 预先告知 CamCtrl。</li>
-<li>tryEnQ 之后 state machine 就会进入 <strong>S_Enque</strong>,并等待下一个 event trigger,这个 event 会是setupSubmission,setupSubmission 被 trigger 的时候 S_Enque 相关 function 会被执行,这个过程会跟MW 要 buffer,做完之后 state machine 就会停留在 <strong>S_Deque</strong>。</li>
-<li>S_Deque 状态会等 Deque thread trigger,当 deque thread 已经 deque 到东西,这个时候 S_Deque 的stage 就会做事情去产生 metadata,并切到下一个 state <strong>S_Deliver</strong> 等待被 trigger。</li>
-<li>当Deliver thread 知道有可以 Deliver 的 frame 进入之后就会 call pipeline 的接口做 deliver。</li>
-</ol>
-<h3 id="Reprocess："><a href="#Reprocess：" class="headerlink" title="Reprocess："></a>Reprocess：</h3><p>   <img src="image4.png"></p>
-<h3 id="FastPreview-fast-launch"><a href="#FastPreview-fast-launch" class="headerlink" title="FastPreview(fast launch):"></a>FastPreview(fast launch):</h3><p>   <img src="image5.png"><br>FastPreview的流程如上图(if preqCnt != -1)的流程，原本正常的流程request需要tryEnQ 并进入S_Enque状态，此时需要等待3A相关的计算。<br>为了加速启动，当((if preqCnt != -1)成立时，会调用preEnQ，进入S_PreQue状态，此时采用<strong>默认的3A计算结果（一般会是上一次退出相机时的3A计算结果）</strong>直接作用在driver，随后调用setupSubmission ，让 P1Node 将对应的 buffer 给 acquire 出来，并将buffer address给到Camctrl, 等待driver 吐帧。随后的流程和Normal Request一致。</p>
-<h3 id="Drop-Case："><a href="#Drop-Case：" class="headerlink" title="Drop Case："></a>Drop Case：</h3><p>drop case应用在上层下发flush的场景，通过dropSubmission实现drop：<br>   <img src="image6.png"></p>
-]]></content>
-      <categories>
-        <category>1. Android Camera</category>
-      </categories>
-      <tags>
-        <tag>Android Camera</tag>
-        <tag>Camera系统</tag>
-        <tag>MTKCamera</tag>
-      </tags>
-  </entry>
-  <entry>
-    <title>MTKcam-ISP7-enable fast launch</title>
-    <url>/2024/11/19/2024-11-20-MTKcam-ISP7-enable-fast-launch/</url>
-    <content><![CDATA[<h2 id="Breakdown"><a href="#Breakdown" class="headerlink" title="Breakdown"></a>Breakdown</h2><p>相机的冷/热启动，若从systrace上分析耗时，可以按照cameraservice进程来分5个阶段：</p>
-<ol>
-<li> <strong>S1: AppLaunch_dispatchPtr:Up –&gt; connectDevice</strong><br>点击APP按钮到连接相机，这部分主要是APP和framework的耗时；</li>
-<li> <strong>S2: connectDevice</strong><br>连接相机的耗时，对应HAL层的open操作，主要包括遍历sensorlist，加载tuning算法库（并行化的，不需要等上下电），主要是HAL部分耗时</li>
-<li> <strong>S3: connectDevice –&gt; endConfigure</strong><br>CameraDevice callback之后，就可以调用createcapturesession（endConfigure），因此这部分耗时主要来源于APP和framework</li>
-<li> <strong>S4:endConfigure</strong><br>对应HAL层的configstream，需要等待sensor上电完成，以及3A初始化，耗时主要是HAL部分</li>
-<li> <strong>S5: endConfigure –&gt; first full buffer call back</strong><br>流配置完成到回帧到APP，需要等待HAL pipeline创建完成，3A计算和吐帧，主要耗时是HAL部分</li>
-</ol>
-<h2 id="analysis"><a href="#analysis" class="headerlink" title="analysis"></a>analysis</h2><p>breakdown的结果是<strong>S5: endConfigure –&gt; first full buffer call back</strong>耗时长，流配置完成到回帧到APP，需要等待HAL pipeline创建完成，3A计算和吐帧，主要耗时是HAL部分;<br>在这个阶段MTK有一个fast lunch功能可以开启</p>
-<h2 id="fast-launch功能介绍"><a href="#fast-launch功能介绍" class="headerlink" title="fast launch功能介绍"></a>fast launch功能介绍</h2><p>fast launch又叫Fast Preview，在了解fast launch功能之前，我们首先需要知道request在MTK P1 Node中是如何流转的，具体过程可以参考文档<a href="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-P1-Node/">ISP7-P1 node</a>简介 ，里面有相关介绍。<br>开启fast launch主要时节省了3A相关的计算，使用<strong>默认的3A计算结果（一般会是上一次退出相机时的3A计算结果）</strong>直接作用在driver，随后等待driver出帧。</p>
-<h2 id="SysTrace分析"><a href="#SysTrace分析" class="headerlink" title="SysTrace分析"></a>SysTrace分析</h2><h3 id="Normal-Request："><a href="#Normal-Request：" class="headerlink" title="Normal Request："></a>Normal Request：</h3><p>cameraservice通过sendRequestsBatch下发quest，正常需要等待P1Node.queue走完之后才会返回：<br>   <img src="image1.png"><br>   <img src="image2.png"><br>并且会调用tryEnQ 并进入S_Enque状态，此时需要等待3A相关的计算：<br>   <img src="image3.png"></p>
-<h3 id="fast-launch-Request："><a href="#fast-launch-Request：" class="headerlink" title="fast launch Request："></a>fast launch Request：</h3><p>   <img src="image4.png"><br>这里有3个sendRequestsBatch执行时间特别短，原因就是开启了fast launch功能。我们看来下这些request在HAL中是怎么走的：<br>   <img src="image5.png"><br>request下发到HAL之后并没有等待queue。queue动作在另一个线程中完成：<br>   <img src="image6.png"><br>另外，第一个queue函数执行很长，主要是在等res寄存器的写入。<br>   <img src="image7.png"><br>这里做的实际上是调用preEnQ，进入S_PreQue状态，这里便是核心区别。用preEnQ，进入S_PreQue状态，此时采用<strong>默认的3A计算结果（一般会是上一次退出相机时的3A计算结果）</strong>直接作用在driver，随后调用setupSubmission ，让 P1Node 将对应的 buffer 给 acquire 出来，并将buffer address给到Camctrl, 等待driver 吐帧。随后的流程和Normal Request一致。</p>
-<h2 id="优化方法"><a href="#优化方法" class="headerlink" title="优化方法"></a>优化方法</h2><p>通过设置：<br>adb shell setprop vendor.debug.camera.pass1initrequestnum 4 //可以开启功能4-1=3帧，理论优化耗时3*33=99ms<br>或者直接在代码里面修改</p>
-]]></content>
-      <categories>
-        <category>1. Android Camera</category>
-      </categories>
-      <tags>
-        <tag>Android Camera</tag>
-        <tag>Camera系统</tag>
-        <tag>MTKCamera</tag>
-        <tag>性能</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>C++从入门到进阶之三-STL等高阶话题</title>
     <url>/2024/11/18/2024-11-18-CPP-Basics-about-STL/</url>
     <content><![CDATA[<h2 id="C-模板编程入门"><a href="#C-模板编程入门" class="headerlink" title="C++模板编程入门"></a>C++模板编程入门</h2><h3 id="一个案例引入模板"><a href="#一个案例引入模板" class="headerlink" title="一个案例引入模板"></a>一个案例引入模板</h3><p>1、模板和泛型编程系类文章介绍<br>(1)模板编程是C++的一种高级特性，很常用，很有用，可以说是 C++的精髓，是C++被广泛使用的关键<br>(2)泛型在C++、java、C#等多种语言中都有，是现代编程语言典型特性<br>(3)本章开始不像以前以理论知识讲解为主，而是以写代码和实践为主，在实践中学为主。因为开始变得抽象起来了 </p>
@@ -1452,91 +1290,138 @@ xxx.c文件<figure class="highlight c++"><table><tr><td class="code"><pre><span 
       </tags>
   </entry>
   <entry>
-    <title>Memory libmemunreachable</title>
-    <url>/2024/11/20/2024-11-20-memory-libmemunreachable/</url>
-    <content><![CDATA[<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>libmemunreachable is a zero-overhead native memory leak detector. </p>
-<span id="more"></span>
-<p>It uses an imprecise mark-and-sweep garbage collector pass over all native memory, reporting any unreachable blocks as leaks. It is similar to the Heap Checker from tcmalloc, but with a few key differences to remove the overhead. Instead of instrumenting every call to malloc and free, it queries the allocator (jemalloc) for active allocations when leak detection is requested. In addition, it performs a very short stop-the-world data collection on the main process, and then forks a copy of the process to perform the mark-and-sweep, minimizing disruption to the original process.</p>
-<p>In the default (zero-overhead) mode, the returned data on leaks is limited to the address, approximate (upper bound) size, and the the first 32 bytes of the contents of the leaked allocation. If malloc_debug backtraces are enabled they will be included in the leak information, but backtracing allocations requires significant overhead.</p>
-<hr>
-<h2 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h2><h3 id="In-Android-apps"><a href="#In-Android-apps" class="headerlink" title="In Android apps"></a>In Android apps</h3><p>libmemunreachble is loaded by zygote and can be triggered with dumpsys -t 600 meminfo –unreachable [process].</p>
-<p>To enable malloc_debug backtraces on allocations for a single app process on a userdebug device, use:</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">adb root</span><br><span class="line">adb shell setprop libc.debug.malloc.program app_process</span><br><span class="line">adb shell setprop wrap.[process] <span class="string">&quot;\$\@&quot;</span></span><br><span class="line">adb shell setprop libc.debug.malloc.options backtrace=<span class="number">4</span></span><br></pre></td></tr></table></figure>
-<p>Kill and restart the app, trigger the leak, and then run dumpsys -t 600 meminfo –unreachable [process].</p>
-<p>To disable malloc_debug:</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">adb shell setprop libc.debug.malloc.options <span class="string">&quot;&#x27;&#x27;&quot;</span></span><br><span class="line">adb shell setprop libc.debug.malloc.program <span class="string">&quot;&#x27;&#x27;&quot;</span></span><br><span class="line">adb shell setprop wrap.[process]  <span class="string">&quot;&#x27;&#x27;&quot;</span></span><br></pre></td></tr></table></figure>
-<p>Starting with Android U, new malloc debug options have been added that allow specific sized allocation to be backtraced. The three new options are:</p>
+    <title>MTKcam-ISP7-CamCtrl</title>
+    <url>/2024/11/19/2024-11-20-MTKcam-ISP7-CamCtrl/</url>
+    <content><![CDATA[<h2 id="CamCtrl简介："><a href="#CamCtrl简介：" class="headerlink" title="CamCtrl简介："></a>CamCtrl简介：</h2><p>文件目录：vendor/mediatek/proprietary/hardware/mtkcam-core/hw/camsys/cam_ctrl/<br>CamCtrl是P1Node/PipeMgr/3A HAL/ISP HAL的协调者。其主要有两个作用：</p>
 <ul>
-<li>backtrace_size</li>
-<li>backtrace_min_size</li>
-<li>backtrace_max_size</li>
+<li>搜集从P1 Node过来的request Info，然后queue给driver（使用PipeMgr并通过SensorPipe接口丢给MTK drivers):<br>request Info包含：</li>
+<li>Image Info. (from P1Node)，例如上层传下来的buffer size，format等</li>
+<li>Setting (from 3A-HAL)，例如需要给到driver的gain值，曝光等</li>
+<li>Tuning (from ISP-HAL)，例如从tuning参数中获取的信息等</li>
+<li>从driver中做deque(使用PipeMgr并通过SensorPipe接口),并将结果传递给用户：<ul>
+<li>Image buffer(to P1Node)</li>
+<li>STT buffer(to 3A HAL)，如AAO，AFO等统计信息</li>
 </ul>
-<p>When enabling backtracing on all allocations, it is possible to have the process run so slowly that the app does not come up. Or the app runs so slowly that the leaks do not occur. The best way to avoid any slowdowns or timeouts is to first run libmemunreachable and look at the sizes of the leaking allocations. If there is only a single allocation size, then use backtrace_size which will indicate that backtraces should only be collected for that exact size. For example, if the output of dumpsys is:</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">Unreachable memory</span><br><span class="line"> <span class="number">24</span> bytes in <span class="number">2</span> unreachable allocations</span><br><span class="line"> ABI: <span class="string">&#x27;arm64&#x27;</span></span><br><span class="line"></span><br><span class="line"> <span class="number">24</span> bytes unreachable at <span class="number">71</span>d37787d0</span><br><span class="line">  first <span class="number">20</span> bytes of contents:</span><br><span class="line">  <span class="number">71</span>d37787d0: <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ................</span><br><span class="line">  <span class="number">71</span>d37787e0: <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ................</span><br><span class="line"></span><br><span class="line"> <span class="number">24</span> bytes unreachable at <span class="number">71</span>d37797d0</span><br><span class="line">  first <span class="number">20</span> bytes of contents:</span><br><span class="line">  <span class="number">71</span>d37797d0: <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ................</span><br><span class="line">  <span class="number">71</span>d37797e0: <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ................</span><br></pre></td></tr></table></figure>
-<p>Then set the malloc debug options thusly:</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">adb shell setprop libc.debug.malloc.options <span class="string">&quot;&#x27;backtrace backtrace_size=24&#x27;&quot;</span></span><br></pre></td></tr></table></figure>
-<p>This will backtrace only 24 byte allocations.</p>
-<p>If the output of libmemunreachable has multiple sized allocations, set the backtrace_min_size and backtrace_max_size options to cover all of the sizes. For example, if the output of dumpsys is:</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">Unreachable memory</span><br><span class="line"> <span class="number">512</span> bytes in <span class="number">2</span> unreachable allocations</span><br><span class="line"> ABI: <span class="string">&#x27;arm64&#x27;</span></span><br><span class="line"></span><br><span class="line"> <span class="number">320</span> bytes unreachable at <span class="number">71</span>d37787d0</span><br><span class="line">  first <span class="number">20</span> bytes of contents:</span><br><span class="line">  <span class="number">71</span>d37787d0: <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ................</span><br><span class="line">  <span class="number">71</span>d37787e0: <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ................</span><br><span class="line"></span><br><span class="line"> <span class="number">192</span> bytes unreachable at <span class="number">71b</span>37b2f50</span><br><span class="line">  first <span class="number">20</span> bytes of contents:</span><br><span class="line">  <span class="number">71b</span>37b2f50: <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ................</span><br><span class="line">  <span class="number">71b</span>37b2f60: <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ................</span><br></pre></td></tr></table></figure>
-
-<p>Then set the malloc debug options thusly:</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">adb shell setprop libc.debug.malloc.options <span class="string">&quot;&#x27;backtrace backtrace_min_size=192 backtrace_max_size=320&#x27;&quot;</span></span><br></pre></td></tr></table></figure>
-<p>This will backtrace allocations of any size between 192 bytes and 320 bytes inclusively.</p>
-<p>After setting the backtrace size options, restart the application so that running dumpsys again will include the actual backtrace of the leaking allocations.</p>
-<h3 id="C-interface"><a href="#C-interface" class="headerlink" title="C interface"></a>C interface</h3><h4 id="bool-LogUnreachableMemory-bool-log-contents-size-t-limit"><a href="#bool-LogUnreachableMemory-bool-log-contents-size-t-limit" class="headerlink" title="bool LogUnreachableMemory(bool log_contents, size_t limit)"></a>bool LogUnreachableMemory(bool log_contents, size_t limit)</h4><p>Writes a description of leaked memory to the log. A summary is always written, followed by details of up to limit leaks. If log_contents is true, details include up to 32 bytes of the contents of each leaked allocation. Returns true if leak detection succeeded.</p>
-<h4 id="bool-NoLeaks"><a href="#bool-NoLeaks" class="headerlink" title="bool NoLeaks()"></a>bool NoLeaks()</h4><p>Returns true if no unreachable memory was found.</p>
-<h3 id="C-interface-1"><a href="#C-interface-1" class="headerlink" title="C++ interface"></a>C++ interface</h3><h4 id="bool-GetUnreachableMemory-UnreachableMemoryInfo-amp-info-size-t-limit-100"><a href="#bool-GetUnreachableMemory-UnreachableMemoryInfo-amp-info-size-t-limit-100" class="headerlink" title="bool GetUnreachableMemory(UnreachableMemoryInfo&amp; info, size_t limit = 100)"></a>bool GetUnreachableMemory(UnreachableMemoryInfo&amp; info, size_t limit = 100)</h4><p>Updates an UnreachableMemoryInfo object with information on leaks, including details on up to limit leaks. Returns true if leak detection succeeded.</p>
-<h4 id="std-string-GetUnreachableMemoryString-bool-log-contents-false-size-t-limit-100"><a href="#std-string-GetUnreachableMemoryString-bool-log-contents-false-size-t-limit-100" class="headerlink" title="std::string GetUnreachableMemoryString(bool log_contents = false, size_t limit = 100)"></a>std::string GetUnreachableMemoryString(bool log_contents = false, size_t limit = 100)</h4><p>Returns a description of leaked memory. A summary is always written, followed by details of up to limit leaks. If log_contents is true, details include up to 32 bytes of the contents of each leaked allocation. Returns true if leak detection succeeded.</p>
-<h3 id="Implementation"><a href="#Implementation" class="headerlink" title="Implementation"></a>Implementation</h3><p>The sequence of steps required to perform a leak detection pass is divided into three processes - the original process, the collection process, and the sweeper process.</p>
-<ol>
-<li>Original process: Leak detection is requested by calling GetUnreachableMemory()</li>
-<li>Allocations are disabled using malloc_disable()</li>
-<li>The collection process is spawned. The collection process, created using clone, is similar to a normal fork() child process, except that it shares the address space of the parent - any writes by the original process are visible to the collection process, and vice-versa. If we forked instead of using clone, the address space might get out of sync with observed post-ptrace thread state, since it takes some time to pause the parent.</li>
-<li>Collection process: All threads in the original process are paused with ptrace().</li>
-<li>Registers contents, active stack areas, and memory mapping information are collected.</li>
-<li>Original process: Allocations are re-enabled using malloc_enable(), but all threads are still paused with ptrace().</li>
-<li>Collection process: The sweeper process is spawned using a normal fork(). The sweeper process has a copy of all memory from the original process, including all the data collected by the collection process.</li>
-<li>Collection process releases all threads from ptrace and exits</li>
-<li>Original process: All threads continue, the thread that called GetUnreachableMemory() blocks waiting for leak data over a pipe.</li>
-<li>Sweeper process: A list of all active allocations is produced by examining the memory mappings and calling malloc_iterate() on any heap mappings.</li>
-<li>A list of all roots is produced from globals (.data and .bss sections of binaries), and registers and stacks from each thread.</li>
-<li>The mark-and-sweep pass is performed starting from roots.</li>
-<li>Unmarked allocations are sent over the pipe back to the original process.</li>
+</li>
+</ul>
+<p>更多可以参考：<a href="https://shenweikun.github.io/2024/11/18/2024-11-20-MTKcam-ISP7-Camsys-Hw-Lib/">ISP7-Camsys Hw-Lib</a></p>
+<h2 id="CamCtrl基本流程"><a href="#CamCtrl基本流程" class="headerlink" title="CamCtrl基本流程:"></a>CamCtrl基本流程:</h2><p>   <img src="image1.png"><br>如上图，描述的是CamCtrl与其它模块相互交互时使用的function。不同颜色的线代表不同的线程，其中requestregulator thread是混色的，代表包含多个线程(实现同一功能)。同一颜色的不同标号代表一串事件的先后顺序。</p>
+<h3 id="request-thread"><a href="#request-thread" class="headerlink" title="request thread:"></a>request thread:</h3><ol>
+<li>当Pipeline model Queue一个request到P1 Node时，P1 Node会调用的Camtrl的tryEnQ()往Camtrl塞request</li>
+<li>随后CamCtrl会调用到3A-HAL的setControl()，把当前request带下来的metadata数据设置到3A-HAL中，让3A-HAL去做一些预处理。</li>
+<li>同时，CamCtrl还会调用到RequestRegulator中的enrollRequest()函数，通知RequestRegulator，CamCtrl收到了一帧request，并且已将其相关的metadata参数设置到了3A-HAL。此信息将用于控制request的节奏。</li>
 </ol>
-<hr>
-<h2 id="Components"><a href="#Components" class="headerlink" title="Components"></a>Components</h2><ul>
-<li>MemUnreachable.cpp: Entry points, implements the sequencing described above.</li>
-<li>PtracerThread.cpp: Used to clone the collection process with shared address space.</li>
-<li>ThreadCapture.cpp: Pauses threads in the main process and collects register contents.</li>
-<li>ProcessMappings.cpp: Collects snapshots of /proc/pid/maps.</li>
-<li>HeapWalker.cpp: Performs the mark-and-sweep pass over active allocations.</li>
-<li>LeakPipe.cpp: transfers data describing leaks from the sweeper process to the original process.</li>
-</ul>
-<h2 id="Heap-allocator-requirements"><a href="#Heap-allocator-requirements" class="headerlink" title="Heap allocator requirements"></a>Heap allocator requirements</h2><p>libmemunreachable requires a small interface to the allocator in order to collect information about active allocations.</p>
-<ul>
-<li>malloc_disable(): prevent any thread from mutating internal allocator state.</li>
-<li>malloc enable(): re-enable allocations in all threads.</li>
-<li>malloc_iterate(): call a callback on each active allocation in a given heap region.</li>
-<li>malloc_backtrace(): return the backtrace from when the allocation at the given address was allocated, if it was collected.</li>
-</ul>
-<p>上文来源于官方文档，但是需要翻墙访问，原文链接：<a href="https://android.googlesource.com/platform/system/memory/libmemunreachable/+/master/README.md">libmemunreachable</a></p>
-<hr>
-<h2 id="在相机中的应用"><a href="#在相机中的应用" class="headerlink" title="在相机中的应用"></a>在相机中的应用</h2><p>unreachable是一个零开销的内存泄露检测工具，使用mark-and-sweep（一种垃圾回收算法） 遍历所有的native memory，统计出所有unreachable内存。</p>
-<p>什么是unreachable内存：如果堆内存中的内存没有引用指向他，那么该内存就无法被调用，这样的内存称为不可达(unreachable)</p>
-<h3 id="目的："><a href="#目的：" class="headerlink" title="目的："></a>目的：</h3><p>使用unreachable检查camera provider 内存泄露。</p>
-<h3 id="方法："><a href="#方法：" class="headerlink" title="方法："></a>方法：</h3><p>1、链接库libmemunreachable.so, 在dumpsys  media.camera 时通过GetUnreachableMemory获取unreachable memory信息</p>
-<p>在dumpsys 的流程中加入一下如下代码（除此之外还需要在mk中链接一下，具体看patch）：</p>
-<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">// dump_unreachable_info</span></span><br><span class="line"><span class="comment">////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dump_unreachable_info</span><span class="params">(<span class="keyword">int</span> fd)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    android::UnreachableMemoryInfo info;</span><br><span class="line">    <span class="keyword">bool</span> success = <span class="built_in">GetUnreachableMemory</span>(info, <span class="comment">/*limit*/</span> <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span> (!success)</span><br><span class="line">    &#123;</span><br><span class="line">        CamX::OsUtils::<span class="built_in">DPrintF</span>(fd, <span class="string">&quot;%s&quot;</span>, <span class="string">&quot;\n== Unable to dump unreachable memory. &quot;</span></span><br><span class="line">                <span class="string">&quot;Try disabling SELinux enforcement. ==\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        CamX::OsUtils::<span class="built_in">DPrintF</span>(fd,<span class="string">&quot;%s&quot;</span>, <span class="string">&quot;\n== Dumping unreachable memory: ==\n&quot;</span>);</span><br><span class="line">        std::string s = info.<span class="built_in">ToString</span>(<span class="comment">/*log_contents*/</span> <span class="literal">false</span>);</span><br><span class="line">        <span class="built_in">write</span>(fd, s.<span class="built_in">c_str</span>(), s.<span class="built_in">size</span>());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
-
-<p>limit ： 打印最多的内存泄露信息，如果只需要统计总的内存泄露大小，limit设置为0就可以了。<br>log_contents ：为true时会打印泄露位置前32字节的内容。</p>
-<h3 id="结果："><a href="#结果：" class="headerlink" title="结果："></a>结果：</h3><p>adb shell dumpsys media.camera  &gt; dumpsys.txt<br>   <img src="image1.png"><br>把limit 设置为0后dump出的结果将更加简洁：<br>   <img src="image2.png"></p>
+<h3 id="requestRegulator-thread"><a href="#requestRegulator-thread" class="headerlink" title="requestRegulator thread:"></a>requestRegulator thread:</h3><ol>
+<li>RequestRegulator有一个线程会通过CamCtrl去调用到Sensor-Pipe的wait-SOF()，去等待sof信号。</li>
+<li>当RequestRegulator收到sof信号后，会通过CamCtrl的cueFrameStart()去triggerFrameStart（我理解是触发接收下一个request）。</li>
+<li>CamCtrl调用RequestRegulator的available()去确认request的节奏，CamCtrl是否可以接收下一个request。</li>
+<li>若能接收下一个quest，CamCtrl会调用到P1 Node的requestSubmission()，告诉P1 Node可以继续tryEnQ()塞request下来了。</li>
+<li>于此同时,CamCtrl会通过P1 Node的setupSubmission(),去获取上一个request的image buffer。</li>
+</ol>
+<h3 id="deque-thread"><a href="#deque-thread" class="headerlink" title="deque thread:"></a>deque thread:</h3><ol>
+<li>P1 Node会调用CamCtrl的tryDeQ()。tryDeQ()是blocking code，所以只有当真正的driver那边吐出data，CamCtrl的tryDeQ才会被完成，这个时候P1 Node就可以拿到result的数据。</li>
+<li>CamCtrl的tryDeQ()实际会去调用Sensor-Pipe的deque()，然后等待driver deque数据出来。这个数据包括Image buffer和STT buffer。</li>
+<li>当Sensor-Pipe deque出数据之后，首先CamCtrl会调用3A-HAL 的setSttBuffer()，将统计数据设置到3A-HAL</li>
+<li>CamCtrl调用3A-HAL的getResult()，去获取3A的result meta。</li>
+<li>CamCtrl调用ISP-HAL的getResultByFrameID()，去获取ISP的result meta。</li>
+</ol>
+<h3 id="CamCtrl-thread-3A-thread"><a href="#CamCtrl-thread-3A-thread" class="headerlink" title="CamCtrl thread/3A thread:"></a>CamCtrl thread/3A thread:</h3><ol>
+<li>当deque thread的第3步，CamCtrl通过setSttBuffer将统计数据给到3A-HAL后，若3A-HAL使用完，会调用notifySettingReadyEvent()告诉CamCtrl有一个request的结果计算完成了。</li>
+<li>CamCtrl调用3A-HAL的getSetting()，拿到3A-HAL的计算结果。</li>
+<li>CamCtrl调用ISP-HAL的getCamSysMetaTuning()，拿到ISP-HAL的计算结果。</li>
+<li>前面2(getSetting())，3(getCamSysMetaTuning())，结合requestRegulator thread中的5(setupSubmission())，这里就获取到了3份数据（3A-HAL的计算结果，ISP-HAL的计算结果，Image Buffer），此时所有数据准备就绪，就可以通过CamCtrl去调用RequestRegulator的informReady()，通知RequestRegulator已经CamCtrl已经准备好了，可以enque了。</li>
+<li>RequestRegulator调用CamCtrl的hintForEnQ(),去通知CamCtrl做enque。</li>
+<li>CamCtrl去做enque。</li>
+<li>当CamCtrl做完enque之后，CamCtrl会调用RequestRegulator的informCount，去告诉RequestRegulator，我已经往driver做enque了。之所以要告诉RequestRegulator，是因为RequestRegulator要控制enque的节奏，避免driver中累积太多的request。</li>
+</ol>
+<p>参考：[ISP7]CAMSYS_HW-Lib_P1Node_CamCtrl.pdf</p>
 ]]></content>
       <categories>
-        <category>5. Memory</category>
+        <category>1. Android Camera</category>
       </categories>
       <tags>
-        <tag>Android</tag>
-        <tag>内存</tag>
+        <tag>Android Camera</tag>
+        <tag>Camera系统</tag>
+        <tag>MTKCamera</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MTKcam-ISP7-Camsys Hw-Lib</title>
+    <url>/2024/11/18/2024-11-20-MTKcam-ISP7-Camsys-Hw-Lib/</url>
+    <content><![CDATA[<h2 id="High-Level-view"><a href="#High-Level-view" class="headerlink" title="High-Level view"></a>High-Level view</h2><p><img src="High-Level-view.png"><br>CAMSYS_HW-Lib所在位置如上图红框所示，包含<strong>CamCtrl</strong>，<strong>PipeMgr</strong>，<strong>CamCoordinator</strong>，<strong>RequestRegulator</strong>四个模块，向上通过CamCtrl沟通P1Node，向下通过PipeMgr对接drivers，访问硬件，同时CamCtrl还可以沟通IHALIsp Adapter和3A control flows。<br><img src="image1.png"></p>
+<h3 id="CamCtrl"><a href="#CamCtrl" class="headerlink" title="CamCtrl:"></a>CamCtrl:</h3><p>文件目录：vendor/mediatek/proprietary/hardware/mtkcam-core/hw/camsys/cam_ctrl/<br>CamCtrl是P1Node/PipeMgr/3A HAL/ISP HAL的协调者。其主要有两个作用：</p>
+<ul>
+<li>搜集从P1 Node过来的request Info，然后queue给driver（使用PipeMgr并通过SensorPipe接口丢给MTK drivers):<br>request Info包含：</li>
+<li>Image Info. (from P1Node)，例如上层传下来的buffer size，format等</li>
+<li>Setting (from 3A-HAL)，例如需要给到driver的gain值，曝光等</li>
+<li>Tuning (from ISP-HAL)，例如从tuning参数中获取的信息等</li>
+<li>从driver中做deque(使用PipeMgr并通过SensorPipe接口),并将结果传递给用户：<ul>
+<li>Image buffer(to P1Node)</li>
+<li>STT buffer(to 3A HAL)，如AAO，AFO等统计信息</li>
+</ul>
+</li>
+</ul>
+<h3 id="PipeMgr-SensorPipe"><a href="#PipeMgr-SensorPipe" class="headerlink" title="PipeMgr/SensorPipe:"></a>PipeMgr/SensorPipe:</h3><p>文件目录：vendor/mediatek/proprietary/hardware/mtkcam-core/hw/camsys/pipe_mgr/<br>pipeMgr的作用：</p>
+<ul>
+<li>简化和封装V4L2-FW操作</li>
+<li>抽象化CamCtrl</li>
+<li>构建sensor map，映射driver中的设备文件<br>pipe_mgr兼容isp6，pipe_mgr目录下有isp6s和isp7两个目录。主要有如下几个类：<br><img src="image2.png"><br>PipeCapability类没在代码中找到定义。PiPeMgr和sensorPipe互为友元，PiPeMgr和RawPipe互为友元。剩下三个是PipeMgr的友元，可以访问PipeMgr的数据。</li>
+</ul>
+<h3 id="CamCoordinator"><a href="#CamCoordinator" class="headerlink" title="CamCoordinator:"></a>CamCoordinator:</h3><p>文件目录：vendor/mediatek/proprietary/hardware/mtkcam-core/hw/camsys/cam_coordinator/<br>CamCoordinator作用：</p>
+<ul>
+<li>Negotiate and Configure the CAMSYS topology</li>
+<li>Align MW-Frame and CAMSYS Request in multiple-sensor sources</li>
+</ul>
+<h3 id="RequestRegulator"><a href="#RequestRegulator" class="headerlink" title="RequestRegulator:"></a>RequestRegulator:</h3><p>文件目录：vendor/mediatek/proprietary/hardware/mtkcam-core/hw/camsys/request_regulator/<br>RequestRegulator的作用：</p>
+<ul>
+<li>防止request累积，因为enque给driver的request都需要被消费，不会被drop，所以当P1处理较慢就会形成堆积。</li>
+<li>监控和调整request消耗</li>
+<li>为Cam Ctrl提供不同的策略选择<br>  <img src="image3.png"><br>主要有ContSttRegulator，ImageRequestRegulator，SttRegulator三个类对IRequestRegulator接口的实现。</li>
+</ul>
+<h2 id="Instance-view"><a href="#Instance-view" class="headerlink" title="Instance view"></a>Instance view</h2><p>如下是从instance view的视角来看Camsys-HW-Lib各个模块间的关系:<br>   <img src="image4.png"><br>1.此图是一个multicam的例子，可以看到左右两边是对称的<br>2. PipeMgr针对不同的sensor有开出两个SensorPipe接口，不同Sensor的CamCtrl会使用的不同的SensorPipe接口实例<br>3.其他的如：P1Node、HalISP、Hal3A、RequestRegulator也都是每个实例服务对应的单颗sensor<br>4.而像CamCoordinator、PipeMgr、V4L2 Framework因为需要统筹整个系统的资源，所以是Topology的View<br>从这个图也可以看出，<strong>CamCtrl</strong>和<strong>P1Node</strong>等可以有多个实例，<strong>CamCoordinator</strong>和<strong>RequestRegulator</strong>只有单个实例，用于统筹<strong>CamCtrl和P1Node</strong>等模块</p>
+<h2 id="The-role-conception-of-module-layer"><a href="#The-role-conception-of-module-layer" class="headerlink" title="The role/conception of module-layer"></a>The role/conception of module-layer</h2><p>下图描述了从PipelineModel→ P1Node→ CamCtrl→ PipeMgr→ V4L2各层级作用和扮演的角色。<br>   <img src="image5.png"></p>
+<h2 id="Data-Processing"><a href="#Data-Processing" class="headerlink" title="Data Processing"></a>Data Processing</h2><p>   <img src="image6.png"><br>例如：pipelineModel会送一个request给P1Node，P1Node会送给CamCtrl，到了CamCtrl之后，它会跟P1Node拿image、跟ISP_HAL拿tuning、跟HAL3A拿setting，都准备好后就一整包使用同一个<strong>request-FD</strong>打包好后送给PipeMgr，之后再透过PipeMgr往V4L2 FrameWork进行设置，进而控制底层driver的行为。<br>ISP7 之前 P1Node 会跟 Hal3A、P1Driver、HalISP 都有交互,目前在 ISP7 上对 P1Node 有做解耦操作,P1Node 会跟 MW 对接,处理 feature 相关的部分,而跟其他模块交互的动作就交给了 CamCtrl,使 P1Node 的工作变得单纯,也使得 CamCtrl 可以不用关注 feature 相关的部分。</p>
+<p>参考文章：<br>[ISP7]CAMSYS_HW-Lib_P1Node_CamCtrl.pdf</p>
+]]></content>
+      <categories>
+        <category>1. Android Camera</category>
+      </categories>
+      <tags>
+        <tag>Android Camera</tag>
+        <tag>Camera系统</tag>
+        <tag>MTKCamera</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>MTKcam-ISP7-P1 Node</title>
+    <url>/2024/11/19/2024-11-20-MTKcam-ISP7-P1-Node/</url>
+    <content><![CDATA[<h2 id="P1Node-Architecture-Overview"><a href="#P1Node-Architecture-Overview" class="headerlink" title="P1Node Architecture Overview"></a>P1Node Architecture Overview</h2><p>   <img src="image1.png"><br>如上图所示，在旧版的ISP6中，P1Node会直接与HAL3A，NormalPipe，HalIsp进行交互，但是在新的ISP7架构中，引入了CamCtrl作为协调者，统一协调Camsys Hw-Lib，P1Node与CAMCtrl进行交互。关于Camsys Hw-Lib的介绍可以看文档： <a href="https://shenweikun.github.io/2024/11/18/2024-11-20-MTKcam-ISP7-Camsys-Hw-Lib/">ISP7-Camsys Hw-Lib</a><br>由此，P1 Node的工作变得更加清晰简单。</p>
+<h2 id="P1Node-Basic-Flow"><a href="#P1Node-Basic-Flow" class="headerlink" title="P1Node Basic Flow"></a>P1Node Basic Flow</h2><p>   <img src="image2.png"><br>如图是P1Node处理request的Basic Flow：</p>
+<ol>
+<li>首先P1Node会先实作一些callback，可让CamCtrl回调，主要实作是requestsubmission和setupsubmission。CamCtrl 透过 requestSubmission 去通知 P1Node 送 request 下来,此时 P1Node 会通知 Pipeline 送 request 下来,之后 Pipeline 就会调用 P1Node 的 queue 丢 request 下来,接着P1Node 会 call 到 CamCtrl 的 tryEnQ 将 request 送下来。</li>
+<li>接下来 CamCtrl 会调用 setupSubmission,主要是告之 P1Node 已经送了 request 下来,CamCtrl 这边也拿到了对应的设定,让 P1Node 将对应的 buffer 给 acquire 出来,并通知 P1Node 设定 buffer 的address 给 CamCtrl。</li>
+<li>P1Node 有一个 deque thread,这个 thread 会 call CamCtrl 的 tryDeQ,tryDeQ 是 blocking code,所以只有当真正 driver 那边有吐 data,CamCtrl 的 tryDeQ 才会放开,这个时候 P1Node 就可以拿到result 的数据。</li>
+<li>P1Node 还有一个 deliver thread,deliver thread 会透过 pipeline 的接口进行 dispatch。</li>
+</ol>
+<h3 id="Nornal-Request："><a href="#Nornal-Request：" class="headerlink" title="Nornal Request："></a>Nornal Request：</h3><p>   <img src="image3.png"><br>上面是描述Normal Request的例子：</p>
+<ol>
+<li>假设MW透过P1Node的queue接口送request下来，P1Node 会先执行 parseFrame 产生 <strong>S_Queue</strong>，在S_Queue 的时候主要是去 call CamCtrl 的 tryEnQ(图中 S_Queue 后面的 hwOps_try_enque()表达的是它会 call try enque,其他的状态后面表示被相应的事件来 trigger)。</li>
+<li>tryEnQ 主要是先告知 CamCtrl 有 request 进来,并将一些 setting 预先告知 CamCtrl。</li>
+<li>tryEnQ 之后 state machine 就会进入 <strong>S_Enque</strong>,并等待下一个 event trigger,这个 event 会是setupSubmission,setupSubmission 被 trigger 的时候 S_Enque 相关 function 会被执行,这个过程会跟MW 要 buffer,做完之后 state machine 就会停留在 <strong>S_Deque</strong>。</li>
+<li>S_Deque 状态会等 Deque thread trigger,当 deque thread 已经 deque 到东西,这个时候 S_Deque 的stage 就会做事情去产生 metadata,并切到下一个 state <strong>S_Deliver</strong> 等待被 trigger。</li>
+<li>当Deliver thread 知道有可以 Deliver 的 frame 进入之后就会 call pipeline 的接口做 deliver。</li>
+</ol>
+<h3 id="Reprocess："><a href="#Reprocess：" class="headerlink" title="Reprocess："></a>Reprocess：</h3><p>   <img src="image4.png"></p>
+<h3 id="FastPreview-fast-launch"><a href="#FastPreview-fast-launch" class="headerlink" title="FastPreview(fast launch):"></a>FastPreview(fast launch):</h3><p>   <img src="image5.png"><br>FastPreview的流程如上图(if preqCnt != -1)的流程，原本正常的流程request需要tryEnQ 并进入S_Enque状态，此时需要等待3A相关的计算。<br>为了加速启动，当((if preqCnt != -1)成立时，会调用preEnQ，进入S_PreQue状态，此时采用<strong>默认的3A计算结果（一般会是上一次退出相机时的3A计算结果）</strong>直接作用在driver，随后调用setupSubmission ，让 P1Node 将对应的 buffer 给 acquire 出来，并将buffer address给到Camctrl, 等待driver 吐帧。随后的流程和Normal Request一致。</p>
+<h3 id="Drop-Case："><a href="#Drop-Case：" class="headerlink" title="Drop Case："></a>Drop Case：</h3><p>drop case应用在上层下发flush的场景，通过dropSubmission实现drop：<br>   <img src="image6.png"></p>
+]]></content>
+      <categories>
+        <category>1. Android Camera</category>
+      </categories>
+      <tags>
+        <tag>Android Camera</tag>
+        <tag>Camera系统</tag>
+        <tag>MTKCamera</tag>
       </tags>
   </entry>
   <entry>
@@ -1842,15 +1727,21 @@ xxx.c文件<figure class="highlight c++"><table><tr><td class="code"><pre><span 
       </tags>
   </entry>
   <entry>
-    <title>深入理解Android相机体系结构之十：安卓相机架构总结</title>
-    <url>/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-10/</url>
-    <content><![CDATA[<p>Android 相机体系庞大且复杂，在我刚开始接触到该框架的时候，如盲人摸象一般，一点一点地在代码的世界中探索，在很长的一段时间内，都只能局限于某一个特定的区域，而且在解决问题的过程中，虽然通过对代码的深入梳理，最终都会顺利解决难题，但是到最后依然缺乏一个对于整个框架的理解，正如管中窥豹一般，只见细节而无法把握全貌。但是进入现在的公司之后，通过与相机前辈的沟通，我发现框架思维能力尤为重要，针对整个框架结构需要做到掌控全局，这样在遇到问题的时候便可以迅速定位，此时再进行代码层面的深入研究，发现问题根源，进而达到最终解决问题的目的。</p>
-<p>Android相机体系随处可见接口与实现相分离的设计思想，而之前提及的对于体系结构的梳理正是按照其接口的逻辑定义来完成，再结合其接口具体实现，进而完善整个框架体系的代码地图的构建，而在本人六年多的相机开发过程中，经历了多次的Android 相机的框架调整，接口演变，接下来以个人经历为主线，简单为整个相机架构做一个总结。</p>
-<p>起初，首先接触到的相机框架部分便是驱动，那时接触的是高通MSM8953平台，该平台还是采用的QCamera &amp; MM-Camera框架，底层驱动并没有负责复杂业务逻辑控制，而是主要用于控制上下电，以及数据流的开启以及停止等，并且依然使用的是vb2进行图像帧缓冲区的管理，但是现如今的7150，其驱动部分俨然发生了翻天覆地的变化，高通为了配合UMD的业务处理，为驱动设计了一套KMD的框架，包含了复杂的业务处理流程，并且数据的管理也摒弃了vb2，采用了新的管理手段，赋予了驱动更多的职能。</p>
-<p>之后由于工作需要，进一步将工作重心过渡到Camera HAL层，开发的平台依然是8953平台上，当时采用还是QCamera &amp; MM-Camera框架，在该平台上见证了HAL接口的演变，首先接触最多的便是HAL1接口，该接口使用起来比较简单，通过几个特定接口分别实现预览、拍照以及录像的功能，此时，谷歌已经意识到该接口具有一定的局限，所以自然而然地进行接口的升级，提出了HAL2接口，但是由于接口定义存在问题，所有很快谷歌便摒弃了该接口，迅速推出HAL3接口，并且一直沿用至今。HAL3接口相比于HAL1，优势明显，通过将所有的采集流程高度抽象为一个统一逻辑，所有的场景都可以通过这一统一逻辑进行扩展，使该接口具有很强的灵活性和扩展性，所以通过这几代HAL接口的演变，不难得出一个结论，那便是接口的定义需要高度抽象，而抽象的目的就是为了更好的灵活性和可扩展性，就单单这一点而言，HAL3接口可以说是成功的。</p>
-<p>在后续HAL层的开发过程中，也见证了HIDL接口的诞生，在进行Android 8.0系统的升级过程中，发现谷歌将Camera Hal Module从Camera Service 解耦出来，放入一个独立的进程Camera Provider中进行管理，而该进程负责向外暴露HIDL接口，对内完成对其的实现，并且开始针对system分区以及vendor分区进行了严格的权限控制，该目的显而易见，那边是将平台厂商的实现与谷歌Framework相分离，这样便可以进行快速的迭代升级。</p>
-<p>进入现在的公司之后，工作内容进一步扩大，涉及到了App部分，而这部分在之前也有所接触，但是并不深入，那个时候还是使用Camera Api v1接口，其定义和HAL1类似，但为了增加其灵活性和扩展性，之后谷歌提出了Camera Api v2接口，现在主要接触的便是该接口，通过简单的几个控制语句便可以实现图像的采集，使用起来比较简单，进一步降低了开发者的门槛，这也从侧面体现出了该接口定义的巧妙。同时，对于Camera Api v2的实现，是通过Camera Framework来完成的，而该层也有着一次不小的演变，刚开始Framework层并不是直接通过AIDL接口与Camera Service进行通信，而是通过一个JNI层来完成从Java到Native的转换，而Native部分作为客户端，保持对Service的通信。这种设计，很显然会比较臃肿，并且代码难以维护，所以之后由于AIDL接口的提出，谷歌直接将其加入到相机框架中，用于保持Framework与Service的通信，进而摈弃了JNI层，进一步减少了不必要的层级结构，保持了整个体系简洁性。</p>
-<p>整个相机体系，经历了多次的发展，最终形成了而今的框架结构，一路走来，不难发现都是对于接口的升级，而其升级主要是更新其逻辑定义，完善其具体实现。</p>
+    <title>MTKcam-ISP7-enable fast launch</title>
+    <url>/2024/11/19/2024-11-20-MTKcam-ISP7-enable-fast-launch/</url>
+    <content><![CDATA[<h2 id="Breakdown"><a href="#Breakdown" class="headerlink" title="Breakdown"></a>Breakdown</h2><p>相机的冷/热启动，若从systrace上分析耗时，可以按照cameraservice进程来分5个阶段：</p>
+<ol>
+<li> <strong>S1: AppLaunch_dispatchPtr:Up –&gt; connectDevice</strong><br>点击APP按钮到连接相机，这部分主要是APP和framework的耗时；</li>
+<li> <strong>S2: connectDevice</strong><br>连接相机的耗时，对应HAL层的open操作，主要包括遍历sensorlist，加载tuning算法库（并行化的，不需要等上下电），主要是HAL部分耗时</li>
+<li> <strong>S3: connectDevice –&gt; endConfigure</strong><br>CameraDevice callback之后，就可以调用createcapturesession（endConfigure），因此这部分耗时主要来源于APP和framework</li>
+<li> <strong>S4:endConfigure</strong><br>对应HAL层的configstream，需要等待sensor上电完成，以及3A初始化，耗时主要是HAL部分</li>
+<li> <strong>S5: endConfigure –&gt; first full buffer call back</strong><br>流配置完成到回帧到APP，需要等待HAL pipeline创建完成，3A计算和吐帧，主要耗时是HAL部分</li>
+</ol>
+<h2 id="analysis"><a href="#analysis" class="headerlink" title="analysis"></a>analysis</h2><p>breakdown的结果是<strong>S5: endConfigure –&gt; first full buffer call back</strong>耗时长，流配置完成到回帧到APP，需要等待HAL pipeline创建完成，3A计算和吐帧，主要耗时是HAL部分;<br>在这个阶段MTK有一个fast lunch功能可以开启</p>
+<h2 id="fast-launch功能介绍"><a href="#fast-launch功能介绍" class="headerlink" title="fast launch功能介绍"></a>fast launch功能介绍</h2><p>fast launch又叫Fast Preview，在了解fast launch功能之前，我们首先需要知道request在MTK P1 Node中是如何流转的，具体过程可以参考文档<a href="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-P1-Node/">ISP7-P1 node</a>简介 ，里面有相关介绍。<br>开启fast launch主要时节省了3A相关的计算，使用<strong>默认的3A计算结果（一般会是上一次退出相机时的3A计算结果）</strong>直接作用在driver，随后等待driver出帧。</p>
+<h2 id="SysTrace分析"><a href="#SysTrace分析" class="headerlink" title="SysTrace分析"></a>SysTrace分析</h2><h3 id="Normal-Request："><a href="#Normal-Request：" class="headerlink" title="Normal Request："></a>Normal Request：</h3><p>cameraservice通过sendRequestsBatch下发quest，正常需要等待P1Node.queue走完之后才会返回：<br>   <img src="image1.png"><br>   <img src="image2.png"><br>并且会调用tryEnQ 并进入S_Enque状态，此时需要等待3A相关的计算：<br>   <img src="image3.png"></p>
+<h3 id="fast-launch-Request："><a href="#fast-launch-Request：" class="headerlink" title="fast launch Request："></a>fast launch Request：</h3><p>   <img src="image4.png"><br>这里有3个sendRequestsBatch执行时间特别短，原因就是开启了fast launch功能。我们看来下这些request在HAL中是怎么走的：<br>   <img src="image5.png"><br>request下发到HAL之后并没有等待queue。queue动作在另一个线程中完成：<br>   <img src="image6.png"><br>另外，第一个queue函数执行很长，主要是在等res寄存器的写入。<br>   <img src="image7.png"><br>这里做的实际上是调用preEnQ，进入S_PreQue状态，这里便是核心区别。用preEnQ，进入S_PreQue状态，此时采用<strong>默认的3A计算结果（一般会是上一次退出相机时的3A计算结果）</strong>直接作用在driver，随后调用setupSubmission ，让 P1Node 将对应的 buffer 给 acquire 出来，并将buffer address给到Camctrl, 等待driver 吐帧。随后的流程和Normal Request一致。</p>
+<h2 id="优化方法"><a href="#优化方法" class="headerlink" title="优化方法"></a>优化方法</h2><p>通过设置：<br>adb shell setprop vendor.debug.camera.pass1initrequestnum 4 //可以开启功能4-1=3帧，理论优化耗时3*33=99ms<br>或者直接在代码里面修改</p>
 ]]></content>
       <categories>
         <category>1. Android Camera</category>
@@ -1858,6 +1749,96 @@ xxx.c文件<figure class="highlight c++"><table><tr><td class="code"><pre><span 
       <tags>
         <tag>Android Camera</tag>
         <tag>Camera系统</tag>
+        <tag>MTKCamera</tag>
+        <tag>性能</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Memory libmemunreachable</title>
+    <url>/2024/11/20/2024-11-20-memory-libmemunreachable/</url>
+    <content><![CDATA[<h2 id="Introduction"><a href="#Introduction" class="headerlink" title="Introduction"></a>Introduction</h2><p>libmemunreachable is a zero-overhead native memory leak detector. </p>
+<span id="more"></span>
+<p>It uses an imprecise mark-and-sweep garbage collector pass over all native memory, reporting any unreachable blocks as leaks. It is similar to the Heap Checker from tcmalloc, but with a few key differences to remove the overhead. Instead of instrumenting every call to malloc and free, it queries the allocator (jemalloc) for active allocations when leak detection is requested. In addition, it performs a very short stop-the-world data collection on the main process, and then forks a copy of the process to perform the mark-and-sweep, minimizing disruption to the original process.</p>
+<p>In the default (zero-overhead) mode, the returned data on leaks is limited to the address, approximate (upper bound) size, and the the first 32 bytes of the contents of the leaked allocation. If malloc_debug backtraces are enabled they will be included in the leak information, but backtracing allocations requires significant overhead.</p>
+<hr>
+<h2 id="Usage"><a href="#Usage" class="headerlink" title="Usage"></a>Usage</h2><h3 id="In-Android-apps"><a href="#In-Android-apps" class="headerlink" title="In Android apps"></a>In Android apps</h3><p>libmemunreachble is loaded by zygote and can be triggered with dumpsys -t 600 meminfo –unreachable [process].</p>
+<p>To enable malloc_debug backtraces on allocations for a single app process on a userdebug device, use:</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">adb root</span><br><span class="line">adb shell setprop libc.debug.malloc.program app_process</span><br><span class="line">adb shell setprop wrap.[process] <span class="string">&quot;\$\@&quot;</span></span><br><span class="line">adb shell setprop libc.debug.malloc.options backtrace=<span class="number">4</span></span><br></pre></td></tr></table></figure>
+<p>Kill and restart the app, trigger the leak, and then run dumpsys -t 600 meminfo –unreachable [process].</p>
+<p>To disable malloc_debug:</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">adb shell setprop libc.debug.malloc.options <span class="string">&quot;&#x27;&#x27;&quot;</span></span><br><span class="line">adb shell setprop libc.debug.malloc.program <span class="string">&quot;&#x27;&#x27;&quot;</span></span><br><span class="line">adb shell setprop wrap.[process]  <span class="string">&quot;&#x27;&#x27;&quot;</span></span><br></pre></td></tr></table></figure>
+<p>Starting with Android U, new malloc debug options have been added that allow specific sized allocation to be backtraced. The three new options are:</p>
+<ul>
+<li>backtrace_size</li>
+<li>backtrace_min_size</li>
+<li>backtrace_max_size</li>
+</ul>
+<p>When enabling backtracing on all allocations, it is possible to have the process run so slowly that the app does not come up. Or the app runs so slowly that the leaks do not occur. The best way to avoid any slowdowns or timeouts is to first run libmemunreachable and look at the sizes of the leaking allocations. If there is only a single allocation size, then use backtrace_size which will indicate that backtraces should only be collected for that exact size. For example, if the output of dumpsys is:</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">Unreachable memory</span><br><span class="line"> <span class="number">24</span> bytes in <span class="number">2</span> unreachable allocations</span><br><span class="line"> ABI: <span class="string">&#x27;arm64&#x27;</span></span><br><span class="line"></span><br><span class="line"> <span class="number">24</span> bytes unreachable at <span class="number">71</span>d37787d0</span><br><span class="line">  first <span class="number">20</span> bytes of contents:</span><br><span class="line">  <span class="number">71</span>d37787d0: <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ................</span><br><span class="line">  <span class="number">71</span>d37787e0: <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ................</span><br><span class="line"></span><br><span class="line"> <span class="number">24</span> bytes unreachable at <span class="number">71</span>d37797d0</span><br><span class="line">  first <span class="number">20</span> bytes of contents:</span><br><span class="line">  <span class="number">71</span>d37797d0: <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ................</span><br><span class="line">  <span class="number">71</span>d37797e0: <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ................</span><br></pre></td></tr></table></figure>
+<p>Then set the malloc debug options thusly:</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">adb shell setprop libc.debug.malloc.options <span class="string">&quot;&#x27;backtrace backtrace_size=24&#x27;&quot;</span></span><br></pre></td></tr></table></figure>
+<p>This will backtrace only 24 byte allocations.</p>
+<p>If the output of libmemunreachable has multiple sized allocations, set the backtrace_min_size and backtrace_max_size options to cover all of the sizes. For example, if the output of dumpsys is:</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">Unreachable memory</span><br><span class="line"> <span class="number">512</span> bytes in <span class="number">2</span> unreachable allocations</span><br><span class="line"> ABI: <span class="string">&#x27;arm64&#x27;</span></span><br><span class="line"></span><br><span class="line"> <span class="number">320</span> bytes unreachable at <span class="number">71</span>d37787d0</span><br><span class="line">  first <span class="number">20</span> bytes of contents:</span><br><span class="line">  <span class="number">71</span>d37787d0: <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ................</span><br><span class="line">  <span class="number">71</span>d37787e0: <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ................</span><br><span class="line"></span><br><span class="line"> <span class="number">192</span> bytes unreachable at <span class="number">71b</span>37b2f50</span><br><span class="line">  first <span class="number">20</span> bytes of contents:</span><br><span class="line">  <span class="number">71b</span>37b2f50: <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ................</span><br><span class="line">  <span class="number">71b</span>37b2f60: <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> <span class="number">00</span> ................</span><br></pre></td></tr></table></figure>
+
+<p>Then set the malloc debug options thusly:</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">adb shell setprop libc.debug.malloc.options <span class="string">&quot;&#x27;backtrace backtrace_min_size=192 backtrace_max_size=320&#x27;&quot;</span></span><br></pre></td></tr></table></figure>
+<p>This will backtrace allocations of any size between 192 bytes and 320 bytes inclusively.</p>
+<p>After setting the backtrace size options, restart the application so that running dumpsys again will include the actual backtrace of the leaking allocations.</p>
+<h3 id="C-interface"><a href="#C-interface" class="headerlink" title="C interface"></a>C interface</h3><h4 id="bool-LogUnreachableMemory-bool-log-contents-size-t-limit"><a href="#bool-LogUnreachableMemory-bool-log-contents-size-t-limit" class="headerlink" title="bool LogUnreachableMemory(bool log_contents, size_t limit)"></a>bool LogUnreachableMemory(bool log_contents, size_t limit)</h4><p>Writes a description of leaked memory to the log. A summary is always written, followed by details of up to limit leaks. If log_contents is true, details include up to 32 bytes of the contents of each leaked allocation. Returns true if leak detection succeeded.</p>
+<h4 id="bool-NoLeaks"><a href="#bool-NoLeaks" class="headerlink" title="bool NoLeaks()"></a>bool NoLeaks()</h4><p>Returns true if no unreachable memory was found.</p>
+<h3 id="C-interface-1"><a href="#C-interface-1" class="headerlink" title="C++ interface"></a>C++ interface</h3><h4 id="bool-GetUnreachableMemory-UnreachableMemoryInfo-amp-info-size-t-limit-100"><a href="#bool-GetUnreachableMemory-UnreachableMemoryInfo-amp-info-size-t-limit-100" class="headerlink" title="bool GetUnreachableMemory(UnreachableMemoryInfo&amp; info, size_t limit = 100)"></a>bool GetUnreachableMemory(UnreachableMemoryInfo&amp; info, size_t limit = 100)</h4><p>Updates an UnreachableMemoryInfo object with information on leaks, including details on up to limit leaks. Returns true if leak detection succeeded.</p>
+<h4 id="std-string-GetUnreachableMemoryString-bool-log-contents-false-size-t-limit-100"><a href="#std-string-GetUnreachableMemoryString-bool-log-contents-false-size-t-limit-100" class="headerlink" title="std::string GetUnreachableMemoryString(bool log_contents = false, size_t limit = 100)"></a>std::string GetUnreachableMemoryString(bool log_contents = false, size_t limit = 100)</h4><p>Returns a description of leaked memory. A summary is always written, followed by details of up to limit leaks. If log_contents is true, details include up to 32 bytes of the contents of each leaked allocation. Returns true if leak detection succeeded.</p>
+<h3 id="Implementation"><a href="#Implementation" class="headerlink" title="Implementation"></a>Implementation</h3><p>The sequence of steps required to perform a leak detection pass is divided into three processes - the original process, the collection process, and the sweeper process.</p>
+<ol>
+<li>Original process: Leak detection is requested by calling GetUnreachableMemory()</li>
+<li>Allocations are disabled using malloc_disable()</li>
+<li>The collection process is spawned. The collection process, created using clone, is similar to a normal fork() child process, except that it shares the address space of the parent - any writes by the original process are visible to the collection process, and vice-versa. If we forked instead of using clone, the address space might get out of sync with observed post-ptrace thread state, since it takes some time to pause the parent.</li>
+<li>Collection process: All threads in the original process are paused with ptrace().</li>
+<li>Registers contents, active stack areas, and memory mapping information are collected.</li>
+<li>Original process: Allocations are re-enabled using malloc_enable(), but all threads are still paused with ptrace().</li>
+<li>Collection process: The sweeper process is spawned using a normal fork(). The sweeper process has a copy of all memory from the original process, including all the data collected by the collection process.</li>
+<li>Collection process releases all threads from ptrace and exits</li>
+<li>Original process: All threads continue, the thread that called GetUnreachableMemory() blocks waiting for leak data over a pipe.</li>
+<li>Sweeper process: A list of all active allocations is produced by examining the memory mappings and calling malloc_iterate() on any heap mappings.</li>
+<li>A list of all roots is produced from globals (.data and .bss sections of binaries), and registers and stacks from each thread.</li>
+<li>The mark-and-sweep pass is performed starting from roots.</li>
+<li>Unmarked allocations are sent over the pipe back to the original process.</li>
+</ol>
+<hr>
+<h2 id="Components"><a href="#Components" class="headerlink" title="Components"></a>Components</h2><ul>
+<li>MemUnreachable.cpp: Entry points, implements the sequencing described above.</li>
+<li>PtracerThread.cpp: Used to clone the collection process with shared address space.</li>
+<li>ThreadCapture.cpp: Pauses threads in the main process and collects register contents.</li>
+<li>ProcessMappings.cpp: Collects snapshots of /proc/pid/maps.</li>
+<li>HeapWalker.cpp: Performs the mark-and-sweep pass over active allocations.</li>
+<li>LeakPipe.cpp: transfers data describing leaks from the sweeper process to the original process.</li>
+</ul>
+<h2 id="Heap-allocator-requirements"><a href="#Heap-allocator-requirements" class="headerlink" title="Heap allocator requirements"></a>Heap allocator requirements</h2><p>libmemunreachable requires a small interface to the allocator in order to collect information about active allocations.</p>
+<ul>
+<li>malloc_disable(): prevent any thread from mutating internal allocator state.</li>
+<li>malloc enable(): re-enable allocations in all threads.</li>
+<li>malloc_iterate(): call a callback on each active allocation in a given heap region.</li>
+<li>malloc_backtrace(): return the backtrace from when the allocation at the given address was allocated, if it was collected.</li>
+</ul>
+<p>上文来源于官方文档，但是需要翻墙访问，原文链接：<a href="https://android.googlesource.com/platform/system/memory/libmemunreachable/+/master/README.md">libmemunreachable</a></p>
+<hr>
+<h2 id="在相机中的应用"><a href="#在相机中的应用" class="headerlink" title="在相机中的应用"></a>在相机中的应用</h2><p>unreachable是一个零开销的内存泄露检测工具，使用mark-and-sweep（一种垃圾回收算法） 遍历所有的native memory，统计出所有unreachable内存。</p>
+<p>什么是unreachable内存：如果堆内存中的内存没有引用指向他，那么该内存就无法被调用，这样的内存称为不可达(unreachable)</p>
+<h3 id="目的："><a href="#目的：" class="headerlink" title="目的："></a>目的：</h3><p>使用unreachable检查camera provider 内存泄露。</p>
+<h3 id="方法："><a href="#方法：" class="headerlink" title="方法："></a>方法：</h3><p>1、链接库libmemunreachable.so, 在dumpsys  media.camera 时通过GetUnreachableMemory获取unreachable memory信息</p>
+<p>在dumpsys 的流程中加入一下如下代码（除此之外还需要在mk中链接一下，具体看patch）：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="comment">////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////</span></span><br><span class="line"><span class="comment">// dump_unreachable_info</span></span><br><span class="line"><span class="comment">////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">dump_unreachable_info</span><span class="params">(<span class="keyword">int</span> fd)</span></span></span><br><span class="line"><span class="function"></span>&#123;</span><br><span class="line">    android::UnreachableMemoryInfo info;</span><br><span class="line">    <span class="keyword">bool</span> success = <span class="built_in">GetUnreachableMemory</span>(info, <span class="comment">/*limit*/</span> <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span> (!success)</span><br><span class="line">    &#123;</span><br><span class="line">        CamX::OsUtils::<span class="built_in">DPrintF</span>(fd, <span class="string">&quot;%s&quot;</span>, <span class="string">&quot;\n== Unable to dump unreachable memory. &quot;</span></span><br><span class="line">                <span class="string">&quot;Try disabling SELinux enforcement. ==\n&quot;</span>);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">else</span></span><br><span class="line">    &#123;</span><br><span class="line">        CamX::OsUtils::<span class="built_in">DPrintF</span>(fd,<span class="string">&quot;%s&quot;</span>, <span class="string">&quot;\n== Dumping unreachable memory: ==\n&quot;</span>);</span><br><span class="line">        std::string s = info.<span class="built_in">ToString</span>(<span class="comment">/*log_contents*/</span> <span class="literal">false</span>);</span><br><span class="line">        <span class="built_in">write</span>(fd, s.<span class="built_in">c_str</span>(), s.<span class="built_in">size</span>());</span><br><span class="line">    &#125;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<p>limit ： 打印最多的内存泄露信息，如果只需要统计总的内存泄露大小，limit设置为0就可以了。<br>log_contents ：为true时会打印泄露位置前32字节的内容。</p>
+<h3 id="结果："><a href="#结果：" class="headerlink" title="结果："></a>结果：</h3><p>adb shell dumpsys media.camera  &gt; dumpsys.txt<br>   <img src="image1.png"><br>把limit 设置为0后dump出的结果将更加简洁：<br>   <img src="image2.png"></p>
+]]></content>
+      <categories>
+        <category>5. Memory</category>
+      </categories>
+      <tags>
+        <tag>Android</tag>
+        <tag>内存</tag>
       </tags>
   </entry>
   <entry>
@@ -1887,6 +1868,25 @@ xxx.c文件<figure class="highlight c++"><table><tr><td class="code"><pre><span 
 <p>麻雀虽小，五脏俱全，Android相机的小体积中俨然具备着一个完整的相机硬件体系，从光圈到透镜组，再到感光器件最后到后期的图像处理模块，每一个器件都承担着自己特有的使命。对于整套硬件体系而言，对于每一个器件的一个小小的提升都有可能使其在一系列竞争者中脱颖而出，比如某品牌的一亿像素，由于机身厚度的限制，大尺寸的CMOS会给透镜组乃至后期的算法处理带来不小的压力。<br>一张完美的图像，仅仅依靠前期的成像系统是远远不够的，就像当我们看见一副美景时，心中所呈现的并不是单单眼前的景色而已，我们所独有的人生阅历会在我们心中不经意地给其铺上一层独特的滤镜，赋予其独特的意义，而对于相机系统而言，算法便是其给图像铺上灵魂滤镜的关键因素，不同的算法可以赋予图像不同的属性，但是评价算法的好坏，经常会通过效果与效率两个方面来衡量，所以图像的更多意义，需要更多的算法来实现，而算法的更好更快处理便是其实现的目标，一个好的算法往往能够为平庸无奇的图像带来质的飞跃。</p>
 <p>而今的Android相机已经完全不局限于记录身边的美好，而是在创造属于每个人的美好，可以通过它来和相隔万里的亲人朋友进行视频通讯，可以编辑属于自己的独一无二的图像表情，可以让多个自己存在在同一个空间中，以及通过萌拍模式记录下自己的可爱瞬间等，这一切的一切都极大的扩展了Android相机的功能性和可玩性，所以针对新Feature的开发，势必是一个大的趋势，这也印证了一个道理，对于相机的开发，我们有时候不是在满足需求，而是在创造需求。</p>
 <p>最后，纵观Android历史，不难发现谷歌自始至终秉承着开源普惠大众的宗旨，从未停止过对Android系统的迭代优化，在整个Android相机系统架构中，不难发现接口与实现相分离的这一简单设计原则在其身上随处可见，这样既保证了整体架构的足够稳定，也实现了系统细节实现的多样性，同时也体现出了强大的灵活性，总的来讲，这样一套优秀的架构体系并且依托如今强大的硬件设备，加之全球开发者们在算法、新feature的不懈努力，我相信Android 相机会在以后的发展中一路高歌猛进，超越苹果成为手机相机领域的王者。</p>
+]]></content>
+      <categories>
+        <category>1. Android Camera</category>
+      </categories>
+      <tags>
+        <tag>Android Camera</tag>
+        <tag>Camera系统</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>深入理解Android相机体系结构之十：安卓相机架构总结</title>
+    <url>/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-10/</url>
+    <content><![CDATA[<p>Android 相机体系庞大且复杂，在我刚开始接触到该框架的时候，如盲人摸象一般，一点一点地在代码的世界中探索，在很长的一段时间内，都只能局限于某一个特定的区域，而且在解决问题的过程中，虽然通过对代码的深入梳理，最终都会顺利解决难题，但是到最后依然缺乏一个对于整个框架的理解，正如管中窥豹一般，只见细节而无法把握全貌。但是进入现在的公司之后，通过与相机前辈的沟通，我发现框架思维能力尤为重要，针对整个框架结构需要做到掌控全局，这样在遇到问题的时候便可以迅速定位，此时再进行代码层面的深入研究，发现问题根源，进而达到最终解决问题的目的。</p>
+<p>Android相机体系随处可见接口与实现相分离的设计思想，而之前提及的对于体系结构的梳理正是按照其接口的逻辑定义来完成，再结合其接口具体实现，进而完善整个框架体系的代码地图的构建，而在本人六年多的相机开发过程中，经历了多次的Android 相机的框架调整，接口演变，接下来以个人经历为主线，简单为整个相机架构做一个总结。</p>
+<p>起初，首先接触到的相机框架部分便是驱动，那时接触的是高通MSM8953平台，该平台还是采用的QCamera &amp; MM-Camera框架，底层驱动并没有负责复杂业务逻辑控制，而是主要用于控制上下电，以及数据流的开启以及停止等，并且依然使用的是vb2进行图像帧缓冲区的管理，但是现如今的7150，其驱动部分俨然发生了翻天覆地的变化，高通为了配合UMD的业务处理，为驱动设计了一套KMD的框架，包含了复杂的业务处理流程，并且数据的管理也摒弃了vb2，采用了新的管理手段，赋予了驱动更多的职能。</p>
+<p>之后由于工作需要，进一步将工作重心过渡到Camera HAL层，开发的平台依然是8953平台上，当时采用还是QCamera &amp; MM-Camera框架，在该平台上见证了HAL接口的演变，首先接触最多的便是HAL1接口，该接口使用起来比较简单，通过几个特定接口分别实现预览、拍照以及录像的功能，此时，谷歌已经意识到该接口具有一定的局限，所以自然而然地进行接口的升级，提出了HAL2接口，但是由于接口定义存在问题，所有很快谷歌便摒弃了该接口，迅速推出HAL3接口，并且一直沿用至今。HAL3接口相比于HAL1，优势明显，通过将所有的采集流程高度抽象为一个统一逻辑，所有的场景都可以通过这一统一逻辑进行扩展，使该接口具有很强的灵活性和扩展性，所以通过这几代HAL接口的演变，不难得出一个结论，那便是接口的定义需要高度抽象，而抽象的目的就是为了更好的灵活性和可扩展性，就单单这一点而言，HAL3接口可以说是成功的。</p>
+<p>在后续HAL层的开发过程中，也见证了HIDL接口的诞生，在进行Android 8.0系统的升级过程中，发现谷歌将Camera Hal Module从Camera Service 解耦出来，放入一个独立的进程Camera Provider中进行管理，而该进程负责向外暴露HIDL接口，对内完成对其的实现，并且开始针对system分区以及vendor分区进行了严格的权限控制，该目的显而易见，那边是将平台厂商的实现与谷歌Framework相分离，这样便可以进行快速的迭代升级。</p>
+<p>进入现在的公司之后，工作内容进一步扩大，涉及到了App部分，而这部分在之前也有所接触，但是并不深入，那个时候还是使用Camera Api v1接口，其定义和HAL1类似，但为了增加其灵活性和扩展性，之后谷歌提出了Camera Api v2接口，现在主要接触的便是该接口，通过简单的几个控制语句便可以实现图像的采集，使用起来比较简单，进一步降低了开发者的门槛，这也从侧面体现出了该接口定义的巧妙。同时，对于Camera Api v2的实现，是通过Camera Framework来完成的，而该层也有着一次不小的演变，刚开始Framework层并不是直接通过AIDL接口与Camera Service进行通信，而是通过一个JNI层来完成从Java到Native的转换，而Native部分作为客户端，保持对Service的通信。这种设计，很显然会比较臃肿，并且代码难以维护，所以之后由于AIDL接口的提出，谷歌直接将其加入到相机框架中，用于保持Framework与Service的通信，进而摈弃了JNI层，进一步减少了不必要的层级结构，保持了整个体系简洁性。</p>
+<p>整个相机体系，经历了多次的发展，最终形成了而今的框架结构，一路走来，不难发现都是对于接口的升级，而其升级主要是更新其逻辑定义，完善其具体实现。</p>
 ]]></content>
       <categories>
         <category>1. Android Camera</category>
@@ -2092,18 +2092,6 @@ xxx.c文件<figure class="highlight c++"><table><tr><td class="code"><pre><span 
       </tags>
   </entry>
   <entry>
-    <title>深入理解Android相机体系结构之七：相机驱动层–V4L2框架解析</title>
-    <url>/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-7/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>1. Android Camera</category>
-      </categories>
-      <tags>
-        <tag>Android Camera</tag>
-        <tag>Camera系统</tag>
-      </tags>
-  </entry>
-  <entry>
     <title>深入理解Android相机体系结构之六：相机硬件抽象层实现</title>
     <url>/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-6/</url>
     <content><![CDATA[]]></content>
@@ -2116,8 +2104,32 @@ xxx.c文件<figure class="highlight c++"><table><tr><td class="code"><pre><span 
       </tags>
   </entry>
   <entry>
+    <title>深入理解Android相机体系结构之七：相机驱动层–V4L2框架解析</title>
+    <url>/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-7/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>1. Android Camera</category>
+      </categories>
+      <tags>
+        <tag>Android Camera</tag>
+        <tag>Camera系统</tag>
+      </tags>
+  </entry>
+  <entry>
     <title>深入理解Android相机体系结构之八：相机驱动层–高通KMD框架详解</title>
     <url>/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-8/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>1. Android Camera</category>
+      </categories>
+      <tags>
+        <tag>Android Camera</tag>
+        <tag>Camera系统</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>深入理解Android相机体系结构之九：相机硬件层</title>
+    <url>/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-9/</url>
     <content><![CDATA[]]></content>
       <categories>
         <category>1. Android Camera</category>
@@ -2141,18 +2153,6 @@ xxx.c文件<figure class="highlight c++"><table><tr><td class="code"><pre><span 
       <categories>
         <category>建站</category>
       </categories>
-  </entry>
-  <entry>
-    <title>深入理解Android相机体系结构之九：相机硬件层</title>
-    <url>/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-9/</url>
-    <content><![CDATA[]]></content>
-      <categories>
-        <category>1. Android Camera</category>
-      </categories>
-      <tags>
-        <tag>Android Camera</tag>
-        <tag>Camera系统</tag>
-      </tags>
   </entry>
   <entry>
     <title>如何更换主题？</title>
