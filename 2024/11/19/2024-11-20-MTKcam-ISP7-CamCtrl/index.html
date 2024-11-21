@@ -18,16 +18,16 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"shenweikun.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.21.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":false,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="CamCtrl简介：文件目录：vendor&#x2F;mediatek&#x2F;proprietary&#x2F;hardware&#x2F;mtkcam-core&#x2F;hw&#x2F;camsys&#x2F;cam_ctrl&#x2F;CamCtrl是P1Node&#x2F;PipeMgr&#x2F;3A HAL&#x2F;ISP HAL的协调者。其主要有两个作用：  搜集从P1 Node过来的request Info，然后queue给driver（使用PipeMgr并通过SensorPipe接">
+    <meta name="description" content="CamCtrl简介：文件目录：vendor&#x2F;mediatek&#x2F;proprietary&#x2F;hardware&#x2F;mtkcam-core&#x2F;hw&#x2F;camsys&#x2F;cam_ctrl&#x2F;">
 <meta property="og:type" content="article">
 <meta property="og:title" content="MTKcam-ISP7-CamCtrl">
 <meta property="og:url" content="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-CamCtrl/index.html">
 <meta property="og:site_name" content="Weikun&#39;s Notes">
-<meta property="og:description" content="CamCtrl简介：文件目录：vendor&#x2F;mediatek&#x2F;proprietary&#x2F;hardware&#x2F;mtkcam-core&#x2F;hw&#x2F;camsys&#x2F;cam_ctrl&#x2F;CamCtrl是P1Node&#x2F;PipeMgr&#x2F;3A HAL&#x2F;ISP HAL的协调者。其主要有两个作用：  搜集从P1 Node过来的request Info，然后queue给driver（使用PipeMgr并通过SensorPipe接">
+<meta property="og:description" content="CamCtrl简介：文件目录：vendor&#x2F;mediatek&#x2F;proprietary&#x2F;hardware&#x2F;mtkcam-core&#x2F;hw&#x2F;camsys&#x2F;cam_ctrl&#x2F;">
 <meta property="og:locale" content="zh_CN">
 <meta property="og:image" content="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-CamCtrl/image1.png">
 <meta property="article:published_time" content="2024-11-18T17:46:48.000Z">
-<meta property="article:modified_time" content="2024-11-20T17:53:40.559Z">
+<meta property="article:modified_time" content="2024-11-21T10:00:16.027Z">
 <meta property="article:author" content="空白">
 <meta property="article:tag" content="Android Camera">
 <meta property="article:tag" content="Camera系统">
@@ -229,7 +229,7 @@
         <i class="far fa-calendar-check"></i>
       </span>
       <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-11-21 01:53:40" itemprop="dateModified" datetime="2024-11-21T01:53:40+08:00">2024-11-21</time>
+      <time title="修改时间：2024-11-21 18:00:16" itemprop="dateModified" datetime="2024-11-21T18:00:16+08:00">2024-11-21</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -261,7 +261,7 @@
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>6 分钟</span>
     </span>
 </div>
 
@@ -271,7 +271,9 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><h2 id="CamCtrl简介："><a href="#CamCtrl简介：" class="headerlink" title="CamCtrl简介："></a>CamCtrl简介：</h2><p>文件目录：vendor/mediatek/proprietary/hardware/mtkcam-core/hw/camsys/cam_ctrl/<br>CamCtrl是P1Node/PipeMgr/3A HAL/ISP HAL的协调者。其主要有两个作用：</p>
+    <div class="post-body" itemprop="articleBody"><h2 id="CamCtrl简介："><a href="#CamCtrl简介：" class="headerlink" title="CamCtrl简介："></a>CamCtrl简介：</h2><p>文件目录：vendor/mediatek/proprietary/hardware/mtkcam-core/hw/camsys/cam_ctrl/</p>
+<span id="more"></span>
+<p>CamCtrl是P1Node/PipeMgr/3A HAL/ISP HAL的协调者。其主要有两个作用：</p>
 <ul>
 <li>搜集从P1 Node过来的request Info，然后queue给driver（使用PipeMgr并通过SensorPipe接口丢给MTK drivers):<br>request Info包含：</li>
 <li>Image Info. (from P1Node)，例如上层传下来的buffer size，format等</li>
@@ -359,7 +361,7 @@
     <div class="footer-inner">
 
   <div class="copyright">
-    &copy; 
+    &copy; 2021 – 
     <span itemprop="copyrightYear">2024</span>
     <span class="with-love">
       <i class="fa fa-heart"></i>
@@ -377,7 +379,7 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">4:22</span>
+    <span title="站点阅读时长">12:01</span>
   </span>
 </div>
 <div class="busuanzi-count">
@@ -413,6 +415,7 @@
     <i class="fa fa-arrow-up fa-lg"></i>
     <span>0%</span>
   </div>
+  <div class="reading-progress-bar"></div>
 
 <noscript>
   <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
