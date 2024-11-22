@@ -2203,7 +2203,183 @@ hexo会帮我们在_posts下生成相关md文件：<br>source/_posts/my-new-blog
   <entry>
     <title>深入理解Android相机体系结构之八：相机驱动层–高通KMD框架详解</title>
     <url>/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-8/</url>
-    <content><![CDATA[]]></content>
+    <content><![CDATA[<h2 id="一、概览"><a href="#一、概览" class="headerlink" title="一、概览"></a>一、概览</h2><p>利用了V4L2可扩展这一特性，高通在相机驱动部分实现了自有的一套KMD框架，该框架通过V4L2标准方法在系统中创建设备节点，将控制接口直接暴露给UMD CSL进行访问，而其内部主要定义了一系列核心模块，包括CRM(Camera Request Manager)，用于管理整个KMD的Session/Link的创建销毁以及Request的在子设备间的流转，该模块创建video0设备节点暴露关键接口给UMD，此外还包括了Sync模块，主要负责了UMD/KMD之间的数据同步与传输，创建video1设备节点暴露接口给UMD进行访问，除此之外，为了更精细化地控制一系列的硬件图像处理模块，包括ISP/IPE/Sensor等硬件模块，高通也分别为各自子模块创建了设备节点，进而暴露控制接口给UMD进行访问。</p>
+<span id="more"></span>
+<p>其中主要目录如下：</p>
+<ul>
+<li>cam_core/： 关于KMD核心函数的实现都放在这，主要包括了subdev、node、context的一些诸如创建/注册/销毁等标准方法。</li>
+<li>cam_req_mgr/: CRM的具体实现，用于创建v4l2_device，用于管理所有的子设备，同时生成video设备节点，暴露控制接口给UMD，主要包括了Session/Link的行为管理以及Request的同步与分发，此外，还创建了media_device，用于暴露枚举接口给UMD来轮询查找整个KMD的子设备。</li>
+<li>cam_sync/: 该部分主要实现了用于保持与UMD的图像数据的同步相关业务逻辑，由于该模块的特殊性，高通直接为其创建了一个单独的video设备节点，暴露了用于同步的一些控制接口。</li>
+<li>cam_utils/: 一些共有方法的实现，包括debug方法集等</li>
+<li>cam_smmu/: 高通自己实现了一套smmu api，供KMD使用</li>
+<li>cam_lrme/: 低分辨率运动估计模块的驱动实现</li>
+<li>cam_fd/: 人脸识别的驱动程序</li>
+<li>cam_isp/: isp的驱动程序</li>
+<li>cam_jpeg/: 编码器，可以通过该驱动完成jpeg的编码工作</li>
+<li>cam_cdm/: camera data mover，数据移动器的驱动实现，主要用于解析由CSL传入的命令信息，其中包括了寄存器的设置以及图像数据的处理等。</li>
+<li>cam_cpas/: 该模块主要用于CSL获取camera 平台驱动信息，IPE/BPS电源控制等</li>
+<li>cam_icp/: image control processor ，图像处理控制器驱动实现</li>
+<li>cam_sensor_module/: 类传感器的系列硬件模块<ul>
+<li>cam_actuator/: 对焦马达的驱动实现</li>
+<li>cam_cci/: 实现了用于通讯的CCI接口，其中包括了I2C以及gpio的实现</li>
+<li>cam_csiphy: 基于MIPI CSI接口的物理层驱动，用于传输图像数据</li>
+<li>cam_sensor_io: 使用cam_cci，向上实现了控制sensor的IO接口</li>
+<li>cam_sensor: sensor 的驱动实现</li>
+<li>cam_sensor_util: sensor相关的公有方法的实现</li>
+<li>cam_eeprom: eeprom设备的驱动实现</li>
+<li>cam_ois ： 光学防抖设备的驱动实现</li>
+<li>cam_flash: 闪光灯设备的驱动实现</li>
+</ul>
+</li>
+</ul>
+<h2 id="二、核心模块解析"><a href="#二、核心模块解析" class="headerlink" title="二、核心模块解析"></a>二、核心模块解析</h2><p>正如之前介绍的那样，整个框架主要由三个部分组成，CRM/Camera Sync以及子模块，接下来我们以下图为例简单讲解下各自的关系：<br><img src="image.png" alt="alt text"><br>在系统初始化时，CRM内部会创建一个v4l2_device结构体，用于管理所有的子设备，与此同时每一个子设备在注册的时候都会创建各自的v4l2_subdev挂载到该v4l2_device上面。此外，CRM会创建一个video0设备节点提供关键接口给CSL来进行访问，而每个子设备也会在系统中生成各自的v4l2-sbudev设备节点，提供接口给CSL进行更为精细化的控制。而其中的Cam Sync在初始化的过程中，也创建了一个v4l2_device设备，并且生成了video1节点给CSL进行控制。这个框架主要就是围绕这三个部分进行的，CRM用于管理Session/Link的创建，控制Request在各个子设备中的流转，子设备受CSL控制进行配置以及图像处理工作，而一旦图像处理完成便会将结果发送至Cam Sync模块，进上传至CSL中。</p>
+<h3 id="1-CRM-Camera-Request-Manager"><a href="#1-CRM-Camera-Request-Manager" class="headerlink" title="1. CRM(Camera Request Manager)"></a>1. CRM(Camera Request Manager)</h3><p>该模块本质上是一个软件模块，主要做了以下几个事情：</p>
+<ul>
+<li>接收来自CSL的Session/Link/Request请求，并且维护其在内核的状态。</li>
+<li>在不同pipeline delay的子模块间，同步每一个Request状态，并按照需要发送给每一个子设备。</li>
+<li>如果出现错误，负责上传至CSL。</li>
+<li>负责针对实时子模块的flush操作。</li>
+</ul>
+<p>其中针对Session/Link/Request的请求便是通过之前创建的video设备节点将接口暴露给CSL，一旦接收到命令便开始进行处理，而命令主要有以下几个：</p>
+<ul>
+<li>CAM_REQ_MGR_CREATE_SESSION/CAM_REQ_MGR_DESTROY_SESSION： 分别表示了Session的创建和销毁，该Session保持着与CamX-CHI的一一对应关系。</li>
+<li>CAM_REQ_MGR_LINK/CAM_REQ_MGR_UNLINK： 分别表示了Link的创建和销毁动作，每一个Session可以包含多条Link，而每一个Link都连接着此次图像采集过程中所需要的子设备，CRM也是通过该Link来管理Request同步与分发的操作。</li>
+<li>CAM_REQ_MGR_SCHED_REQ：一旦CSL开始下发Request的时候，便可以通过该命令告知KMD，而在KMD中，CRM会将此次Request存入Link中的in_q数组中，当子设备告知准备好了此次Request的处理后，便通知子设备进行配置并处理Request。</li>
+<li>CAM_REQ_MGR_ALLOC_BUF/CAM_REQ_MGR_RELEASE_BUF: 图像缓冲区的申请与释放，CRM中使用cam_mem_table结构体来管理着申请的缓冲区。</li>
+</ul>
+<p>一旦CRM接收了来自CSL的请求，便会在内部进行处理，而其中的一系列业务处理便会通过接下来的几个结构体来完成：</p>
+<p>首先在初始化过程中，会去创建一个cam_req_mgr_device。<br>该结构体有以下几个主要的成员：</p>
+<ul>
+<li>video: 存储着对应的video_device。</li>
+<li>v4l2_dev: 保存着初始化过程中创建的v4l2_device。</li>
+<li>subdev_nodes_created: 标志着从属于v4l2_device的子设备是否都成功创建了设备节点。</li>
+<li>cam_eventq： v4l2文件描述结构体，其中维护着event事件队列。</li>
+</ul>
+<p>之后会去创建一个cam_req_mgr_core_device，该结构体比较简单主要用于维护一个Session链表，在CSL下发创建Session的动作后，会将创建好的Session放入该量表中，同时通过crm_lock保持着业务处理中的同步。</p>
+<p>一个Session可以包含很多条Link，其中变量num_links存储了Link数量，数组links存储着所有link，entry变量作为当前session的实体可以嵌入cam_req_mgr_core_device中的session链表中进行统一管理。</p>
+<p>在CSL下发CAM_REQ_MGR_LINK命令的时候，会去创建cam_req_mgr_core_link。<br>该结构体比较复杂，接下来我们主要介绍下几个主要的变量：</p>
+<ul>
+<li>link_hdl：作为该Link的句柄，区别于其它Link。</li>
+<li>num_devs： 表示了该条Link上连接了多少个子设备。</li>
+<li>max_delay： 表示了从属于该Link上的所有子设备具有的最大的Pipeline delay值。</li>
+<li>l_dev： 存储着所有从属于该Link上的子设备，后续对于子设备的控制都是通过该数组来进行的。</li>
+<li>req： 该成员主要用于管理下发的request。</li>
+<li>state: 标志着该Link的状态，而Link状态主要包括了CAM_CRM_LINK_STATE_AVAILABLE/CAM_CRM_LINK_STATE_IDLE/CAM_CRM_LINK_STATE_READY/CAM_CRM_LINK_STATE_ERR几种状态。</li>
+</ul>
+<p>创建完Link之后，会将其存入一个存储cam_req_mgr_core_link的全局变量g_links中进行统一管理。</p>
+<p>而当下发CAM_REQ_MGR_SCHED_REQ命令的时候，会在内部进行解析，并且将其存入cam_req_mgr_core_link中的cam_req_mgr_req_data中等待后续的流转。<br>其中in_q变量主要用于存储request，而l_tbl用于记录pipeline delay的相关信息，而apply_data数组用于存储所有的等待处理的request信息。</p>
+<h3 id="2-Cam-Sync"><a href="#2-Cam-Sync" class="headerlink" title="2. Cam Sync"></a>2. Cam Sync</h3><p>该模块本质上是一个软件模块，用于保持与UMD的图像数据的同步，主要利用了V4L2框架的event机制，由CSL进行事件的等待，一旦数据处理完毕，该模块便可以向上层发送事件，进而，通知CSL取出数据进行下一步处理，其中包括了几个主要ioctl的命令：</p>
+<ul>
+<li>CAM_SYNC_CREATE: 一旦CSL部分需要创建一个用于同步的实体的时候便下发该命令，而在Cam Sync中，会将传入的信息存入内部的sync_table_row数组中进行管理，并且将生成的sync_obj传入上层。</li>
+<li>CAM_SYNC_DESTROY： 销毁用于同步的sync实体。</li>
+<li>CAM_SYNC_REGISTER_PAYLOAD： 通过该命令将一些同步的回调方法注册到Cam Sync中，这样一当数据处理完成，Cam Sync便可以由之前创建的sync_obj来找到相应的回调方法，进而调用该回调方法进行后续处理。</li>
+<li>CAM_SYNC_DEREGISTER_PAYLOAD：释放之前注册的相关同步实体的信息，包括其回调方法。</li>
+<li>CAM_SYNC_SIGNAL：该命令主要用于CamX-CHI中软件Node处理完数据之后，通知Cam Sync进行后续处理的目的。</li>
+</ul>
+<p>其中包括了几个比较重要的结构体，首先在初始化过程中会去创建sync_device结构体，其主要的几个变量如下：</p>
+<ul>
+<li>vdev: 创建的video_device。</li>
+<li>v4l2_dev: 创建的v4l2_device设备。</li>
+<li>sync_table: 用于存储sync_table_row的数组。</li>
+<li>cam_sync_eventq: v4l2设备描述符结构体，其中维护着event事件队列。</li>
+</ul>
+<p>其中最重要的时sync_table中存储的sync_table_row结构体，它代表了整个对应于CSL中的sync object，其中比较重要的变量含义如下：</p>
+<ul>
+<li>sync_id：该sync object的唯一标识，同时该标识于CSL保持同步。</li>
+<li>state: 代表了当前sync object的状态。</li>
+<li>user_payload_list： 存储着该sync object所对应的来自UMD的payload，该payload在KMD中并没有被使用，仅仅存储与KMD中，一旦当前sync object被触发，便直接将其再次传入UMD中。</li>
+</ul>
+<h3 id="三、模块初始化"><a href="#三、模块初始化" class="headerlink" title="三、模块初始化"></a>三、模块初始化</h3><p>在系统启动初期，整个相机驱动中的各个模块都开始进行加载了，接下来我们依次介绍下：<br>首先是CRM的初始化，按照linux驱动模块的标准方法，会走到module_init宏声明的驱动结构体中的probe方法，这里是cam_req_mgr_probe方法，在该方法中主要做了以下几个事情：</p>
+<ul>
+<li>调用cam_v4l2_device_setup方法，创建并向系统注册用于管理所有子设备的v4l2_device。</li>
+<li>调用cam_media_device_setup方法，创建并向系统注册media_device，并且创建了media设备节点，用于CSL枚举KMD中所有设备。</li>
+<li>调用cam_video_device_setup方法，创建video_device，并将v4l2_device嵌入到该结构体中，紧接着，使用标准的video注册方法，创建了video0设备节点，其中将g_cam_ioctl_ops方法集作为了video0的扩展方法，CSL下发的有关Session/Link/Request的诸多操作都是通过该方法集来进行分发的，最后将video0 media_entity中的function赋值CAM_VNODE_DEVICE_TYPE，这样CSL便可以通过该function判断出该节点便是CRM了。</li>
+<li>调用cam_req_mgr_util_init方法，其中初始化了一个cam_req_mgr_util_hdl_tbl，该结构体中存在一个handle数组，而每一个handle主要用于存储Session、Link以及各个子设备的相关信息，后期在整个图像采集的过程中，都是通过该结构体来找对应的操作实体，进而采取相应的动作。</li>
+<li>调用cam_req_mgr_core_device_init方法，该方法中，会去创建并初始化一个cam_req_mgr_core_device结构体，作为全局变量g_crm_core_dev存在于整个框架中，而该结构体中主要包含了用于存储创建的Session的session_head链表，以及用于保护Session临界资源的crm_lock。</li>
+</ul>
+<p>其次，是Cam Sync的初始化，整个流程最终会走到驱动结构体中的probe方法中，这里是cam_sync_probe方法，在该方法中主要做了以下几个事情：</p>
+<ul>
+<li>创建sync_dev结构体，该结构中通过一个sync_table_row数组来维护着所有的sync objects。</li>
+<li>调用cam_sync_media_controller_init方法，用于创建media_deivce设备，并且创建了media设备节点，提供给CSL枚举子设备的能力。</li>
+<li>调用v4l2_device_register方法，创建并像系统注册一个v4l2_device结构体，其中用于ioctl的方法集是指向的g_cam_sync_ioctl_ops，一旦CSL有创建/注册sync objects需求的时候，便会最终走到该方法中，从而实现相应的功能。</li>
+<li>调用video_register_device方法，生成video1设备节点，暴露控制接口给CSL。</li>
+<li>调用cam_sync_init_entity方法，将video1中的meida_entity中function字段赋值CAM_SYNC_DEVICE_TYPE，这样在UMD就可以通过相应的media节点枚举出该模块。</li>
+</ul>
+<p>以上两个模块都是具有独立的video设备节点的，但是对于子设备而言，由于代表着相应的硬件设备，同时需要嵌入到整个框架中才能正常运行，所以高通将其抽象成了v4l2_subdev来进行管理，这里主要还是介绍两个比较有代表性的子模块，ISP以及Sensor。</p>
+<p>首先来看下ISP的初始化阶段，在其相应的probe方法cam_isp_dev_probe中做了如下几个事情：</p>
+<ul>
+<li>调用cam_subdev_probe方法，在该方法中，会去注册一个v4l2_subdev，并且将其挂载到CRM中的v4l2_device上，同时还创建了一个node，并且存入了v4l2_subdev中的token中，方便以后进行读取，另外，将方法集赋值为cam_subdev_ops，最后，创建了该v4l2_subdev内部的media_entity， 并且为其function字段赋值为CAM_IFE_DEVICE_TYPE，这样也方便在枚举子设备时分辨出当前节点代表着isp模块。</li>
+<li>调用cam_isp_hw_mgr_init方法，该方法用于初始化isp中的硬件模块。</li>
+<li>调用cam_isp_context_init方法，该方法中会初始化node，在node内部创建一定数量的context，用于后期的状态维护，并且为每一个context都配置了状态机，以及子状态机来用于管理整个isp模块。</li>
+</ul>
+<p>其次来看下Sensor模块的初始化，在其相应的probe方法cam_sensor_driver_i2c_probe中主要做了以下几个事情：</p>
+<ul>
+<li>调用cam_sensor_parse_dt方法获取dts中定义的硬件信息。</li>
+<li>调用cam_sensor_init_subdev_params方法，该方法中会创建v4l2_subdev，然后挂载到CRM中的v4l2_device中，并且将sensor的私有方法集cam_sensor_internal_ops赋值给v4l2_subdev结构体中的ops，这样一旦操作相应的子设备节点，便最终会走到该方法集中，关于Sensor的一些操作便可以放到这个里面进行处理。最终将创建的v4l2_subdev中的media_entity中functon赋值为CAM_SENSOR_DEVICE_TYPE，方便CSL进行枚举Sensor设备。</li>
+</ul>
+<p>通过上面的两个子设备的初始化代码梳理，不难发现，并没有进行设备节点的创建，那关于节点的创建动作发生在哪一个阶段呢？ 为了解决这个疑问我们不得不先介绍下linux两个宏定义，一个是module_init，另一个便是late_initcall，两者都是为了声明初始化函数，但是执行时间有一个先后顺序，而late_initcall一般在所有module_init定义的方法都运行完成之后才会被运行，而针对所有子设备的节点的创建便是在这里完成的，在该方法中主要做了以下工作：</p>
+<ul>
+<li>调用cam_dev_mgr_create_subdev_nodes方法，而在该方法中会去调用v4l2标准方法v4l2_device_register_subdev_nodes来统一创建挂载在CRM中v4l2_device下的子设备节点。</li>
+</ul>
+<p>至此，整个KMD框架便初始化完成，现在便静静等待CSL下发请求。</p>
+<h2 id="四、处理UMD-CSL请求"><a href="#四、处理UMD-CSL请求" class="headerlink" title="四、处理UMD CSL请求"></a>四、处理UMD CSL请求</h2><p>整个KMD的初始化动作在linux内核启动的时候完成的，要稍早于CamX-CHI整个框架的初始化，所以在CamX-CHI进行初始化的时候，KMD框架的各个资源节点都已准备妥当，接下来我们就以CamX-CHI的初始化开始详细描述下整个KMD处理来自CSL请求的流程。</p>
+<h3 id="1-获取模块资源"><a href="#1-获取模块资源" class="headerlink" title="1. 获取模块资源"></a>1. 获取模块资源</h3><p>在CamX-CHI初始化的时候，并不知道内核驱动部分是个什么状态，所以需要打开所有的media设备节点来枚举查询每一个驱动模块。</p>
+<p>首先，打开media0，根据CAM_VNODE_DEVICE_TYPE信枚举并找到KMD框架中的CRM模块，并调用标准open方法来打开该设备，该动作最终会调用到cam_req_mgr_open方法，该方法主要做了以下几个工作：</p>
+<ul>
+<li>调用v4l2_fh_open方法，打开v4l2文件。</li>
+<li>调用cam_mem_mgr_init方法，初始化了内存管理模块，为之后的缓冲区的申请与释放做好准备。</li>
+<li>更新CRM状态为CAM_MEM_MGR_INITIALIZED。</li>
+</ul>
+<p>在打开video0之后，会另起一个线程用于监听video的事件，这样就建立了与底层的双向通讯，而在此之前，需要通过ioctl方法将CSL需要监听的事件下发到驱动层，其中包括以下几个事件：</p>
+<ul>
+<li>V4L_EVENT_CAM_REQ_MGR_SOF/V4L_EVENT_CAM_REQ_MGR_SOF_BOOT_TS： 一旦底层产生的SOF事件，便会向CSL发送该事件。</li>
+<li>V4L_EVENT_CAM_REQ_MGR_ERROR： 一旦底层产生了错误，会向上抛出该事件。</li>
+</ul>
+<p>一旦CSL获取了CRM模块信息成功之后，便开始枚举查找各个子模块了，其中会先去打开Sensor子设备，获取硬件信息，并且存入CSL中，然后再依次获取其它诸如IFE/IPE等硬件子模块并获取各自的信息，并存入CSL中，为之后的数据流转做好准备。</p>
+<p>以上动作都完成之后，便开始查询Cam Sync模块了，基本流程与CRM大致相同：</p>
+<ul>
+<li>调用open方法打开video1，该方法最终会调用内核部分的cam_sync_open方法，而该方法中会调用v4l2_fh_open方法，从而打开v4l2文件。</li>
+<li>调用ioctl方法，订阅针对CAM_SYNC_V4L_EVENT_ID_CB_TRIG事件的监听 ，而对于该事件，一般是在子模块处理数据完成之后，会触发Cam Sync发送该事件至上层。</li>
+</ul>
+<h3 id="2-打开Session"><a href="#2-打开Session" class="headerlink" title="2. 打开Session"></a>2. 打开Session</h3><p>好了，到这里，整个CamX初始化过程对于底层的请求都已经完成了，一旦用户打开相机应用之后，经过层层调用最终会去打开Session，进而调用video0的相应的ioctl方法传入CAM_REQ_MGR_CREATE_SESSION命令开始在驱动层打开Session的操作，而在驱动部分，会调用到CRM中的cam_req_mgr_create_session方法，在该方法中，会去创建一个用于代表session的handle，并将其存入全局静态变量hdl_tbl中。紧接着会去初始化该session中的link，其中该session管理着两个link数组，一个是用于初始化的links_init数组，一个是用于运行起来之后使用的links数组，这里的会首先初始化所有的links_init中的link，在使用的时候，会从该数组去取出一个空闲的link放入links中进行管理。</p>
+<h3 id="3-打开设备"><a href="#3-打开设备" class="headerlink" title="3. 打开设备"></a>3. 打开设备</h3><p>在打开Session之后，随着Pipeline的创建，CamX会通过调用CSL中的相应Node的ioctl方法，下发CAM_ACQUIRE_DEV命令，来依次打开底层硬件设备，这里我们还是以ISP为例进行分析：</p>
+<ul>
+<li>一旦CSL调用了ISP设备节点的ioctl并且下发了CAM_ACQUIRE_DEV命令，并会通过层层调用一直调到__cam_node_handle_acquire_dev方法，在该方法中会首先去在ISP对应的node中的存储空闲context的队列中获取一个context。</li>
+<li>紧接着，调用了cam_context_handle_acquire_dev方法，来通过调用之前获取的context的对用的状态机方法集中的acquire_dev方法来打开isp设备，而在该方法中，会调用cam_create_device_hdl方法，将当前session handle以及isp操作方法集存入存入hdl_tbl中，之后crm会通过该方法集操作isp模块。之后会将当前isp context状态更新为CAM_CTX_ACQUIRED，并且初始化了用于管理request的active_req_list/wati_req_list/pending_req_list/pending_req_list/free_req_list链表，并且将初始化好req_list都挂载到free链表中。</li>
+</ul>
+<p>除了ISP，会根据不同的图像采集需求，打开不同的子设备，基本流程差不多，都是通过下发CAM_ACQUIRE_DEV命令来完成的，这里我们便不进行赘述了。</p>
+<h3 id="4-创建Link"><a href="#4-创建Link" class="headerlink" title="4. 创建Link"></a>4. 创建Link</h3><p>在打开所有的子设备之后，紧接着需要将它们链接起来形成一个拓扑结构，方便各个子模块的管理。而这个动作还是通过调用CRM对应的ioctl下发CAM_REQ_MGR_LINK命令来完成的，该动作会经过层层调用，一直调用到CRM中的cam_req_mgr_link方法，接下来我们具体介绍下该方法的主要动作：</p>
+<ul>
+<li>调用__cam_req_mgr_reserve_link方法，在该方法中，首先会去从当前Session中的links_init数组中取出一个空闲的link，将其存入links数组，并且初始化其中的用于管理所有的request的in_q队列。</li>
+<li>调用cam_create_device_hdl，创建link对应的handle，并且存入hdl_tbl中。</li>
+<li>调用__cam_req_mgr_create_subdevs方法，初始化用于存储处于当前Link中的所有子设备。</li>
+<li>调用__cam_req_mgr_setup_link_info方法，该方法首先会去调用该link中的所有子设备的get_dev_info方法来获取设备信息，然后会去依次调用hdl_tbl中的链接在此Link上的所有子设备的setup_link方法，来连接子设备，同时也将CRM的一些回调方法通过该方式注入到子设备中，使其具有通知CRM的能力。</li>
+<li>更新该Link状态为CAM_CRM_LINK_STATE_READY，并且创建了一个工作队列用于操作的异步处理。</li>
+</ul>
+<h3 id="5-开启数据流"><a href="#5-开启数据流" class="headerlink" title="5. 开启数据流"></a>5. 开启数据流</h3><p>一旦整个Link创建完成之后，便可以开启数据流了，该动作通过CSL控制每一个子设备来完成，这里还是以ISP为例进行分析：</p>
+<p>由于在CamX初始化过程中已经存有打开的ISP文件句柄，所有通过调用起iotcl方法下发CAM_START_DEV命令来通知底层ISP模块开始进行数据流程传输，该命令首先会走到node,然后通过node下发到context，然后调用当前context的状态机对应的start_dev方法，而在该方法中，会首先更新当前context状态为CAM_CTX_ACTIVATED，然后通过操作底层硬件管理模块开始数据流的处理。</p>
+<p>除了ISP，还有Sensor/FLash等模块也是需要开启数据流，为之后的Request的下发做好准备。</p>
+<h3 id="6-下发Request"><a href="#6-下发Request" class="headerlink" title="6. 下发Request"></a>6. 下发Request</h3><p>一旦开启了整个数据处理流程，便可以接收Request请求了，而该动作依然还是通过CRM来完成，调用其ioctl方法，传入CRM_WORKQ_TASK_SCHED_REQ命令，该动作最终会到达内核CRM中的cam_req_mgr_schedule_request方法，而方法会将此次任务封装成task交由工作队列进行异步处理，而在工作队列中最终会调用其回调方法cam_req_mgr_process_sched_req，该方法主要做了如下工作：</p>
+<ul>
+<li>取出该request从属的link，并且将其中的in_q取出，找到一个空闲的slot，并将该slot便作为此次request在内核中的实体。</li>
+<li>更新该slot的状态为CRM_SLOT_STATUS_REQ_ADDED，并且将link中的open_req_cnt计数加1。</li>
+</ul>
+<p>从上面的梳理不难看出，下发Request的操作并不复杂，其中并没有一个实际的Request下发到子设备的动作，所以很自然地会产生一个疑问，没有下发Request的动作，那CRM是如何来驱动整个Request的流转的呢? 所以接下来我们来进一步介绍下，整个Request的流转机制。</p>
+<h3 id="7-子设备处理数据"><a href="#7-子设备处理数据" class="headerlink" title="7. 子设备处理数据"></a>7. 子设备处理数据</h3><p>当CSL下发Request到KMD之后，便会进入到DRQ中进行流转，通过之前对于CamX的学习，想必大家应该已经熟悉了整个DRQ的运行机制，DRQ的每一个Node都会有一定依赖关系，一旦某个Node满足依赖关系之后，便会调用其ProcessRequest开始进行此次的Request处理，而该动作会将图像数据的以及配置信息打包，通过调用ioctl方法下发CAM_CONFIG_DEV到具体的子设备节点来将配置写入KMD子设备中，而一旦子设备收到此次请求之后，会调用当前context的状态机所对应的config_dev方法，接下来我们具体介绍下其中的所作的动作：</p>
+<ul>
+<li>将此次配置信息包括图像数据放入硬件管理模块中，但是此时并不进行处理，等待处理指示。</li>
+<li>将此次Request信息封装一下，通过调用之前setup_link传入的回调方法集中的add_req方法通知CRM，而在CRM中，会首先通过一系列的判断，如果条件满足了便将此次request对应的slot状态更新为CRM_REQ_STATE_READY，并将该request存入pending队列中。</li>
+</ul>
+<p>由上面的分析，发现该过程中并没有进行实际的硬件配置或者处理，此时便需要等待SOF的事件，来驱动接下来的操作，而SOF事件是ISP来通知CRM的，具体流程如下：</p>
+<ul>
+<li>EPOCH中断产生，触发回调方法__cam_isp_ctx_notify_sof_in_activated_state，在该方法中会封装事件，并且通过调用CRM中传入的回调方法notify_trigger将事件发送至CRM中。</li>
+<li>一旦CRM收取到SOF事件，便会去找到对应的满足要求的request，并且调用__cam_req_mgr_process_req方法通知相应的子设备进行配置。</li>
+<li>最后ISP会将此次SOF事件通过V4L2 event机制发送至UMD，通知到CSL中。</li>
+</ul>
+<h3 id="8-数据操作完成"><a href="#8-数据操作完成" class="headerlink" title="8. 数据操作完成"></a>8. 数据操作完成</h3><p>当CamX中的各自Node完成了下发Request的操作之后，便会等待数据的处理完成，一旦完成便会触发buf_done中断，进而告知context，最终会调用cam_sync_signal方法来通知Cam Sync，而在Cam Sync中会通过子设备调用cam_sync_signal时传入的sync_id在sync_table_row找到相应的sync object，最终通过event机制，将此次处理完成的事件传入UMD CSL中，进而进行后续处理。</p>
+<p>等到最后一个Node处理完成之后，此次Request的处理便宣告完成。</p>
+<p>之前QCamera &amp; Mm-Camera架构采用的相机驱动比较简单，主要就承担了硬件的上下电以及读写寄存器的任务，并且控制方向都是从上到下，并且控制逻辑由UMD负责。但是随着时代的发展，相机硬件模块越发复杂，所以用于直接控制硬件的驱动层也需要承担更为复杂的控制任务，通过上面的分析，我们可以看到，高通重新设计了一套优秀的KMD框架，在其中加入了更多复杂的控制逻辑，以达到精细化控制底层硬件模块的目的，其中比较重要的是CRM对于子设备的横向控制，这样的好处很明显，降低了UMD控制驱动的难度，UMD只需要将请求通过V4L2框架中的设备节点下发至KMD中，之后便由KMD中的CRM来统一管理，适时地将请求下发给各个子设备，进而控制着底层硬件模块。</p>
+]]></content>
       <categories>
         <category>1. Android Camera</category>
       </categories>
@@ -2470,7 +2646,65 @@ hexo会帮我们在_posts下生成相关md文件：<br>source/_posts/my-new-blog
   <entry>
     <title>深入理解Android相机体系结构之七：相机驱动层–V4L2框架解析</title>
     <url>/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-7/</url>
-    <content><![CDATA[]]></content>
+    <content><![CDATA[<h2 id="一、概览"><a href="#一、概览" class="headerlink" title="一、概览"></a>一、概览</h2><p>相机驱动层位于HAL Moudle与硬件层之间，借助linux内核驱动框架，以文件节点的方式暴露接口给用户空间，让HAL Module通过标准的文件访问接口，从而能够将请求顺利地下发到内核中，而在内核中，为了更好的支持视频流的操作，早先提出了v4l视频处理框架，但是由于操作复杂，并且代码无法进行较好的重构，难以维护等原因，之后便衍生出了v4l2框架。</p>
+<span id="more"></span>
+
+<p>按照v4l2标准，它将一个数据流设备抽象成一个videoX节点，从属的子设备都对应着各自的v4l2_subdev实现，并且通过media controller进行统一管理，整个流程复杂但高效，同时代码的扩展性也较高。</p>
+<p>而对高通平台而言，高通整个内核相机驱动是建立在v4l2框架上的，并且对其进行了相应的扩展，创建了一个整体相机控制者的CRM，它以节点video0暴露给用户空间，主要用于管理内核中的Session、Request以及与子设备，同时各个子模块都实现了各自的v4l2_subdev设备，并且以v4l2_subdev节点暴露给用户空间，与此同时，高通还创建了另一个video1设备Camera SYNC，该设备主要用于同步数据流，保证用户空间和内核空间的buffer能够高效得进行传递。</p>
+<p>再往下与相机驱动交互的便是整个相机框架的最底层Camera Hardware了，驱动部分控制着其上下电逻辑以及寄存器读取时序并按照I2C协议进行与硬件的通信，和根据MIPI CSI协议传递数据，从而达到控制各个硬件设备，并且获取图像数据的目的。</p>
+<p>V4L2英文是Video for Linux 2，该框架是诞生于Linux系统，用于提供一个标准的视频控制框架，其中一般默认会嵌入media controller框架中进行统一管理，v4l2提供给用户空间操作节点，media controller控制对于每一个设备的枚举控制能力，于此同时，由于v4l2包含了一定数量的子设备，而这一系列的子设备都是处于平级关系，但是在实际的图像采集过程中，子设备之间往往还存在着包含于被包含的关系，所以为了维护并管理这种关系，media controller针对多个子设备建立了的一个拓扑图，数据流也就按照这个拓扑图进行流转。</p>
+<h2 id="二、流程简介"><a href="#二、流程简介" class="headerlink" title="二、流程简介"></a>二、流程简介</h2><p>整个对于v4l2的操作主要包含了如下几个主要流程：<br><img src="image.png" alt="alt text"><br>a) 打开video设备<br>在需要进行视频数据流的操作之前，首先要通过标准的字符设备操作接口open方法来打开一个video设备，并且将返回的字符句柄存在本地，之后的一系列操作都是基于该句柄，而在打开的过程中，会去给每一个子设备的上电，并完成各自的一系列初始化操作。<br>b) 查看并设置设备<br>在打开设备获取其文件句柄之后，就需要查询设备的属性，该动作主要通过ioctl传入VIDIOC_QUERYCAP参数来完成，其中该系列属性通过v4l2_capability结构体来表达，除此之外，还可以通过传入VIDIOC_ENUM_FMT来枚举支持的数据格式，通过传入VIDIOC_G_FMT/VIDIOC_S_FMT来分别获取和获取当前的数据格式，通过传入VIDIOC_G_PARM/VIDIOC_S_PARM来分别获取和设置参数。<br>c) 申请帧缓冲区<br>完成设备的配置之后，便可以开始向设备申请多个用于盛装图像数据的帧缓冲区，该动作通过调用ioctl并且传入VIDIOC_REQBUFS命令来完成，最后将缓冲区通过mmap方式映射到用户空间。<br>d) 将帧缓冲区入队<br>申请好帧缓冲区之后，通过调用ioctl方法传入VIDIOC_QBUF命令来将帧缓冲区加入到v4l2 框架中的缓冲区队列中，静等硬件模块将图像数据填充到缓冲区中。<br>e) 开启数据流<br>将所有的缓冲区都加入队列中之后便可以调用ioctl并且传入VIDIOC_STREAMON命令，来通知整个框架开始进行数据传输，其中大致包括了通知各个子设备开始进行工作，最终将数据填充到V4L2框架中的缓冲区队列中。<br>f) 将帧缓冲区出队<br>一旦数据流开始进行流转了，我们就可以通过调用ioctl下发VIDIOC_DQBUF命令来获取帧缓冲区，并且将缓冲区的图像数据取出，进行预览、拍照或者录像的处理，处理完成之后，需要将此次缓冲区再次放入V4L2框架中的队列中等待下次的图像数据的填充。<br>整个采集图像数据的流程现在看来还是比较简单的，接口的控制逻辑很清晰，主要原因是为了提供给用户的接口简单而且抽象，这样方便用户进行集成开发，其中的大部分复杂的业务处理都被V4L2很好的封装了，接下来我们来详细了解下V4L2框架内部是如何表达以及如何运转的。</p>
+<h2 id="三、关键结构体"><a href="#三、关键结构体" class="headerlink" title="三、关键结构体"></a>三、关键结构体</h2><p><img src="image-1.png" alt="alt text"><br>从上图不难看出，v4l2_device作为顶层管理者，一方面通过嵌入到一个video_device中，暴露video设备节点给用户空间进行控制，另一方面，video_device内部会创建一个media_entity作为在media controller中的抽象体，被加入到media_device中的entitie链表中，此外，为了保持对所从属子设备的控制，内部还维护了一个挂载了所有子设备的subdevs链表。</p>
+<p>而对于其中每一个子设备而言，统一采用了v4l2_subdev结构体来进行描述，一方面通过嵌入到video_device，暴露v4l2_subdev子设备节点给用户空间进行控制，另一方面其内部也维护着在media controller中的对应的一个media_entity抽象体，而该抽象体也会链入到media_device中的entities链表中。</p>
+<p>通过加入entities链表的方式，media_device保持了对所有的设备信息的查询和控制的能力，而该能力会通过media controller框架在用户空间创建meida设备节点，将这种能力暴露给用户进行控制。</p>
+<p>由此可见，V4L2框架都是围绕着以上几个主要结构体来进行的，接下来我们依次简单介绍下：<br>v4l2_device 源码如下：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">v4l2_subdev</span> &#123;</span></span><br><span class="line">  <span class="meta">#<span class="meta-keyword">if</span> defined(CONFIG_MEDIA_CONTROLLER)</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">media_entity</span> <span class="title">entity</span>;</span></span><br><span class="line">  <span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">list</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">module</span> *<span class="title">owner</span>;</span></span><br><span class="line">  <span class="keyword">bool</span> owner_v4l2_dev;</span><br><span class="line">  u32 flags;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">v4l2_device</span> *<span class="title">v4l2_dev</span>;</span></span><br><span class="line">  <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">v4l2_subdev_ops</span> *<span class="title">ops</span>;</span></span><br><span class="line">  <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">v4l2_subdev_internal_ops</span> *<span class="title">internal_ops</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">v4l2_ctrl_handler</span> *<span class="title">ctrl_handler</span>;</span></span><br><span class="line">  <span class="keyword">char</span> name[V4L2_SUBDEV_NAME_SIZE];</span><br><span class="line">  u32 grp_id;</span><br><span class="line">  <span class="keyword">void</span> *dev_priv;</span><br><span class="line">  <span class="keyword">void</span> *host_priv;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">video_device</span> *<span class="title">devnode</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">device</span> *<span class="title">dev</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">fwnode_handle</span> *<span class="title">fwnode</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">async_list</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">v4l2_async_subdev</span> *<span class="title">asd</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">v4l2_async_notifier</span> *<span class="title">notifier</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">v4l2_subdev_platform_data</span> *<span class="title">pdata</span>;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>该结构体代表了一个子设备，每一个子设备都需要在初始化的时候挂载到一个总的v4l2_device上，并且将该v4l2设备赋值给内部的v4l2_dev变量，之后将自身加入到v4l2_device中的子设备链表中进行统一管理，这种方式提高了遍历访问所有子设备的效率，同时为了表达不同硬件模块的特殊操作行为，v4l2_subdev定义了一个v4l2_subdev_ops 结构体来进行定义，其实现交由不同的硬件模块来具体完成。其中如果使能了CONFIG_MEDIA_CONTROLLER宏，便会在media_controller中生成一个对应的media_entity，来代表该子设备，而该entity便会存入子设备结构体中的entity变量中，最后，如果需要创建一个设备节点的话，通过video_device调用标准API接口进行实现，而相应的video_device便会存入其内部devnode变量中。</p>
+<p>video_device源码如下：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">video_device</span></span></span><br><span class="line"><span class="class">&#123;</span></span><br><span class="line">  <span class="meta">#<span class="meta-keyword">if</span> defined(CONFIG_MEDIA_CONTROLLER)</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">media_entity</span> <span class="title">entity</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">media_intf_devnode</span> *<span class="title">intf_devnode</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">media_pipeline</span> <span class="title">pipe</span>;</span></span><br><span class="line">  <span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">  <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">v4l2_file_operations</span> *<span class="title">fops</span>;</span></span><br><span class="line"></span><br><span class="line">  u32 device_caps;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* sysfs */</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">device</span> <span class="title">dev</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">cdev</span> *<span class="title">cdev</span>;</span></span><br><span class="line"></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">v4l2_device</span> *<span class="title">v4l2_dev</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">device</span> *<span class="title">dev_parent</span>;</span></span><br><span class="line"></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">v4l2_ctrl_handler</span> *<span class="title">ctrl_handler</span>;</span></span><br><span class="line"></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">vb2_queue</span> *<span class="title">queue</span>;</span></span><br><span class="line"></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">v4l2_prio_state</span> *<span class="title">prio</span>;</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">/* device info */</span></span><br><span class="line">  <span class="keyword">char</span> name[<span class="number">32</span>];</span><br><span class="line">  <span class="keyword">int</span> vfl_type;</span><br><span class="line">  <span class="keyword">int</span> vfl_dir;</span><br><span class="line">  <span class="keyword">int</span> minor;</span><br><span class="line">  u16 num;</span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">long</span> flags;</span><br><span class="line">  <span class="keyword">int</span> index;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* V4L2 file handles */</span></span><br><span class="line">  <span class="keyword">spinlock_t</span> fh_lock;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">fh_list</span>;</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">int</span> dev_debug;</span><br><span class="line"></span><br><span class="line">  v4l2_std_id tvnorms;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* callbacks */</span></span><br><span class="line">  <span class="built_in"><span class="keyword">void</span></span> (*release)(struct video_device *vdev);</span><br><span class="line">  <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">v4l2_ioctl_ops</span> *<span class="title">ioctl_ops</span>;</span></span><br><span class="line">  <span class="built_in">DECLARE_BITMAP</span>(valid_ioctls, BASE_VIDIOC_PRIVATE);</span><br><span class="line"></span><br><span class="line">  <span class="built_in">DECLARE_BITMAP</span>(disable_locking, BASE_VIDIOC_PRIVATE);</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">mutex</span> *<span class="title">lock</span>;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>如果需要给v4l2_device或者v4l2_subdev在系统中创建节点的话，便需要实现该结构体，并且通过video_register_device方法进行创建，而其中的fops便是video_device所对应的操作方法集，在v4l2框架内部，会将video_device嵌入到一个具有特定主设备号的字符设备中，而其方法集会在操作节点时被调用到。除了这些标准的操作集外，还定义了一系列的ioctl操作集，通过内部ioctl_ops来描述。</p>
+<p>media_device源码如下:</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">media_device</span> &#123;</span></span><br><span class="line">  <span class="comment">/* dev-&gt;driver_data points to this struct. */</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">device</span> *<span class="title">dev</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">media_devnode</span> *<span class="title">devnode</span>;</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">char</span> model[<span class="number">32</span>];</span><br><span class="line">  <span class="keyword">char</span> driver_name[<span class="number">32</span>];</span><br><span class="line">  <span class="keyword">char</span> serial[<span class="number">40</span>];</span><br><span class="line">  <span class="keyword">char</span> bus_info[<span class="number">32</span>];</span><br><span class="line">  u32 hw_revision;</span><br><span class="line"></span><br><span class="line">  u64 topology_version;</span><br><span class="line"></span><br><span class="line">  u32 id;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">ida</span> <span class="title">entity_internal_idx</span>;</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">int</span> entity_internal_idx_max;</span><br><span class="line"></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">entities</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">interfaces</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">pads</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">links</span>;</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">/* notify callback list invoked when a new entity is registered */</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">entity_notify</span>;</span></span><br><span class="line"></span><br><span class="line">  <span class="comment">/* Serializes graph operations. */</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">mutex</span> <span class="title">graph_mutex</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">media_graph</span> <span class="title">pm_count_walk</span>;</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">void</span> *source_priv;</span><br><span class="line">  <span class="built_in"><span class="keyword">int</span></span> (*enable_source)(struct media_entity *entity,</span><br><span class="line">  struct media_pipeline *pipe);</span><br><span class="line">  <span class="built_in"><span class="keyword">void</span></span> (*disable_source)(struct media_entity *entity);</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">media_device_ops</span> *<span class="title">ops</span>;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>如果使能了CONFIG_MEDIA_CONTROLLER宏，则当v4l2_device初始化的过程中便会去创建一个media_device，而这个media_device便是整个media controller的抽象管理者，每一个v4l2设备以及从属的子设备都会对应的各自的entity，并且将其存入media_device中进行统一管理，与其它抽象设备一样，media_device也具有自身的行为，比如用户可以通过访问media节点，枚举出所有的从属于同一个v4l2_device的子设备，另外，在开启数据流的时候，media_device通过将各个media_entity按照一定的顺序连接起来，实现了数据流向的整体控制。</p>
+<p>vb2_queue源码如下：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">vb2_queue</span> &#123;</span></span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">int</span> type;</span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">int</span> io_modes;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">device</span> *<span class="title">dev</span>;</span></span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">long</span> dma_attrs;</span><br><span class="line">  <span class="keyword">unsigned</span> bidirectional:<span class="number">1</span>;</span><br><span class="line">  <span class="keyword">unsigned</span> fileio_read_once:<span class="number">1</span>;</span><br><span class="line">  <span class="keyword">unsigned</span> fileio_write_immediately:<span class="number">1</span>;</span><br><span class="line">  <span class="keyword">unsigned</span> allow_zero_bytesused:<span class="number">1</span>;</span><br><span class="line">  <span class="keyword">unsigned</span> quirk_poll_must_check_waiting_for_buffers:<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">mutex</span> *<span class="title">lock</span>;</span></span><br><span class="line">  <span class="keyword">void</span> *owner;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">vb2_ops</span> *<span class="title">ops</span>;</span></span><br><span class="line">  <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">vb2_mem_ops</span> *<span class="title">mem_ops</span>;</span></span><br><span class="line">  <span class="keyword">const</span> <span class="class"><span class="keyword">struct</span> <span class="title">vb2_buf_ops</span> *<span class="title">buf_ops</span>;</span></span><br><span class="line">  <span class="keyword">void</span> *drv_priv;</span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">int</span> buf_struct_size;</span><br><span class="line">  u32 timestamp_flags;</span><br><span class="line">  <span class="keyword">gfp_t</span> gfp_flags;</span><br><span class="line">  u32 min_buffers_needed;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* private: internal use only */</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">mutex</span> <span class="title">mmap_lock</span>;</span></span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">int</span> memory;</span><br><span class="line">  <span class="class"><span class="keyword">enum</span> <span class="title">dma_data_direction</span> <span class="title">dma_dir</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">vb2_buffer</span> *<span class="title">bufs</span>[<span class="title">VB2_MAX_FRAME</span>];</span></span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">int</span> num_buffers;</span><br><span class="line"></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">queued_list</span>;</span></span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">int</span> queued_count;</span><br><span class="line"></span><br><span class="line">  <span class="keyword">atomic_t</span> owned_by_drv_count;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">done_list</span>;</span></span><br><span class="line">  <span class="keyword">spinlock_t</span> done_lock;</span><br><span class="line">  <span class="keyword">wait_queue_head_t</span> done_wq;</span><br><span class="line"></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">device</span> *<span class="title">alloc_devs</span>[<span class="title">VB2_MAX_PLANES</span>];</span></span><br><span class="line"></span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">int</span> streaming:<span class="number">1</span>;</span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">int</span> start_streaming_called:<span class="number">1</span>;</span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">int</span> error:<span class="number">1</span>;</span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">int</span> waiting_for_buffers:<span class="number">1</span>;</span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">int</span> is_multiplanar:<span class="number">1</span>;</span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">int</span> is_output:<span class="number">1</span>;</span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">int</span> copy_timestamp:<span class="number">1</span>;</span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">int</span> last_buffer_dequeued:<span class="number">1</span>;</span><br><span class="line"></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">vb2_fileio_data</span> *<span class="title">fileio</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">vb2_threadio_data</span> *<span class="title">threadio</span>;</span></span><br><span class="line"></span><br><span class="line">  <span class="meta">#<span class="meta-keyword">ifdef</span> CONFIG_VIDEO_ADV_DEBUG</span></span><br><span class="line">  <span class="comment">/*</span></span><br><span class="line"><span class="comment">  * Counters for how often these queue-related ops are</span></span><br><span class="line"><span class="comment">  * called. Used to check for unbalanced ops.</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">  u32 cnt_queue_setup;</span><br><span class="line">  u32 cnt_wait_prepare;</span><br><span class="line">  u32 cnt_wait_finish;</span><br><span class="line">  u32 cnt_start_streaming;</span><br><span class="line">  u32 cnt_stop_streaming;</span><br><span class="line">  <span class="meta">#<span class="meta-keyword">endif</span></span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>在整个V4L2框架运转过程中，最为核心的是图像数据缓冲区的管理，而这个管理工作便是由vb2_queue来完成的，vb2_queue通常在打开设备的时候被创建，其结构体中的vb2_ops可以由驱动自己进行实现，而vb2_mem_ops代表了内存分配的方法集，另外，还有一个用于将管理用户空间和内核空间的相互传递的方法集buf_ops，而该方法集一般都定义为v4l2_buf_ops这一标准方法集。除了这些方法集外，vb2_queue还通过一个vb2_buffer的数组来管理申请的所有数据缓冲区，并且通过queued_list来管理入队状态的所有buffer，通过done_list来管理被填充了数据等待消费的所有buffer。</p>
+<p>vb2_buffer源码如下：</p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="class"><span class="keyword">struct</span> <span class="title">vb2_buffer</span> &#123;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">vb2_queue</span> *<span class="title">vb2_queue</span>;</span></span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">int</span> index;</span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">int</span> type;</span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">int</span> memory;</span><br><span class="line">  <span class="keyword">unsigned</span> <span class="keyword">int</span> num_planes;</span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">vb2_plane</span> <span class="title">planes</span>[<span class="title">VB2_MAX_PLANES</span>];</span></span><br><span class="line">  u64 timestamp;</span><br><span class="line"></span><br><span class="line">  <span class="comment">/* private: internal use only</span></span><br><span class="line"><span class="comment">  *</span></span><br><span class="line"><span class="comment">  * state: current buffer state; do not change</span></span><br><span class="line"><span class="comment">  * queued_entry: entry on the queued buffers list, which holds</span></span><br><span class="line"><span class="comment">  * all buffers queued from userspace</span></span><br><span class="line"><span class="comment">  * done_entry: entry on the list that stores all buffers ready</span></span><br><span class="line"><span class="comment">  * to be dequeued to userspace</span></span><br><span class="line"><span class="comment">  */</span></span><br><span class="line">  <span class="class"><span class="keyword">enum</span> <span class="title">vb2_buffer_state</span> <span class="title">state</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">queued_entry</span>;</span></span><br><span class="line">  <span class="class"><span class="keyword">struct</span> <span class="title">list_head</span> <span class="title">done_entry</span>;</span></span><br><span class="line">&#125;;</span><br></pre></td></tr></table></figure>
+<p>该结构体代表了V4L2框架中的图像缓冲区，当处于入队状态时内部queued_entry会被链接到vb2_queue中的queued_list中，当处于等待消费的状态时其内部done_entry会被链接到vb2_queue 中的done_list中，而其中的vb2_queue便是该缓冲区的管理者。</p>
+<p>该结构体代表了V4L2框架中的图像缓冲区，当处于入队状态时内部queued_entry会被链接到vb2_queue中的queued_list中，当处于等待消费的状态时其内部done_entry会被链接到vb2_queue 中的done_list中，而其中的vb2_queue便是该缓冲区的管理者。</p>
+<h2 id="四、模块初始化"><a href="#四、模块初始化" class="headerlink" title="四、模块初始化"></a>四、模块初始化</h2><p>整个v4l2框架是在linux内核中实现的，所以按照内核驱动的运行机制，会在系统启动的过程中，通过标准的module_init方式进行初始化操作，而其初始化主要包含两个方面，一个是v4l2_device的初始化，一个是子设备的初始化，首先我们来看下v4l2_device的初始化动作的基本流程。</p>
+<p>由于驱动的实现都交由各个平台厂商进行实现，所有内部逻辑都各不相同，这里我们抽离出主要方法来进行梳理：</p>
+<p>首先对于v4l2_device的初始化而言，在系统启动的过程中，linux内核会找到module_init声明的驱动，调用其probe方法进行探测相应设备，一旦探测成功，便表示初始化工作完成。</p>
+<p>而在probe方法内部，主要做了以下操作：</p>
+<ul>
+<li>获取dts硬件信息，初始化部分硬件设备。</li>
+<li>创建v4l2_device结构体，填充信息，通过v4l2_device_register方法向系统注册并且创建video设备节点。</li>
+<li>创建media_device结构体，填充信息，通过media_device_register向系统注册，并创建media设备节点，并将其赋值给v4l2_device中的mdev。</li>
+<li>创建v4l2_device的media_entity,并将其添加到media controller进行管理。</li>
+</ul>
+<p>类似于v4l2_device的初始化工作，子设备的流程如下：</p>
+<ul>
+<li>获取dts硬件信息，初始化子设备硬件模块</li>
+<li>创建v4l2_subdev结构体，填充信息，通过v4l2_device_register_subdev向系统注册，并将其挂载到v4l2_device设备中</li>
+<li>创建对应的media_entity，并通过media_device_register_entity方法其添加到media controller中进行统一管理。</li>
+<li>最后调用v4l2_device_register_subdev_nodes方法，为所有的设置了V4L2_SUBDEV_FL_HAS_DEVNODE属性的子设备创建设备节点。</li>
+</ul>
+<h2 id="五、处理用户空间请求"><a href="#五、处理用户空间请求" class="headerlink" title="五、处理用户空间请求"></a>五、处理用户空间请求</h2><p>系统启动之后，初始化工作便已经完成，现在一旦用户想要使用图像采集功能，便会触发整个视频采集流程，会通过操作相应的video节点来获取图像数据，一般来讲，标准的V4L2框架只需要通过操作video节点即可，但是由于现在的硬件功能越来越复杂，常规的v4l2_controller已经满足不了采集需求，所以现在的平台厂商通常会暴露子设备的设备节点，在用户空间直接通过标准的字符设备控制接口来控制各个设备，而现在我们的目的是梳理V4L2框架，所以暂时默认不创建子设备节点，简单介绍下整个流程。</p>
+<p>在操作之前，还有一个准备工作需要做，那就是需要找到哪些是我们所需要的设备，而它的设备节点是什么，此时便可以通过打开media设备节点，并且通过ioctl注入MEDIA_IOC_ENUM_ENTITIES参数来获取v4l2_device下的video设备节点，该操作会调用到内核中的media_device_ioctl方法，而之后根据传入的命令，进而调用到media_device_enum_entities方法来枚举所有的设备。</p>
+<p>整个采集流程，主要使用三个标准字符设备接口来完成，分别是用于打开设备的open方法、用于控制设备的ioctl方法以及关闭设备的close方法。</p>
+<h3 id="1-打开设备-open"><a href="#1-打开设备-open" class="headerlink" title="1. 打开设备(open)"></a>1. 打开设备(open)</h3><p>一旦确认了我们需要操作的video节点是哪一个，便可以通过调用字符设备标准接口open方法来打开设备，而这个方法会首先陷入内核空间，然后调用file_operations中的open方法，再到v4l2_file_operations中的open方法，而该方法由驱动自己进行实现，其中主要包括了给各个硬件模块上电，并且调用vb2_queue_init方法创建并初始化一个vb2_queue用于数据缓冲区的管理。</p>
+<h3 id="2-控制设备-ioctl"><a href="#2-控制设备-ioctl" class="headerlink" title="2. 控制设备(ioctl)"></a>2. 控制设备(ioctl)</h3><p>在打开设备之后，接下来的大部分操作都是通过ioctl方法来完成的，而在该方法中，会首先陷入到内核空间，之后调用字符设备的v4l2_fops中的v4l2_ioctl方法，而在该方法中又会去调用video_device的video_ioctl2方法，video_ioctl2方法定义了一系列video标准的方法，通过不同的命令在v4l2_ioctls中找到相应的标准方法实现，同时为了满足用户自定义命令的实现，在video_ioctl2方法中会去调用到之前注册video_device时赋予的ioctl_ops中的vidioc_default方法，在该方法中加入用户自己的控制逻辑。</p>
+<p>在整个控制流程中，首先通过命令VIDIOC_QUERYCAP来获取设备所具有的属性，通过VIDIOC_G_PARM/VIDIOC_S_PARM来分别获取和设置设备参数，在这一系列操作配置完成之后，便需要向内核申请用于数据流转的缓冲区(Buffer)，该操作通过命令VIDIOC_REQBUFS来完成，在内核部分主要调用了标准方法vb2_reqbufs，进而调用__vb2_queue_alloc来向内核申请已知个数的Buffer，并且将其存入之前创建的vb2_queue中进行管理。</p>
+<p>申请好了Buffer之后，便可以通过传入VIDIOC_QBUF命令将申请的Buffer入队，具体操作最终会调用vb2_qbuf方法，而在该方法中会从vb2_queue的bufs数组中取出Buffer，将其加入queued_list链表中，并且更新Buffer状态，等待数据的填充或者来自用户空间的出队操作。</p>
+<p>在完成上面的操作后，整个数据流并没有开始流转起来，所以需要下发VIDIOC_STREAMON命令来通知整个框架开始出数据，在驱动中主要会去调用vb2_streamon方法，进而调用vb2_start_streaming方法，其中该方法会去将队列中的的Buffer放入到相应的驱动中，等待被填充，紧接着会去调用vb2_queue.ops.start_streaming方法来通知设备开始出图，而该方法一般由驱动自己实现，最后会调用v4l2_subdev_call(subdev, video, s_stream, mode)方法通知各个子设备开始出图。</p>
+<p>当有图像产生时，会填充到之前传入的buffe中，并且调用vb2_buffer_done方法通知vb2_queue将buffer加入到done_list链表中，并更新状态为VB2_BUF_STATE_DONE。</p>
+<p>在整个数据流开启之后，并不会自动的将图像传入用户空间，必须通过VIDIOC_DQBUF命令来从设备中读取一个帧图像数据，具体操作是通过层层调用会调用到vb2_dqbuf方法，而在该方法中会调用__vb2_get_done_vb方法去从done_list中获取Buffer，如果当前链表为空则会等待最终数据准备好，如果有准备好的buffer便直接从done_list取出，并且将其从queued_list中去掉，最后通过__vb2_dqbuf方法将Buffer返回用户空间。</p>
+<p>获取到图像数据之后，便可以进行后期的图像处理流程了，在处理完成之后，需要下发VIDIOC_QBUF将此次buffer重新加入queued_list中，等待下一次的数据的填充和出队操作。</p>
+<p>但不需要进行图像的采集时，可以通过下发VIDIOC_STREAMOFF命令来停止整个流程，具体流程首先会调用v4l2_subdev_call(subdev, video, s_stream, 0)通知所有子设备停止出图操作，其次调用vb2_buffer_done唤醒可能的等待Buffer的线程，同时更新Buffer状态为VB2_BUF_STATE_ERROR，然后调用vb2_streamoff取消所有的数据流并更新vb2_queue.streaming的为disable状态。</p>
+<h3 id="3-关闭设备-close"><a href="#3-关闭设备-close" class="headerlink" title="3. 关闭设备(close)"></a>3. 关闭设备(close)</h3><p>但确认不使用当前设备进行图像采集操作之后，便可以调用标准方法close来关闭设备。其中主要包括了调用vb2_queue_release方法释放了vb2_queue以及设备下电操作和相关资源的释放。</p>
+<p>通过上面的介绍，我相信我们已经对整个V4L2框架有了一个比较深入的认识， 然而对于一个优秀的软件架构而言，仅仅是支持现有的功能是远远不够的，随着功能的不断完善，势必会出现需要进行扩展的地方，而v4l2在设计之初便很好的考虑到了这一点，所以提供了用于扩展的方法集，开发者可以通过加入自定的命令来扩充整个框架，高通在这一点上做的非常好，在v4l2框架基础上，设计出了一个独特的KMD框架，提供给UMD CSL进行访问的接口。</p>
+]]></content>
       <categories>
         <category>1. Android Camera</category>
       </categories>
@@ -2496,7 +2730,67 @@ hexo会帮我们在_posts下生成相关md文件：<br>source/_posts/my-new-blog
   <entry>
     <title>深入理解Android相机体系结构之九：相机硬件层</title>
     <url>/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-9/</url>
-    <content><![CDATA[]]></content>
+    <content><![CDATA[<h2 id="一、简介"><a href="#一、简介" class="headerlink" title="一、简介"></a>一、简介</h2><p>相机的硬件层，作为整个框架的最底层，通过硬件模块接收来自客观世界的真实光影效果，将其转换为计算机所熟知的数字信号，并按照一定的数据格式向上源源不断提供成稳定并成像效果优秀的图像数据，整个部分复杂且高效，可以说是，一个优秀的硬件基础，就好比为整个相机框架的地基，拥有一个好的地基，便使得建造一座摩天大厦成为可能，接下来我们来详细介绍下，这部分各个组件的基本情况。</p>
+<span id="more"></span>
+
+<h2 id="二、基本硬件结构"><a href="#二、基本硬件结构" class="headerlink" title="二、基本硬件结构"></a>二、基本硬件结构</h2><p>而今的相机硬件系统纷繁复杂，但是如果仔细深入研究的话，你会发现，其实核心组件无外乎镜头、感光器、图像处理器三大件，其中镜头用来聚光，感光器件用于光电转换，而图像处理器用来加工处理图像数据，接下来我们就以这三个组件开始展开对于相机系统的世界的探索之旅。</p>
+<p><img src="image.png" alt="alt text"></p>
+<h3 id="镜头-Lens"><a href="#镜头-Lens" class="headerlink" title="镜头(Lens)"></a>镜头(Lens)</h3><p>将时间的转盘向前波动一下，让我们回到各自的小学时代，那时候老师给我们都布置了一个家庭作业，任务是制作一个小孔成像的简单模型，这个简单模型便是我接触的最原始最简单的成像系统，但是那是我一直有一个疑问，成像为什么那么模糊，这个疑问在我接触到真正的相机之后才得以解开，原来一切都是光线惹的祸。</p>
+<p>根据小孔成像原理，小孔的一端是光源，另一端是成像平面，光经过小孔，入射到平面上，无数个光线都入射到这个平面上，便形成了光源的像，但是有一个问题，就是光线是按照发散路径向四周蔓延开来，光源某点所发出的某一束光线通过小孔后会到达成像平面的某一点上，但是很显然，该点也会接收来自另一个光源上的点所发出的另一束光线，这样就形成的光的干扰，进而影响了最终的成像效果。所以为了改善这个问题，镜头便被发明出来，而镜头其实我们日常生活中接触的凸透镜，其根本目的就是为了解决光线互相干扰的问题，其原理就是通过凸透镜的折射原理，将来自同一点的光线，重新汇聚至一点，从而大幅度提升了成像效果。而这里的重新汇聚的一点便是光源那点在透镜后的像点，而由于随着光源点的不断变换，其像点会相应的变化，所以我们常常将来自无限远处的光线，通过透镜之后汇聚而成的那个点称为该镜头的焦点，而焦点到透镜中心的距离，便称为焦距，一旦透镜制作完成，焦距便被确定下来。</p>
+<h3 id="光圈快门"><a href="#光圈快门" class="headerlink" title="光圈快门"></a>光圈快门</h3><p>对于一个制作完成的镜头，无法随意调整镜头的直径，所以便在其中加入了一个叫做光圈的部件，该部件一般采用正多边形或者圆形的孔状光栅，通过调整光栅开合大小进而控制这个镜头的瞬时进光量，然而针对总的进光亮的控制仅仅依靠光圈也是不够的，需要再用到另一个叫做快门的部件，它主要决定着曝光的时长，最初的快门是通过调整镜头前的盖子的开关来进行实现，随着时代的进步，现在快门衍生出了多个实现方式，其中包括机械快门，它是作为一种只使用弹簧或者其他机械结构，不靠电力来驱动与控制速度的快门结构，电子快门，该快门结构通过马达和磁铁在电力驱动的作用下进行控制。电子断流快门，一种完全没有机械结构的快门结构，具有高快门速率和很快的影响捕捉频率，但是缺点是容易产生高光溢出现象。</p>
+<p>光圈控制着瞬时进光量，快门控制着曝光时间，通过两者的共同合作，完成了控制光线进入量的目的，进而进一步真实再现了场景的光影效果，避免了过度曝光的情况发生，极大的提升了整个提成像质量。</p>
+<h3 id="对焦马达"><a href="#对焦马达" class="headerlink" title="对焦马达"></a>对焦马达</h3><p>正如之前所说，入射光线会在通过透镜之后以锥形路径汇聚到一点，该点叫做像点，之后再以锥形发散开去，而所有的相同距离发射的光线，都会汇聚到各自的像点上时，便形成了一个都是像点组成的一个平面，而这个平面一般叫做像平面，又由于这个平面是所有像点所汇聚而成的，所以该平面是成像清晰的，而现如今的对焦的本质便是通过移动透镜，使像平面与感光器件平面重合，从而在感光器件上形成清晰的像。一般来讲，对焦可以通过手动移动透镜完成，但是更一般地，是通过一个叫做对焦马达的器件来完成。除了手动调整镜头进而完成对焦操作外，现在比较主流的方式是通过自动移动透镜进而完成对焦动作，随着技术的不断发展，而今的对焦又发展出了自动对焦策略，其中包括了相位对焦和对比度对焦。其基本原理是前后调整镜头使像平面与感光器感光平面重合，从而形成清晰的成像效果。另外，针对更为复杂的相机系统，为了获得更加优秀的成像质量，一般都会采用多个透镜组合来实现，一来可以消除色差，二来可以通过马达调整透镜间的距离，来动态的修改整个透镜组的焦距，从而满足更加复杂场景下的成像需求。</p>
+<h3 id="感光器-Sensor"><a href="#感光器-Sensor" class="headerlink" title="感光器(Sensor)"></a>感光器(Sensor)</h3><p>正如之前所讲，透镜的作用是为了汇聚光线，从而形成像平面，但是如何将这个所谓的像平面转换成计算机所熟知的图像信息呢？这就需要用到这里的感光器了，感光器并不是现代社会的专有发明，其实早在19世界初期的欧洲便有了这个概念，一位名叫尼埃普斯的法国人通过使用沥青加上薰衣草油，再以铅锡合金板作为片基，拍摄了从他家楼上看到的窗户外的场景，名叫《鸽子窝》的照片，而这里的沥青混以薰衣草油便是一种简单的感光物质，从这开始感光技术开始进入快速发展期，在1888年，美国柯达公司生产出了一种新型感光材料，柔软且可卷绕的胶卷，这是感光材料的一个质的飞跃，之后1969年在贝尔实验室，CCD数字感光器件被发明出来，将整个感光技术推入了数字时代，随后技术的不断革新，便于大规模批量生产的CMOS应运而生，将成像系统往更小更好的方向推进了一大步。随着CMOS的技术不断发展，优势明显的它渐渐取代了CCD，成为相机系统的主流感光器件</p>
+<h3 id="滤光片-IR-Filter"><a href="#滤光片-IR-Filter" class="headerlink" title="滤光片(IR Filter)"></a>滤光片(IR Filter)</h3><p>由于感光材料的特性所致，它会感受除了可见光波长范围内的光线，比如部分红外光，由于这部分红外光是不可见的，所以对于我们而言没有实际的用处(当然，这也不绝对，有的情况就是需要采集红外光的信息，比如夜视照相机)，并且可能会干扰之后的ISP的处理，所以往往需要使用一个用于过滤红外光，避免红外光线干扰，修正摄入的光线的滤片，一般分为干涉式的IR/AR-CUT(在低通滤波晶片上镀膜，利用干涉相消的原理)和吸收式的玻璃(利用光谱吸收的原理)。</p>
+<h3 id="闪光灯-Flash"><a href="#闪光灯-Flash" class="headerlink" title="闪光灯(Flash)"></a>闪光灯(Flash)</h3><p>针对某些特殊场景，比如暗光环境下拍摄需求，此时由于光线本身较少，无法完成充分的感光操作，但是为了获取正常的拍摄需求，往往需要通过外部补光来作为额外的光照补偿，基于此，闪光灯便应运而生，对于手机而言，其主要分为氙气灯与LED灯两种，由于LED闪光灯具有功耗较低、体积较小的优势，作为手机闪光灯的主流选择。另外，现在很多手机采用了双色闪光灯的策略，双色闪光灯可以根据环境的需要调节两灯发光的强度，可以更为逼近自然光的效果，相比单闪光灯强度有所提升，另外色温也较普通双闪光灯要更为准确，总体来讲效果较好。</p>
+<h3 id="图像处理器-ISP"><a href="#图像处理器-ISP" class="headerlink" title="图像处理器(ISP)"></a>图像处理器(ISP)</h3><p>一旦当感光器件完成光电转换之后，便会将数据给到图像处理器，而ISP第一步需要做的便是去掉暗电流噪声，何为暗电流噪声呢？这要从感光器件说起，针对CCD/CMOS而言，通常并不是全部都用于感光，有一部分是被专门遮挡住，用于采集在并未感光的情况的暗电流情况，通过这种方式消除掉暗电流带来的噪声。</p>
+<p>对于镜头的各处的折射率不同的属性，会随着视场角的慢慢增大，能够通过镜头的斜光束慢慢减少，从而产生了图像中心亮度较边缘部分要高，这个现象在光学系统中叫做渐晕，很显然这种差异性会带成像的不自然，所以ISP接下来需要对于这种偏差进行修正，而修正的算法便是镜头阴影矫正，具体原理便是以图像中间亮度均匀的区域为中心，计算出个点由于衰减带来的图像变暗速度，从而计算出RGB三通道的补偿因子，根据这些补偿因子来对图像进行修正。</p>
+<p>随后，由于感光器件针对光线都是采用红、绿、蓝三基色进行分别采集而成的，所以数据一般会呈现出类似马赛克的排布效果，此时便需要完成去马赛克处理，基本原理便是通过一定的插值算法，通过附近的颜色分量猜测该像素所缺失的颜色分量，力争还原每一个像素的真实颜色效果，从而形成一个颜色真实的图像数据，而此时的数据格式便是RAW数据格式，即最原始的图像数据。</p>
+<p>当感光器进行光电转换的过程中，每一个环节都会产生一定的偏差，而这个偏差到最后便会以噪声的方式表现出来，所以接下来需要对于这个无关信息–噪声进行一定的降噪处理，当前主要采用了非线性去噪算法，比如双边滤波器，在采样时不仅考虑了像素在空间距离上的关系，同时还加入了像素间的相似程度考虑，从而保持了原始图像的大体分块，对于边缘信息保持良好。</p>
+<p>进一步降低了噪声之后，ISP需要对于图像白平衡进行处理，由于不同场景下的外界色温的不同，需要按照一定的比例调整RGB分量的值，从而使得在感光器中，白色依然是呈现白色的效果。白平衡可以采用手动白平衡，通过手动调整三个颜色分量的比例关系，达到白平衡的目的，而更一般地采用了自动白平衡的处理，这里ISP就承担着自动白平衡的使命，通过对当前图像进行分析，得到各颜色分量的比例关系，进而调整其成像效果。</p>
+<p>调整好图像白平衡后，需要进一步地调整颜色误差，这里的误差主要由于滤光片各颜色块之间存在颜色渗透所导致，一般在Tunning过程中会利用相机模组拍摄的图像与标准图像相比较得到的一个矫正矩阵，ISP利用这个矩阵来对拍摄的图像进行图像颜色矫正，从而达到还原拍摄场景中真实颜色的目的。</p>
+<p>以上简单罗列了下，图像处理器的几个基本功能，虽然每个厂商所生产的ISP都不尽相同，但是基本都包括了以上几个步骤，由此可见，图像处理器是用来提升整个相机系统的成像效果的。</p>
+<h2 id="三、手机相机简介"><a href="#三、手机相机简介" class="headerlink" title="三、手机相机简介"></a>三、手机相机简介</h2><p><img src="image-1.png" alt="alt text"><br>对于手机上的相机系统，受到尺寸以及功耗的限制，无法像专业相机那样，为了保证成像效果，可以的很方便地更换更大的镜头，加入更大尺寸的CCD/CMOS感光器件，可以放入更加强大的图像处理模块，所以留给手机的发挥空间并不是很大，但是即便如此，各大手机厂商依旧在有限的空间和续航能力下，将相机系统做到了在某些领域媲美专业相机的地步，接下来我们来简单介绍下这套小体积但具有大能量的相机系统。</p>
+<p>如图所示，手机的相机系统可以分为两个部分，一个是相机模组，一个是图像处理器ISP，相机模组是用来进行进行光电转换的，而图像处理器正如之前所介绍那样是用于图像处理的，接下来我们分别来看下，两者在手机端是如何运行的。</p>
+<h3 id="相机模组"><a href="#相机模组" class="headerlink" title="相机模组"></a>相机模组</h3><p>由于受到体积的限制，手机相机模组往往做得十分精致小巧，里面主要包括了镜头、对焦马达、滤光片以及感光器(Sensor)。<br>手机中的镜头，一般为了消除色差都会采用多个透镜的组合，手机中的镜头也不例外，其材质多是玻璃和塑料的组合，对于塑料镜头而言，成本较低，适合用于低端产品中的相机系统，而玻璃一般成像质量较高，但是成本也稍高于塑料镜头，所以往往用于一些追求成像质量的手机中，同时其中，镜头主要存在以下几个参数：</p>
+<ul>
+<li>视场角FOV，该参数表明了通过镜头可以成像多大范围的场景，一般FOV越大就越能看到大范围的景物，但是有可能会带来严重的畸变，通常使用后期的畸变矫正算法来修正大FOV所带来的畸变。</li>
+<li>焦距F ，规定所有平行于透镜主轴的光线汇聚到的那点叫做焦点，而焦点到透镜中心的距离便是这里的焦距，一般焦距越大，镜头的FOV也就越小。而越短的焦距，往往FOV越大。</li>
+<li>光圈值f，通过镜头焦距与实际光圈的直径比值来指定，该值越小，说明进光量也就越大，手机镜头一般采用f/2.0的固定光圈。</li>
+</ul>
+<p>紧接着是对焦马达，这部分在手机中主要采用的是音圈马达(VCM)，而为了方便调整镜头，一般会将整个镜头集成在马达模组中，主板通过I2C总线传输指令，进而驱动马达的移动调整镜头达到对焦或者变焦的目的，这里我们简单介绍下音圈马达。</p>
+<p><strong>音圈马达</strong>在电子学中被称为音圈电机，之所以被称为音圈，是因为其实现原理与扬声器类似，都是在一个永久磁场内部，通过改变马达内线圈的直流电流大小，来控制弹簧片的拉升位置，进而带动镜头上下运动，达到对焦或者变焦的目的，由于具有着高灵敏度与高精度的特点，使之成为手机的主流对焦组件。</p>
+<p>在手机端，对于音圈马达的使用一般分为两种模式，一种是变焦，一种是对焦，两者原理和目的都不一样。</p>
+<ul>
+<li>变焦: 通过马达调整镜头组中某一个透镜的移动，进而改变整个镜头的焦距，引起视场角的变化，从而实现对于景物的放大缩小的目的，这种方式便是我们常说的光学变焦，这种变焦手段的优点是在放大景物的过程中，不会损失图像细节，但是缺点也很明显，受到体积的限制，无法进行大范围的光学变焦，所以手机厂商一般采用光学与数字变焦的组合方式，达到高范围的变焦目的。</li>
+<li>对焦: 通过音圈马达直接前后移动整个镜头，使物体的像平面与感光器的感光平面重合，进而得到一幅清晰的图像，这种方式正是对焦的过程。其目的是为了获得清晰的图像。</li>
+</ul>
+<p>光线在经过了镜头之后，会首先进入到下一个组件–滤光片，该部分会针对光线做进一步处理，主要有两个目的：</p>
+<ul>
+<li>过滤红外线: 由于感光器会感受到部分不可见的红外线，进而干扰后面的图像处理效果，所以需要通过滤光片，将这部分红外线过滤掉，只让可见光透过。</li>
+<li>修正光线: 光线通过透镜之后，并不都是平行垂直射向感光器的，还有很多并非直射的光线，很显然如果不对其进行拦截，会对感光器产生一定的干扰，所以滤光片利用石英的物理偏光特性，保留了直射的光线，反射掉斜射部份，避免影响旁边的感光点，进一步提升成像效果。</li>
+</ul>
+<p>经过滤光片的过滤与修正，此时入射的光线具有一定的稳定性，此时就需要通过这个相机体系的核心感光器来进行光电转换了。</p>
+<p>手机端的感光器主要有CCD与CMOS，但是由于成本较高，体积较大，CCD在手机端已经用的不多了，CMOS成为了这个领域的主流感光器，手机端的CMOS依然采用了三层结构，微透镜/滤光片/感光层，具体定义如下：</p>
+<ul>
+<li>微透镜层主要用于扩展单个像素的受光面积。</li>
+<li>滤光片采用的事Bayer模式，类似与RGB模式，都是采用RGB几个颜色分量来分别度量每一个像素的三通道的灰度值，但是基于人眼对于绿色更为敏感的基本规律，Bayer模式进一步强调了绿色分量，从而将绿色分量分别定义了Gr以及Gb，用于更好地表达图像的色彩和亮度。</li>
+<li>感光层，用于将光子转换成电子信号，在经过放大电路以及模电转换电路，将其转换成数字信号。</li>
+</ul>
+<p>其感光层的核心便是一个个感光二极管，每一个二极管边上都包含了一个放大器和一个数模转换电路。由于每一个感光元件都有一个放大器，虽然在一定程度上加快的速度的读取，但是却无法保证每一个放大器的放大效果一致，所以这种设计会带来可能的噪声。另外，由于CMOS在每一个二极管旁都加入了额外的硬件电路，势必会造成感光面积的缩小，所以这种设计会影响整体感光效果，这种设计被称为前照式，为了解决该问题，CMOS厂商推出了背照式设计，这种设计将感光像素与金属电极晶体管分别放置于感光片的两面，提高了像素占空比，增加了光线感应效率，增加了像素数量，改善了信噪比，极大的提升了成像效果。</p>
+<h3 id="图像处理器"><a href="#图像处理器" class="headerlink" title="图像处理器"></a>图像处理器</h3><p>手机端的图像处理器的实现流程基本和非手机端的相机系统中类似，对于高通平台的ISP，其中主要包括了诸如IFE/BPS/IPE/JPEG等硬件模块，他们分别担任了不通过图像处理任务，接下来我们一一简单介绍下：</p>
+<ul>
+<li>IFE(Image Front End)： Sensor输出的数据首先会到达IFE，该硬件模块会针对preview以及video去做一些颜色校正、下采样、去马赛克统计3A数据的处理。</li>
+<li>BPS(Bayer processing segment): 该硬件模块主要用于拍照图像数据的坏点去除、相位对焦、 去马赛克，下采样、HDR处理以及Bayer的混合降噪处理。</li>
+<li>IPE(Image processing engine): 该硬件主要由NPS、PPS两部分组成，承担诸如硬件降噪（MFNR、MFSR）、图像的裁剪、降噪、颜色处理、细节增强等图像处理工作。</li>
+<li>JPEG: 拍照数据的存储通过该硬件模块进行jpeg编码工作。</li>
+</ul>
+<p>相对于专业相机而言，手机相机的受众并不了解太多专业的摄影学知识，但是这类群体具有一个明显不同于专业相机受众的特点，那就是比较关注相机的便携性和可玩性，其中便携性不用多说，整体手机相机的都是以小巧著称，但是可玩性方面，各大手机厂商也是煞费苦心，采用了很多策略来扩展了相机的可玩性，其中多摄便是一个比较典型的例子。</p>
+<p>早期的手机相机，一般都是单独的后摄走遍天下，其功能比较单一，之后随着时代的发展以及年轻用户日益增多，对于自拍的需求愈发强烈，其中对于该领域的技术也有所突破。所以手机厂商便顺势推出了双摄模式，在手机前面额外加入一个相机模组来主要用于自拍，其中还在ISP中创新性地加入了美颜算法，进而大幅提升了自拍图像效果。紧接着，手机厂商将多个模组集成到手机上，进而满足了多个场景的拍照需求，接下来简单介绍下，多摄相机系统。</p>
+<p>现如今的手机相机，往往采用了多个摄像模组，有专门的用于拍摄微缩景观的微距模组，也有专门拍摄广角场景的广角模组，也有为了满足特定需求开发的双摄系统，由于双摄技术的飞速发展，而今已经产生了很多中成熟的方案。</p>
+<p>双摄技术顾名思义，是采用了两个摄像头模组分别成像，并通过特定的算法处理，融合成一张图像，达到特定成像需求的目的。普遍地，现在双摄方案主要用于实现背景虚化、提升暗光/夜景条件下成像质量、光学变焦，接下来依次进行简单的介绍：<br><strong>a) 背景虚化(RGB + RGB)</strong><br>为了实现该目的，主要采用了两个RGB的相机模组，同时对景物进行成像，利用三角测量原理，计算出每个点的景深数据，依靠该系列数据，进行前景以及背景的分离，再通过虚化算法针对背景虚化处理，最终营造出背景虚化的成像效果。值得注意的是，这里由于三角测量的原理的限制，需要对两个相机模组进行标定，使得两者成像平面位于同一平面，并且保持像素对齐。<br><strong>b) 暗光提升(RGB + MONO)</strong><br>在较暗的环境中，往往拍摄出来的效果不尽如人意，所以手机厂商便采用了一个RGB和一个黑白相机模组(MONO)来提升暗光成像效果，具体原理是，由于黑白相机模组没有Bayer滤光片，所以在暗光条件下，可以获得更多的进光量，进而保存了更多的图像细节，再加之RGB相机模组的颜色份量的补充，这样就可以更好的保证了暗光下的成像质量，同样的由于同样需要对两个相机模组的成像进行融合，所以依然需要进行标定操作，使两个相机模组能够保持像素对齐。<br><strong>c) 光学变焦(广角 + 长焦)</strong><br>光学变焦，正如之前介绍的，完全可以在对焦马达中通过调整单个透镜进行焦距变换，从而实现变焦的目的，但是有受到体积的限制，往往无法从单个相机模组中得到更大的变焦范围，所以手机厂商就提出采用两个具有不同焦距(广角和长焦)的相机模组，共同实现光学变焦的目的，其原理是通过广角模组呈现大范围的场景，通过长焦模组看到更远的场景，在拍照是模组切换以及优秀的融合算法实现了相对平滑的变焦操作。</p>
+<p>通过上面的介绍，我们可以看到一个相机系统是通过镜头、光圈快门、感光器以及图像处理器组成，而为了提高其成像质量，在发展过程中逐步加入了滤光片、对焦马达以及闪光灯等组件，同时为了将相机系统嵌入手机中，无法避免地对硬件进行了一定的裁剪，比如光圈往往摒弃了可调形式，采用了固定光圈，另外，由于体积以及续航限制，手机上主流感光器主要采用了CMOS，而对焦马达也由于体积限制，对焦范围也有所缩小。但是即便硬件受到不小的限制，通过这这几年图像处理芯片不断发展，以及算法的不断优化，手机相机系统其实正在逐步缩小与专业相机的差距，我相信在不久的将来成像效果手机相机完全可以媲美专业相机。</p>
+]]></content>
       <categories>
         <category>1. Android Camera</category>
       </categories>
