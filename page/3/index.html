@@ -148,7 +148,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">37</span>
+          <span class="site-state-item-count">39</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -367,6 +367,229 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2024/10/30/2024-10-30-CPP-Basics-C-to-Cpp/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://shenweikun.github.io/2021/11/23/2021-11-21-Camera-concept-tuning2-process/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="空白">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Weikun's Notes">
+      <meta itemprop="description" content="记录生活与职业中的点滴">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Weikun's Notes">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/11/23/2021-11-21-Camera-concept-tuning2-process/" class="post-title-link" itemprop="url">Camera调试篇-Camera Tuning流程</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-11-23 18:34:59" itemprop="dateCreated datePublished" datetime="2021-11-23T18:34:59+08:00">2021-11-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-11-23 22:52:42" itemprop="dateModified" datetime="2024-11-23T22:52:42+08:00">2024-11-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/3-Camera%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/" itemprop="url" rel="index"><span itemprop="name">3. Camera基础概念</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>722</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <span id="more"></span>
+<p>如何得到一张好图片？</p>
+<h2 id="何为一张优秀的照片"><a href="#何为一张优秀的照片" class="headerlink" title="何为一张优秀的照片"></a>何为一张优秀的照片</h2><h3 id="维度1：AWB-Auto-White-Balance"><a href="#维度1：AWB-Auto-White-Balance" class="headerlink" title="维度1：AWB (Auto White Balance)"></a>维度1：AWB (Auto White Balance)</h3><p>AWB 指自动白平衡（Auto White Balance），它是一种相机或其他图像采集设备中的功能，用于根据拍摄场景中的光线条件自动调整色彩平衡，以确保白色物体在照片或视频中呈现出真正的白色，而不是带有偏色。这样可以使整个画面的色彩更加自然和真实(因为白光是由多色光混合合成)。<br><img src="image.png" alt="alt text"></p>
+<h3 id="维度2：AEC-Auto-Exposure-Control"><a href="#维度2：AEC-Auto-Exposure-Control" class="headerlink" title="维度2：AEC (Auto Exposure Control)"></a>维度2：AEC (Auto Exposure Control)</h3><p>主要负责根据环境光线调整相机的曝光参数，以确保拍摄到合适亮度的图像。<br><img src="image-1.png" alt="alt text"></p>
+<h3 id="维度3：AF-Auto-Focus"><a href="#维度3：AF-Auto-Focus" class="headerlink" title="维度3：AF (Auto Focus)"></a>维度3：AF (Auto Focus)</h3><p>用于使相机快速、准确地对焦在被拍摄对象上。<br><img src="image-2.png" alt="alt text"></p>
+<h3 id="维度4：Color-Restore"><a href="#维度4：Color-Restore" class="headerlink" title="维度4：Color Restore"></a>维度4：Color Restore</h3><p>旨在尽可能准确地恢复物体原本的颜色。<br><img src="image-3.png" alt="alt text"></p>
+<h3 id="维度5：Dynamic-Range"><a href="#维度5：Dynamic-Range" class="headerlink" title="维度5：Dynamic Range"></a>维度5：Dynamic Range</h3><p>表示图像中可容纳的从最亮到最暗部分之间的比例关系，较大动态范围能呈现更丰富细节和层次。<br><img src="image-4.png" alt="alt text"></p>
+<h3 id="维度6：Sharpness-amp-amp-Noise"><a href="#维度6：Sharpness-amp-amp-Noise" class="headerlink" title="维度6：Sharpness &amp;&amp; Noise"></a>维度6：Sharpness &amp;&amp; Noise</h3><p>Sharpness（锐度）影响图像边缘和细节的清晰度，而 Noise（噪点）则是图像中不必要出现干扰信息。<br><img src="image-5.png" alt="alt text"></p>
+<p>总共六个维度：</p>
+<ul>
+<li>维度1：AWB：图像灰阶部分颜色准确，整体颜色真实；</li>
+<li>维度2：AEC：预览亮度收敛快速，过渡平稳，照片亮暗适宜；</li>
+<li>维度3：AF：对焦快速精准，体验佳，照片清晰；</li>
+<li>维度4：Color Restore：图像彩色部分还原准确，色彩鲜艳；</li>
+<li>维度5：Dynamic Range：图像亮部不过曝，暗部细节丰富，动态宽泛，层次分明；</li>
+<li>维度6：Sharpness &amp;&amp; Noise：画质细腻，噪点少，细节丰富，清晰度好。</li>
+</ul>
+<h2 id="Camera-Tuning流程"><a href="#Camera-Tuning流程" class="headerlink" title="Camera Tuning流程"></a>Camera Tuning流程</h2><h3 id="ISP对比"><a href="#ISP对比" class="headerlink" title="ISP对比"></a>ISP对比</h3><p>不同平台的ISP处理有些许差异，这里以MTK/Qcom两个老平台为例对比：<br><img src="image-6.png" alt="alt text"></p>
+<h3 id="调试流程"><a href="#调试流程" class="headerlink" title="调试流程"></a>调试流程</h3><p><img src="image-7.png" alt="alt text"></p>
+
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://shenweikun.github.io/2021/11/23/2021-11-21-Camera-concept-tuning1-Responsibilities/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="空白">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Weikun's Notes">
+      <meta itemprop="description" content="记录生活与职业中的点滴">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Weikun's Notes">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2021/11/23/2021-11-21-Camera-concept-tuning1-Responsibilities/" class="post-title-link" itemprop="url">Camera调试篇-Camera Tuning简介</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2021-11-23 18:08:09" itemprop="dateCreated datePublished" datetime="2021-11-23T18:08:09+08:00">2021-11-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-11-23 18:28:19" itemprop="dateModified" datetime="2024-11-23T18:28:19+08:00">2024-11-23</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/3-Camera%E5%9F%BA%E7%A1%80%E6%A6%82%E5%BF%B5/" itemprop="url" rel="index"><span itemprop="name">3. Camera基础概念</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>335</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>1 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>Cameratuning（相机调试）通常指对相机系统进行各种参数调整和优化，以达到最佳成像效果的过程。这包括但不限于调整白平衡、色彩校正、对比度调节、锐度设置等方面，旨在使相机拍摄出更符合需求和期望的高质量图像。它涉及到硬件和软件层面的操作和改进。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2021/11/23/2021-11-21-Camera-concept-tuning1-Responsibilities/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1025,218 +1248,6 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://shenweikun.github.io/2021/10/24/2021-10-24-BufferQueue/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="空白">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Weikun's Notes">
-      <meta itemprop="description" content="记录生活与职业中的点滴">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Weikun's Notes">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/10/24/2021-10-24-BufferQueue/" class="post-title-link" itemprop="url">BufferQueue详解</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-10-24 21:07:36" itemprop="dateCreated datePublished" datetime="2021-10-24T21:07:36+08:00">2021-10-24</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-10-31 01:01:26" itemprop="dateModified" datetime="2024-10-31T01:01:26+08:00">2024-10-31</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/2-Android-Other/" itemprop="url" rel="index"><span itemprop="name">2. Android Other</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>29k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>1:12</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>BufferQueue是Android 中所有图形处理操作的核心，是图像buffer流转重要中转站。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/10/24/2021-10-24-BufferQueue/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://shenweikun.github.io/2021/10/24/2021-10-24-a-Camera-system-architecture/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="空白">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Weikun's Notes">
-      <meta itemprop="description" content="记录生活与职业中的点滴">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Weikun's Notes">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2021/10/24/2021-10-24-a-Camera-system-architecture/" class="post-title-link" itemprop="url">Android Camera架构概述</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2021-10-24 17:47:57" itemprop="dateCreated datePublished" datetime="2021-10-24T17:47:57+08:00">2021-10-24</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-11-21 00:21:36" itemprop="dateModified" datetime="2024-11-21T00:21:36+08:00">2024-11-21</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/1-Android-Camera/" itemprop="url" rel="index"><span itemprop="name">1. Android Camera</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>1.9k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>5 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <p>谷歌根据职能的不同将Camera框架一共划分成了五层，分别是App交互层、Camera Service、Camera Provider、Camera Driver以及Camera Hardware。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2021/10/24/2021-10-24-a-Camera-system-architecture/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
     <a class="extend prev" rel="prev" title="上一页" aria-label="上一页" href="/page/2/"><i class="fa fa-angle-left"></i></a><a class="page-number" href="/">1</a><a class="page-number" href="/page/2/">2</a><span class="page-number current">3</span><a class="page-number" href="/page/4/">4</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/4/"><i class="fa fa-angle-right"></i></a>
   </nav>
@@ -1260,13 +1271,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">438k</span>
+    <span title="站点总字数">439k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">18:15</span>
+    <span title="站点阅读时长">18:18</span>
   </span>
 </div>
 <div class="busuanzi-count">
