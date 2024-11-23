@@ -2913,6 +2913,7 @@ xxx.c文件<figure class="highlight c++"><table><tr><td class="code"><pre><span 
 <span id="more"></span>
 <h2 id="技术博文汇总"><a href="#技术博文汇总" class="headerlink" title="技术博文汇总"></a>技术博文汇总</h2><hr>
 <h3 id="Camera基础概念篇"><a href="#Camera基础概念篇" class="headerlink" title="Camera基础概念篇"></a>Camera基础概念篇</h3><p><a href="https://shenweikun.github.io/2021/10/25/2021-10-25-Camera-concept/">Camera概念篇-岗位职能划分</a><br><a href="https://shenweikun.github.io/2021/10/25/2021-10-25-Camera-concept-Camera-HW/">Camera概念篇-相机原理</a><br><a href="https://shenweikun.github.io/2021/10/24/2021-10-24-Camera-concept-sensorIntroduction/">Camera概念篇-Sensor介绍</a><br><a href="https://shenweikun.github.io/2021/10/25/2021-10-24-Camera-concept-illuminant/">Camera概念篇-标准光源</a><br><a href="https://shenweikun.github.io/2021/10/25/2021-10-25-Camera-concept-Image/">Camera概念篇-图像</a><br><a href="https://shenweikun.github.io/2021/10/25/2021-10-25-Camera-concept-Color-Correction-Matrix/">Camera概念篇-色彩校正矩阵</a></p>
+<p><a href="https://shenweikun.github.io/2021/11/23/2021-11-21-Camera-concept-tuning1-Responsibilities/">Camera调试篇-CameraTuning简介</a><br><a href="https://shenweikun.github.io/2021/11/23/2021-11-21-Camera-concept-tuning2-process/">Camera调试篇-CameraTuning流程</a><br><a href="https://shenweikun.github.io/2021/11/23/2021-11-21-Camera-concept-tuning3-basic/">Camera调试篇-CameraTuning基础</a></p>
 <hr>
 <h3 id="Camera系统架构篇"><a href="#Camera系统架构篇" class="headerlink" title="Camera系统架构篇"></a>Camera系统架构篇</h3><p><a href="https://shenweikun.github.io/2021/10/24/2021-10-24-a-Camera-system-architecture/">Android Camera架构概述</a><br><a href="https://shenweikun.github.io/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-1/">深入理解Android相机体系结构之一：相机简史</a><br><a href="https://shenweikun.github.io/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-2/">深入理解Android相机体系结构之二：安卓相机架构概览</a><br><a href="https://shenweikun.github.io/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-3/">深入理解Android相机体系结构之三：相机应用层</a><br><a href="https://shenweikun.github.io/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-4/">深入理解Android相机体系结构之四：相机服务层</a><br><a href="https://shenweikun.github.io/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-5/">深入理解Android相机体系结构之五：相机硬件抽象层</a><br><a href="https://shenweikun.github.io/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-6/">深入理解Android相机体系结构之六：相机硬件抽象层实现</a><br><a href="https://shenweikun.github.io/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-7/">深入理解Android相机体系结构之七：相机驱动层–V4L2框架解析</a><br><a href="https://shenweikun.github.io/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-8/">深入理解Android相机体系结构之八：相机驱动层–高通KMD框架详解</a><br><a href="https://shenweikun.github.io/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-9/">深入理解Android相机体系结构之九：相机硬件层</a><br><a href="https://shenweikun.github.io/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-10/">深入理解Android相机体系结构之十：安卓相机架构总结</a><br><a href="https://shenweikun.github.io/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-11/">深入理解Android相机体系结构之十一：手机相机的未来与发展</a></p>
 <hr>
@@ -2926,5 +2927,87 @@ xxx.c文件<figure class="highlight c++"><table><tr><td class="code"><pre><span 
 <hr>
 <h3 id="建站"><a href="#建站" class="headerlink" title="建站"></a>建站</h3><p><a href="https://shenweikun.github.io/2018/02/07/2018-02-07-hexo-github%E6%90%AD%E5%BB%BA%E4%B8%AA%E4%BA%BA%E5%8D%9A%E5%AE%A2/">hexo+github搭建个人博客</a><br><a href="https://shenweikun.github.io/2018/03/13/How-to-modify-hexo-config/">怎么把hexo的相关信息修改为自己？</a><br><a href="https://shenweikun.github.io/2018/03/14/How-to-change-theme/">如何更换主题？</a><br><a href="https://shenweikun.github.io/2018/03/14/How-to-backup-blog/">如何备份博客？</a><br><a href="https://shenweikun.github.io/2018/03/14/How-to-edit-MarkDown-visually/">如何可视化编辑markdown?</a></p>
 ]]></content>
+  </entry>
+  <entry>
+    <title>Camera调试篇-Camera Tuning基础</title>
+    <url>/2021/11/23/2021-11-21-Camera-concept-tuning3-basic/</url>
+    <content><![CDATA[<span id="more"></span>
+<h2 id="AWB（Auto-White-Balance）"><a href="#AWB（Auto-White-Balance）" class="headerlink" title="AWB（Auto White Balance）"></a>AWB（Auto White Balance）</h2><h3 id="色温"><a href="#色温" class="headerlink" title="色温"></a>色温</h3><p>光色并存，对物体颜色的感知离不开光源的照射，相同物体在不同光源照射下所表现的颜色有所不同。</p>
+<p>色温是表示光源光谱成分的概念。某一光源的色度与某一温度下的绝对黑体的色度相同时，绝对黑体的开尔文温度即为该光源的色温。<br><img src="image.png" alt="alt text"></p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line">Tips: </span><br><span class="line">绝对黑体：根据能量守恒定律：物体吸收的能量越多，加热时它辐射的本领愈大。黑色物体对光能具有较大的吸收能力。如果一个物体能够在任何温度下全部吸收任何波长的辐射，那么这个物体称为绝对黑体。</span><br></pre></td></tr></table></figure>
+<p><img src="image-1.png" alt="alt text"></p>
+<h3 id="AWB的光学意义"><a href="#AWB的光学意义" class="headerlink" title="AWB的光学意义"></a>AWB的光学意义</h3><p>光谱的颜色会随着色温的变化而变化：色温升高，光源的颜色由暖色向冷色过渡，光源中的能量分布也由红光端向蓝光端偏移。</p>
+<p>人眼及视觉神经对色温较强的生理和心理的自适应性，能够将大多数光源下灰色在人大脑内还原成灰色，而Image Sensor 没有这种自适应能力。因此，拍出来的照片需经过算法白平衡处理，以保证和人眼看到的颜色保持一致。<br><img src="image-2.png" alt="alt text"></p>
+<h3 id="AWB的算法原理"><a href="#AWB的算法原理" class="headerlink" title="AWB的算法原理"></a>AWB的算法原理</h3><p><strong>理论基础：</strong>基于图像低阶特征的Gray World假设。<br>假设物体表面的平均反射是无色差的，对于一幅有着大量色彩变化的图像， 三个分量的平均值趋于同一灰度值 。 从物理意义上讲，灰色世界法假设自然界景物对于光线的平均反射的均值在总体上是个定值，这个定值近似地为“灰色”。 颜色平衡算法将这一假设强制应用于待处理图像，可以从图像中消除环境光的影响，获得原始场景图像。</p>
+<p>缺点: 当图像场景颜色并不丰富时，尤其出现大块单色物体时，该算法常会失效。</p>
+<p><strong>Simple Gray World：</strong>选取图像中认为是接近灰色的区域作为有效区域，将所有的有效区域的R/G、B/G值做加权平均，得到 (R/G)_mean、(B/G)_mean，然后以G 为基准，将(R/G)_mean、(B/G)_mean取倒数、做归一，计算出最终的Rgain、Ggain、Bgain赋值到原始图像。</p>
+<p><strong>White World：</strong>选取亮度较高并且接近灰色的区域作为有效区域。</p>
+<h3 id="算法实现流程："><a href="#算法实现流程：" class="headerlink" title="算法实现流程："></a>算法实现流程：</h3><p><img src="image-3.png" alt="alt text"></p>
+<ol>
+<li><p>Reference Piont：<br>采集18%灰卡在各种（九种）色温光源下RAW图像，测量图像的R/G、B/G值，将这些点及点之间的连线作为参考点和参考线。<br><img src="image-4.png" alt="alt text"></p>
+</li>
+<li><p>Outlier Removal<br>将RAW图分割成64X48个Block，通过Bounding Box剔除无效区域<br><img src="image-5.png" alt="alt text"></p>
+</li>
+<li><p>Weighting Table<br>根据光源亮度特性，赋予不同Referren Point的决策权重。<br><img src="image-6.png" alt="alt text"></p>
+</li>
+<li><p>计算所有统计区域的R/G、B/G算术平均值；确定所有有效区域的权重，计算<br>R/G、B/G加权平均值。<br><img src="image-7.png" alt="alt text"></p>
+</li>
+<li><p>特殊场景之“Green-Zone”<br><img src="clipImg.png" alt="alt text"></p>
+</li>
+<li><p>特殊场景之“Purple Sky Prevention”<br><img src="image-8.png" alt="alt text"></p>
+</li>
+<li><p>特殊场景之“Misleading Zone”<br><img src="image-9.png" alt="alt text"></p>
+</li>
+</ol>
+<h2 id="AE-Auto-Exposure"><a href="#AE-Auto-Exposure" class="headerlink" title="AE (Auto Exposure)"></a>AE (Auto Exposure)</h2><h3 id="18-灰"><a href="#18-灰" class="headerlink" title="18%灰"></a>18%灰</h3><p>人眼的结构中，有瞳孔可以控制通光量，有杆状感光细胞和椎状感光细胞以适应不同的光强，可见即使人眼有着很高的感光宽容度，依然有亮度调节系统，以适应光强变化。<br><img src="image-10.png" alt="alt text"></p>
+<p><strong>18%灰理论模型：</strong>假设室内室外景物，其平均的反光系数大约为 18%，而色彩均值，那么整幅图像可以认为是一种中灰的色调。这样，可以通过对反光率为 18%的灰卡拍摄，调整Sensor 的曝光和增益，使其亮度量化为18%的灰卡亮度（255*18%=47）。然后，对于通常的景物，就能自动的得到正确的曝光了。<br><img src="image-11.png" alt="alt text"></p>
+<h3 id="曝光公式"><a href="#曝光公式" class="headerlink" title="曝光公式"></a>曝光公式</h3><p>对于Image Sensor而言，最终的目标亮度是由Shutter(曝光时间), ISO(曝光增益)，Aperture(镜头光圈)，BV(环境亮度)决定的。<br><img src="image-12.png" alt="alt text"><br><img src="image-13.png" alt="alt text"><br>手机拍摄特定景物时，BV(环境亮度)恒定，AV（光圈）恒定，自动曝光的本质是通过调整TV（曝光时间）和SV(曝光增益)来匹配 EV（光通量的总和，即目标亮度）。</p>
+<h3 id="AE算法原理"><a href="#AE算法原理" class="headerlink" title="AE算法原理"></a>AE算法原理</h3><p><img src="image-14.png" alt="alt text"><br>自动曝光的工作原理：硬件实时分析原始Raw图的亮度统计信息，匹配算法预设的场景模式，获取各模式的匹配程度，通过加权平均的方式计算出最终的目标亮度，再将曝光公式计算出的Shutter和Gain下发给Image Sensor。</p>
+<h4 id="如何决策Target-Brightness"><a href="#如何决策Target-Brightness" class="headerlink" title="如何决策Target Brightness?"></a>如何决策Target Brightness?</h4><p><img src="image-15.png" alt="alt text"></p>
+<h5 id="AE-Mode-之“Histogram”"><a href="#AE-Mode-之“Histogram”" class="headerlink" title="AE Mode 之“Histogram”"></a>AE Mode 之“Histogram”</h5><p>统计画面中各亮度的数量分布，再根据分布特征来决策目标亮度。<br><img src="image-16.png" alt="alt text"></p>
+<h5 id="AE-Mode-之“Anti-Backlight”"><a href="#AE-Mode-之“Anti-Backlight”" class="headerlink" title="AE Mode 之“Anti-Backlight”"></a>AE Mode 之“Anti-Backlight”</h5><p>针对背景强亮度场景，根据ABL机制来动态调整背光权重及目标亮度。<br><img src="image-17.png" alt="alt text"></p>
+<h5 id="AE-Mode-之“Anti-OverExposure"><a href="#AE-Mode-之“Anti-OverExposure" class="headerlink" title="AE Mode 之“Anti-OverExposure"></a>AE Mode 之“Anti-OverExposure</h5><p>针对背景强亮度场景，根据AOE机制来动态调整背光权重及目标亮度。<br><img src="image-18.png" alt="alt text"></p>
+<h5 id="AE-Mode-之“Night-Scene”"><a href="#AE-Mode-之“Night-Scene”" class="headerlink" title="AE Mode 之“Night Scene”"></a>AE Mode 之“Night Scene”</h5><p>针对夜景，根据图像的BrightTone和DarkTone动态调整曝光权重权重及目标亮度。<br><img src="image-19.png" alt="alt text"></p>
+<h5 id="AE-Mode-之“Face-Touch-AE”"><a href="#AE-Mode-之“Face-Touch-AE”" class="headerlink" title="AE Mode 之“Face/Touch AE”"></a>AE Mode 之“Face/Touch AE”</h5><p>选取人脸区域或者触摸位置动态调整曝光权重权重及目标亮度。</p>
+<h2 id="AF-Auto-Focus"><a href="#AF-Auto-Focus" class="headerlink" title="AF (Auto Focus)"></a>AF (Auto Focus)</h2><h3 id="AF-光学模型"><a href="#AF-光学模型" class="headerlink" title="AF 光学模型"></a>AF 光学模型</h3><p><img src="image-20.png" alt="alt text"><br>自动对焦的本质是通过微距离移动整个镜头(而不是镜头内的镜片)的位置,控制镜头焦距的长短,以满足合焦条件，从而实现影像的清晰。</p>
+<h3 id="VCM-原理"><a href="#VCM-原理" class="headerlink" title="VCM 原理"></a>VCM 原理</h3><p><img src="image-21.png" alt="alt text"></p>
+<h3 id="AF算法原理"><a href="#AF算法原理" class="headerlink" title="AF算法原理"></a>AF算法原理</h3><p>常用的AF算法分主动式和被动式：<br><strong>主动式：</strong>相机上的红外线发生器、超声波发生器发出红外光或超声波到被摄体。相机上的接受器接受反射回来的红外光或超声波进行对焦。如Laser AF。<br><strong>被动式：</strong>ISP接收来自景物自身的反光, 根据焦点处画面的对比度或相位的变化，也就是准确对焦的位置， 进行自动对焦的方式。如Contrast AF及PDAF。</p>
+<h4 id="Contrast-AF"><a href="#Contrast-AF" class="headerlink" title="Contrast AF"></a>Contrast AF</h4><p>Contrast AF的本质将图片对焦区域的对比度信息量化成Focus Value，再通过“大步搜索，小步拟合”的机制找到最佳合焦点。<br><img src="image-22.png" alt="alt text"><br>整个对焦过程可分解如下：</p>
+<ol>
+<li>未合焦状态下，因为整个焦点的画面处于虚焦状态; </li>
+<li>开始对焦，镜片开始移动，画面逐渐清晰，对比度开始上升；</li>
+<li>合焦状态。画面最清晰，对比度最高，但相机并不知道，所以会继续移动镜头；</li>
+<li>继续移动镜片发现对比度开始下降。进一步移动镜片，发现对比度进一步下降，机知道已经错过焦点；</li>
+<li>镜片回退至对比度最高的位置，完成对焦。<br><img src="image-23.png" alt="alt text"></li>
+</ol>
+<h4 id="PDAF"><a href="#PDAF" class="headerlink" title="PDAF"></a>PDAF</h4><p><strong>图像的清晰度最好的时候是对比度最大的时候，同时也是像差最小的时候</strong>，反差式对焦就是通过找对焦区域对比度最大的点作为对焦准确的点，而相位对焦则是找对焦域相差最小的点作为对焦准确的点。<br><img src="image-24.png" alt="alt text"><br>基于这一特征，Image Sensor在传统的Bayer Pattern的基础上，在成像区域成对增加掩膜像素PD Pixel, 部分像素只允许左侧的光进入，部分像素只允许右侧的光线入。然后比较左右PD Pixel形成的图像，通过算法解析出来相位差来判断镜头的移动方向和位移，从而达到对焦的目的。</p>
+<h4 id="Laser-AF"><a href="#Laser-AF" class="headerlink" title="Laser AF"></a>Laser AF</h4><p>Contrast AF和PDAF是被动式对焦方式，过于依赖图像本身的MTF特征或相位特征，具有一定的局限性。</p>
+<p><strong>激光对焦</strong>原理很简单，它利用红外激光集中性强不易扩散的特性，在后置摄像头旁边的增加红外激光传感器，向被摄物体发射低功率激光，经过目标反射后被传感器接收来计算目标到测试仪器的距离。对相机而言，知道了目标的距离，对焦以一步到位。<br><img src="image-25.png" alt="alt text"><br>先进的Hybrid AF 已融合Contrast AF &amp;&amp; PDAF &amp;&amp; Laser来提升对焦速度和体验:在Laser有效距离内，优先通过Laser获取的目标距离来推动Lens;在PD Confidence可靠的前提下，先大步推动，再小步搜索；否则，启用原始的Contrast AF来爬坡寻找AF Peak点</p>
+<h2 id="Color-基础"><a href="#Color-基础" class="headerlink" title="Color 基础"></a>Color 基础</h2><h3 id="色度学基础"><a href="#色度学基础" class="headerlink" title="色度学基础"></a>色度学基础</h3><h4 id="什么是颜色"><a href="#什么是颜色" class="headerlink" title="什么是颜色"></a>什么是颜色</h4><p><img src="image-26.png" alt="alt text"></p>
+<h4 id="如何识别颜色"><a href="#如何识别颜色" class="headerlink" title="如何识别颜色"></a>如何识别颜色</h4><p><img src="image-27.png" alt="alt text"></p>
+<h4 id="如何描述颜色"><a href="#如何描述颜色" class="headerlink" title="如何描述颜色"></a>如何描述颜色</h4><p>色彩分彩色和非彩色.</p>
+<ul>
+<li>（1） 非彩色<br><img src="image-28.png" alt="alt text"><br>指黑色、白色及由黑白两色相融而成的各种深浅不同的灰色系列。<br>白色、黑色和灰色物体对光谱各波长的反射没有选择性，称为中性色.</li>
+<li>（2）彩色<br>非彩色系以外的各种颜色均为彩色。<br>色彩3要素：色相，明度，纯度（饱和度）；<br><img src="image-29.png" alt="alt text"><br><img src="image-30.png" alt="alt text"><h4 id="如何量化颜色"><a href="#如何量化颜色" class="headerlink" title="如何量化颜色"></a>如何量化颜色</h4>国际照明委员会（CIE）致力于建立一套界定和测量色彩的技术标准，其出发点是用组成某一颜色的三基色比例来规定这一颜色。<br><img src="image-31.png" alt="alt text"><br><img src="image-32.png" alt="alt text"><br>选择依据：红色位于可见光谱的末端，546.1nm的绿基色光和435.8nm的蓝基色光是两个较为明显的汞亮线谱。三者色纯度高，色彩鲜艳，比较容易从光谱中精确地分离出来，同时可以调配出多种颜色。<br><img src="image-33.png" alt="alt text"><h4 id="Camera-如何还原颜色"><a href="#Camera-如何还原颜色" class="headerlink" title="Camera 如何还原颜色"></a>Camera 如何还原颜色</h4>人眼对色彩的识别，是基于人眼对光谱存在三种不同的感应单元，不同的感应单元对<br>不同波段的光有不同的响应曲线的原理，通过大脑的合成得到色彩的感知。<br><img src="image-34.png" alt="alt text"><br>Image Sensor 对于RGB 三原色的响应与人眼具有较大差异，不同的sensor有不同的<br>光谱敏感度和不同的光电转换函数。即使对同一个影像拍摄，不同的sensor输出的数<br>据都不相同。为了取得一个“标准”的输出，就需要一个函数能校正输出结果，这个函数就是Color Matrix。Color Matrix是一个矩阵运算，它的作用是修正每个通道的值，使输出成为一个所谓的“标准”的结果，让不同的sensor达到对同一影像输出数据上的统一。<br><img src="image-35.png" alt="alt text"></li>
+</ul>
+<p>CCM输出的肤色不够红，草地不够绿，蓝天不够蓝HH 喜好色如何调整？变换颜色空<br>间，YCrCb空间接着处理。<br><img src="image-36.png" alt="alt text"><br><img src="image-37.png" alt="alt text"><br><img src="image-38.png" alt="alt text"><br><img src="image-39.png" alt="alt text"></p>
+<h2 id="ISP-基础"><a href="#ISP-基础" class="headerlink" title="ISP 基础"></a>ISP 基础</h2><p>ISP 是Image Signal Processor 的简称，也就是图像信号处理器, 在数码相机中扮演着Raw数据的Blacklevel补偿，Demosic, 坏点补偿，Shading校正，Gamma校正，动态加强，3A运算，色彩校正，色彩加强，降噪，锐化等一系列重要的角色。<br><img src="image-40.png" alt="alt text"><br><img src="image-41.png" alt="alt text"></p>
+<h3 id="OB-Offset-Blacklevel"><a href="#OB-Offset-Blacklevel" class="headerlink" title="OB(Offset Blacklevel)"></a>OB(Offset Blacklevel)</h3><p>Image Sensor的电路本身会存在暗电流，及黑电平。黑电平会导致在没有光线照射的时候，像素单元也有一定的输出电压，影响图像的进一步处理。<br>为此，ISP在RAW图处理的初始阶段，需进行黑甲平校止和补偿。<br><img src="image-42.png" alt="alt text"></p>
+<h3 id="Shading补偿"><a href="#Shading补偿" class="headerlink" title="Shading补偿"></a>Shading补偿</h3><p>镜头是圆形的，而Sensor是矩形，因此必然导致Sensor感测的通光量会从中心到边角衰减，及中心亮，边角暗。此为Lens Shading。对此需要通过ISP去给四周补偿，从而达到四周的亮度趋近于中心亮度。</p>
+<p>但是由于各个场景下的色温不同，在某个色温下RGB三原色的透射能力不同(低色温R的透射能力强些，高色温B的透射能力强些),从而出现了四周和中心颜色有偏差的问题，此为Color Shading。对此ISP新增Table Smooth Function以针对不同色温Shading补偿机制做平滑。<br><img src="image-43.png" alt="alt text"></p>
+<h3 id="Gamma校正"><a href="#Gamma校正" class="headerlink" title="Gamma校正"></a>Gamma校正</h3><p>人眼对外界光源的感光值与输入光强不是呈线性关系的，而是呈指数型关系的。直观感受体现在即对低灰阶的敏感度高于高灰阶。<br><img src="image-44.png" alt="alt text"><br>图像传感器的曝光正确，并不代表整体图像的亮度分布和人眼所见相同。还需要通过软件来调整不同亮度分布的增益，以拟合人眼的实际感知。<br><img src="image-45.png" alt="alt text"></p>
+<p>Gamma改变动态的同时，也影响颜色：<br><img src="image-46.png" alt="alt text"></p>
+<h3 id="Denoise"><a href="#Denoise" class="headerlink" title="Denoise"></a>Denoise</h3><p>由于像素光敏单元的光电二极管的场效应管，Image Sensor在信号采集的过程中不可避免地引入杂讯(噪点),在后续的曝光增益，Shading补偿，Gamma补偿及色彩加强过程中。杂讯被进一步进一步大，为此，在ISP的Pipeline末端需要对噪点做平滑或消除，以提高图像的信噪比。<br><img src="image-47.png" alt="alt text"><br>在Denoise过程中，将不可避免的导致图像Detail的丢失，因此Denoise的调试需结合Noise和Detail权衡评估。</p>
+<p><img src="image-48.png" alt="alt text"></p>
+<h3 id="Sharpness"><a href="#Sharpness" class="headerlink" title="Sharpness"></a>Sharpness</h3><p>为减小Denoise后图像细节丢失的问题，ISP有Sharpen模块增强图像边沿，提高锐度和清晰度。<br><img src="image-49.png" alt="alt text"><br>在Sharpen过程中，将不可避免的导致图像残留Noise的被放大，为此Sharpness的调试需结合Noise和Detail权衡评估。</p>
+]]></content>
+      <categories>
+        <category>3. Camera基础概念</category>
+      </categories>
+      <tags>
+        <tag>Camera基础概念</tag>
+        <tag>Android Camera</tag>
+        <tag>Camera系统</tag>
+      </tags>
   </entry>
 </search>
