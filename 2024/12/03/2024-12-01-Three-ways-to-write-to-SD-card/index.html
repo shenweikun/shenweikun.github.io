@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 5.4.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"shenweikun.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.21.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":true,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="在Linux系统中，常见的IO访问方法有Buffer IO、mmap和Direct IO三种，其IO栈区别可以简化成如图：">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Linux下不同的IO访问方法：Buffer IO、mmap和Direct IO">
+<meta property="og:url" content="https://shenweikun.github.io/2024/12/03/2024-12-01-Three-ways-to-write-to-SD-card/index.html">
+<meta property="og:site_name" content="Weikun&#39;s Notes">
+<meta property="og:description" content="在Linux系统中，常见的IO访问方法有Buffer IO、mmap和Direct IO三种，其IO栈区别可以简化成如图：">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shenweikun.github.io/2024/12/03/2024-12-01-Three-ways-to-write-to-SD-card/image.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/12/03/2024-12-01-Three-ways-to-write-to-SD-card/image-1.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/12/03/2024-12-01-Three-ways-to-write-to-SD-card/image-2.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/12/03/2024-12-01-Three-ways-to-write-to-SD-card/image-3.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/12/03/2024-12-01-Three-ways-to-write-to-SD-card/image-4.png">
+<meta property="article:published_time" content="2024-12-02T17:14:53.000Z">
+<meta property="article:modified_time" content="2024-12-02T19:33:28.451Z">
+<meta property="article:author" content="空白">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="内存">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shenweikun.github.io/2024/12/03/2024-12-01-Three-ways-to-write-to-SD-card/image.png">
+
+
+<link rel="canonical" href="https://shenweikun.github.io/2024/12/03/2024-12-01-Three-ways-to-write-to-SD-card/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://shenweikun.github.io/2024/12/03/2024-12-01-Three-ways-to-write-to-SD-card/","path":"2024/12/03/2024-12-01-Three-ways-to-write-to-SD-card/","title":"Linux下不同的IO访问方法：Buffer IO、mmap和Direct IO"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>Linux下不同的IO访问方法：Buffer IO、mmap和Direct IO | Weikun's Notes</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Weikun's Notes</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">怀揣代码中的唏嘘，记录生活中的点滴</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#PageCache"><span class="nav-number">1.</span> <span class="nav-text">PageCache</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%B5%E7%BC%93%E5%AD%98%E8%AF%BB%E5%8F%96%E7%AD%96%E7%95%A5%EF%BC%9A"><span class="nav-number">1.1.</span> <span class="nav-text">页缓存读取策略：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E9%A1%B5%E7%BC%93%E5%AD%98%E5%86%99%E7%AD%96%E7%95%A5%EF%BC%9A"><span class="nav-number">1.2.</span> <span class="nav-text">页缓存写策略：</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%B8%85%E6%A5%9A%E7%BC%93%E5%AD%98"><span class="nav-number">1.3.</span> <span class="nav-text">清楚缓存</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Buffer-IO"><span class="nav-number">2.</span> <span class="nav-text">Buffer IO</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#mmap"><span class="nav-number">3.</span> <span class="nav-text">mmap</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#Direct-IO"><span class="nav-number">4.</span> <span class="nav-text">Direct IO</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%90%8C%E6%AD%A5Direct-IO-DIO"><span class="nav-number">4.1.</span> <span class="nav-text">同步Direct IO(DIO)</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%82%E6%AD%A5Direct-IO-Asynchronous-IO"><span class="nav-number">4.2.</span> <span class="nav-text">异步Direct IO(Asynchronous IO)</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%85%B1%E6%80%A7%E4%B8%8E%E5%B7%AE%E5%BC%82"><span class="nav-number">5.</span> <span class="nav-text">共性与差异</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BC%93%E5%AD%98%E6%8E%A7%E5%88%B6"><span class="nav-number">5.1.</span> <span class="nav-text">缓存控制</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%95%B0%E6%8D%AE%E5%A4%8D%E5%88%B6%E5%92%8C-MMU-%E6%B4%BB%E5%8A%A8"><span class="nav-number">5.2.</span> <span class="nav-text">数据复制和 MMU 活动</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#I-O-%E8%B0%83%E5%BA%A6"><span class="nav-number">5.3.</span> <span class="nav-text">I&#x2F;O 调度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BA%BF%E7%A8%8B%E8%B0%83%E5%BA%A6"><span class="nav-number">5.4.</span> <span class="nav-text">线程调度</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#I-O-%E5%AF%B9%E9%BD%90"><span class="nav-number">5.5.</span> <span class="nav-text">I&#x2F;O 对齐</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BA%94%E7%94%A8%E5%A4%8D%E6%9D%82%E5%BA%A6"><span class="nav-number">5.6.</span> <span class="nav-text">应用复杂度</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">空白</p>
+  <div class="site-description" itemprop="description">记录生活与职业中的点滴</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">41</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">10</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://shenweikun.github.io/2024/12/03/2024-12-01-Three-ways-to-write-to-SD-card/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="空白">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Weikun's Notes">
+      <meta itemprop="description" content="记录生活与职业中的点滴">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="Linux下不同的IO访问方法：Buffer IO、mmap和Direct IO | Weikun's Notes">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          Linux下不同的IO访问方法：Buffer IO、mmap和Direct IO
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-12-03 01:14:53 / 修改时间：03:33:28" itemprop="dateCreated datePublished" datetime="2024-12-03T01:14:53+08:00">2024-12-03</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/5-Memory/" itemprop="url" rel="index"><span itemprop="name">5. Memory</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>7.9k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>20 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><p>在Linux系统中，常见的IO访问方法有Buffer IO、mmap和Direct IO三种，其IO栈区别可以简化成如图：<br><img src="image.png" alt="alt text"></p>
+<span id="more"></span>
+
+<h2 id="PageCache"><a href="#PageCache" class="headerlink" title="PageCache"></a>PageCache</h2><p>在介绍三种IO访问方式之前，先了解一下什么是页缓存。页缓存（PageCache）是操作系统对文件的缓存，用来减少对磁盘的 I/O 操作，以页为单位的，内容就是磁盘上的物理块，页缓存能帮助程序对文件进行顺序读写的速度几乎接近于内存的读写速度，主要原因就是由于 OS 使用 PageCache 机制对读写访问操作进行了性能优化。</p>
+<h3 id="页缓存读取策略："><a href="#页缓存读取策略：" class="headerlink" title="页缓存读取策略："></a>页缓存读取策略：</h3><p>当进程发起一个读操作 （比如，进程发起一个 read() 系统调用），它首先会检查需要的数据是否在页缓存中：</p>
+<ul>
+<li><strong>如果在</strong>，则放弃访问磁盘，而直接从页缓存中读取。</li>
+<li><strong>如果不在</strong>，则内核调度块 I/O 操作从磁盘去读取数据，并读入紧随其后的少数几个页面（不少于一个页面，通常是三个页面），然后将数据放入页缓存中。</li>
+</ul>
+<h3 id="页缓存写策略："><a href="#页缓存写策略：" class="headerlink" title="页缓存写策略："></a>页缓存写策略：</h3><p>当进程发起 write 系统调用写数据到文件中，先写到页缓存，然后方法返回。此时数据还没有真正的保存到文件中去，Linux 仅仅将页缓存中的这一页数据标记为 “脏”，并且被加入到脏页链表中。<br>然后，由 flusher 回写线程周期性将脏页链表中的页写到磁盘，让磁盘中的数据和内存中保持一致，最后清理“脏”标识。在以下三种情况下，脏页会被写回磁盘：</p>
+<ul>
+<li>空闲内存低于一个特定阈值。</li>
+<li>脏页在内存中驻留超过一个特定的阈值时。</li>
+<li>当用户进程调用 sync() 和 fsync() 系统调用时。</li>
+</ul>
+<h3 id="清楚缓存"><a href="#清楚缓存" class="headerlink" title="清楚缓存"></a>清楚缓存</h3><p>可以用 echo 3 &gt; drop_cache 把 cache/buffer 清除。</p>
+<h2 id="Buffer-IO"><a href="#Buffer-IO" class="headerlink" title="Buffer IO"></a>Buffer IO</h2><p>Buffer IO是传统的文件操作，对性能、吞吐量没有特殊要求，由kernel通过page cache统一管理缓存，page cache的创建和回收由kernel控制。</p>
+<p>read/fread调用要求内核读取文件的一部分并将数据复制到调用进程地址空间中。如果所有请求的数据都在page cache中，内核将复制它并立即返回；否则，它将安排磁盘将请求的数据读取到page cache中，阻塞调用线程，当数据可用时，它将恢复线程并复制数据。</p>
+<p>write/fwrite调用默认是异步写，只是将数据复制到page cache中并立即返回，内核将在一段时间后将page cache写回磁盘；如果使用sync，则是同步写，保证该文件所有的脏页落盘后才返回<br><img src="image-1.png" alt="alt text"></p>
+<p><strong>整个过程有几次拷贝？</strong>从磁盘到 Page Cache 算第一次的话，从 Page Cache 到用户态 buffer 就是第二次。</p>
+<p>使用示例：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> BUFFER_SIZE 100</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 文件名</span></span><br><span class="line">    <span class="keyword">char</span> *filename = <span class="string">&quot;test.txt&quot;</span>;</span><br><span class="line">    <span class="comment">// 用于写入文件的数据</span></span><br><span class="line">    <span class="keyword">char</span> dataToWrite[] = <span class="string">&quot;Hello, this is some data to write into the file.&quot;</span>;</span><br><span class="line">    <span class="keyword">char</span> buffer[BUFFER_SIZE];</span><br><span class="line">    <span class="keyword">int</span> fileDescriptor, bytesWritten, bytesRead;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 打开文件，如果文件不存在则创建，权限设置为可读写</span></span><br><span class="line">    fileDescriptor = <span class="built_in">open</span>(filename, O_CREAT | O_RDWR, <span class="number">0666</span>);</span><br><span class="line">    <span class="keyword">if</span> (fileDescriptor == <span class="number">-1</span>) &#123;</span><br><span class="line">        <span class="built_in">perror</span>(<span class="string">&quot;Error opening file&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 向文件中写入数据</span></span><br><span class="line">    bytesWritten = <span class="built_in">write</span>(fileDescriptor, dataToWrite, <span class="built_in"><span class="keyword">sizeof</span></span>(dataToWrite));</span><br><span class="line">    <span class="keyword">if</span> (bytesWritten == <span class="number">-1</span>) &#123;</span><br><span class="line">        <span class="built_in">perror</span>(<span class="string">&quot;Error writing to file&quot;</span>);</span><br><span class="line">        <span class="built_in">close</span>(fileDescriptor);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Wrote %d bytes to the file.\n&quot;</span>, bytesWritten);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将文件指针移动到文件开头，以便读取刚才写入的数据</span></span><br><span class="line">    <span class="built_in">lseek</span>(fileDescriptor, <span class="number">0</span>, SEEK_SET);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 从文件中读取数据到缓冲区</span></span><br><span class="line">    bytesRead = <span class="built_in">read</span>(fileDescriptor, buffer, BUFFER_SIZE);</span><br><span class="line">    <span class="keyword">if</span> (bytesRead == <span class="number">-1</span>) &#123;</span><br><span class="line">        <span class="built_in">perror</span>(<span class="string">&quot;Error reading from file&quot;</span>);</span><br><span class="line">        <span class="built_in">close</span>(fileDescriptor);</span><br><span class="line">        <span class="keyword">return</span> <span class="number">1</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    buffer[bytesRead] = <span class="string">&#x27;\0&#x27;</span>;  <span class="comment">// 添加字符串结束符</span></span><br><span class="line"></span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Read from file: %s\n&quot;</span>, buffer);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 关闭文件</span></span><br><span class="line">    <span class="built_in">close</span>(fileDescriptor);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="mmap"><a href="#mmap" class="headerlink" title="mmap"></a>mmap</h2><p>mmap将PageCache映射到用户的虚拟内存地址，用户代码可以直接以内存访问的方式，对page cache进行操作。</p>
+<p>使用mmap系统调用将文件内存映射到应用程序地址空间中。这会使地址空间的一部分直接指向包含文件数据的page cache页面。完成这个准备步骤后，应用程序就可以使用处理器的内存读和内存写指令来访问文件数据了。如果所请求的数据恰好就在缓存中，那么内核会被完全绕过，读（或写）操作将以内存速度执行。如果发生缓存未命中的情况，就会产生缺页异常，内核会让当前活动线程进入休眠状态，同时去读取该页的数据。当数据最终准备好时，内存管理单元会被设置好，以便新读取的数据能被线程访问，随后该线程会被唤醒。<br><img src="image-2.png" alt="alt text"></p>
+<p><strong>整个过程有几次拷贝？</strong>从磁盘到Page Cache一次拷贝。相比于Buffer IO少了 Page Cache 到用户态 buffer 的一次拷贝。</p>
+<p>使用示例：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br><span class="line">60</span><br><span class="line">61</span><br><span class="line">62</span><br><span class="line">63</span><br><span class="line">64</span><br><span class="line">65</span><br><span class="line">66</span><br><span class="line">67</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/stat.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/mman.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FILE_PATH <span class="meta-string">&quot;test.txt&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FILE_SIZE 100</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 打开文件</span></span><br><span class="line">    <span class="keyword">int</span> fd = <span class="built_in">open</span>(FILE_PATH, O_RDWR | O_CREAT, S_IRUSR | S_IWUSR);</span><br><span class="line">    <span class="keyword">if</span> (fd == <span class="number">-1</span>) &#123;</span><br><span class="line">        <span class="built_in">perror</span>(<span class="string">&quot;open&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> EXIT_FAILURE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将文件截断为指定大小（如果文件已存在，多余部分会被丢弃；如果不存在则扩展到指定大小）</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">ftruncate</span>(fd, FILE_SIZE) == <span class="number">-1</span>) &#123;</span><br><span class="line">        <span class="built_in">perror</span>(<span class="string">&quot;ftruncate&quot;</span>);</span><br><span class="line">        <span class="built_in">close</span>(fd);</span><br><span class="line">        <span class="keyword">return</span> EXIT_FAILURE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将文件映射到内存空间</span></span><br><span class="line">    <span class="keyword">void</span> *addr = <span class="built_in">mmap</span>(<span class="literal">NULL</span>, FILE_SIZE, PROT_READ | PROT_WRITE, MAP_SHARED, fd, <span class="number">0</span>);</span><br><span class="line">    <span class="keyword">if</span> (addr == MAP_FAILED) &#123;</span><br><span class="line">        <span class="built_in">perror</span>(<span class="string">&quot;mmap&quot;</span>);</span><br><span class="line">        <span class="built_in">close</span>(fd);</span><br><span class="line">        <span class="keyword">return</span> EXIT_FAILURE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 进行读操作，这里简单打印映射内存区域（也就是文件内容对应的内存区域）的数据</span></span><br><span class="line">    <span class="keyword">char</span> *data = (<span class="keyword">char</span> *)addr;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Content read from file (before write):\n&quot;</span>);</span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; FILE_SIZE; ++i) &#123;</span><br><span class="line">        <span class="built_in">putchar</span>(data[i]);</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">putchar</span>(<span class="string">&#x27;\n&#x27;</span>);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 进行写操作，向映射内存区域写入一些数据，这里简单写入字符 &#x27;A&#x27;</span></span><br><span class="line">    <span class="keyword">for</span> (<span class="keyword">int</span> i = <span class="number">0</span>; i &lt; FILE_SIZE; ++i) &#123;</span><br><span class="line">        data[i] = <span class="string">&#x27;A&#x27;</span>;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 刷新内存映射区域到磁盘，确保数据写入磁盘</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">msync</span>(addr, FILE_SIZE, MS_SYNC) == <span class="number">-1</span>) &#123;</span><br><span class="line">        <span class="built_in">perror</span>(<span class="string">&quot;msync&quot;</span>);</span><br><span class="line">        <span class="built_in">munmap</span>(addr, FILE_SIZE);</span><br><span class="line">        <span class="built_in">close</span>(fd);</span><br><span class="line">        <span class="keyword">return</span> EXIT_FAILURE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 解除内存映射</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="built_in">munmap</span>(addr, FILE_SIZE) == <span class="number">-1</span>) &#123;</span><br><span class="line">        <span class="built_in">perror</span>(<span class="string">&quot;munmap&quot;</span>);</span><br><span class="line">        <span class="built_in">close</span>(fd);</span><br><span class="line">        <span class="keyword">return</span> EXIT_FAILURE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 关闭文件描述符</span></span><br><span class="line">    <span class="built_in">close</span>(fd);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> EXIT_SUCCESS;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h2 id="Direct-IO"><a href="#Direct-IO" class="headerlink" title="Direct IO"></a>Direct IO</h2><h3 id="同步Direct-IO-DIO"><a href="#同步Direct-IO-DIO" class="headerlink" title="同步Direct IO(DIO)"></a>同步Direct IO(DIO)</h3><p>传统的读写方式以及内存映射（mmap）都会涉及内核page cache，并将 I/O 调度工作推迟到内核来处理。当应用程序希望自行调度 I/O 时，它可以使用direct I/O。这需要使用O_DIRECT标志打开文件；后续操作将使用常规的读写系列系统调用，不过它们的行为现在会有所改变：<strong>不再访问缓存，而是直接访问磁盘</strong>，这意味着调用线程将会无条件进入休眠状态。而且，磁盘控制器会绕过内核，直接将数据复制到用户空间。<br><img src="image-3.png" alt="alt text"></p>
+<p>使用示例：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br><span class="line">34</span><br><span class="line">35</span><br><span class="line">36</span><br><span class="line">37</span><br><span class="line">38</span><br><span class="line">39</span><br><span class="line">40</span><br><span class="line">41</span><br><span class="line">42</span><br><span class="line">43</span><br><span class="line">44</span><br><span class="line">45</span><br><span class="line">46</span><br><span class="line">47</span><br><span class="line">48</span><br><span class="line">49</span><br><span class="line">50</span><br><span class="line">51</span><br><span class="line">52</span><br><span class="line">53</span><br><span class="line">54</span><br><span class="line">55</span><br><span class="line">56</span><br><span class="line">57</span><br><span class="line">58</span><br><span class="line">59</span><br></pre></td><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdio.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;stdlib.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/types.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;sys/stat.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;fcntl.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;unistd.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;string.h&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;errno.h&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> FILE_PATH <span class="meta-string">&quot;direct_io_test.txt&quot;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">define</span> BUFFER_SIZE 4096</span></span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    <span class="comment">// 以直接I/O方式打开文件，使用O_DIRECT标志</span></span><br><span class="line">    <span class="keyword">int</span> fd = <span class="built_in">open</span>(FILE_PATH, O_RDWR | O_CREAT | O_DIRECT, S_IRUSR | S_IWUSR);</span><br><span class="line">    <span class="keyword">if</span> (fd == <span class="number">-1</span>) &#123;</span><br><span class="line">        <span class="built_in">perror</span>(<span class="string">&quot;open&quot;</span>);</span><br><span class="line">        <span class="keyword">return</span> EXIT_FAILURE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 准备用于读写的缓冲区，注意使用直接I/O时，缓冲区地址需对齐</span></span><br><span class="line">    <span class="keyword">char</span> *buffer = <span class="built_in">aligned_alloc</span>(<span class="number">512</span>, BUFFER_SIZE);</span><br><span class="line">    <span class="keyword">if</span> (buffer == <span class="literal">NULL</span>) &#123;</span><br><span class="line">        <span class="built_in">perror</span>(<span class="string">&quot;aligned_alloc&quot;</span>);</span><br><span class="line">        <span class="built_in">close</span>(fd);</span><br><span class="line">        <span class="keyword">return</span> EXIT_FAILURE;</span><br><span class="line">    &#125;</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 向文件写入数据</span></span><br><span class="line">    <span class="built_in">strcpy</span>(buffer, <span class="string">&quot;This is a test data for direct I/O writing.&quot;</span>);</span><br><span class="line">    <span class="keyword">ssize_t</span> bytes_written = <span class="built_in">write</span>(fd, buffer, <span class="built_in">strlen</span>(buffer));</span><br><span class="line">    <span class="keyword">if</span> (bytes_written == <span class="number">-1</span>) &#123;</span><br><span class="line">        <span class="built_in">perror</span>(<span class="string">&quot;write&quot;</span>);</span><br><span class="line">        <span class="built_in">free</span>(buffer);</span><br><span class="line">        <span class="built_in">close</span>(fd);</span><br><span class="line">        <span class="keyword">return</span> EXIT_FAILURE;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Wrote %ld bytes to the file.\n&quot;</span>, bytes_written);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 将文件指针移动到文件开头，以便读取</span></span><br><span class="line">    <span class="built_in">lseek</span>(fd, <span class="number">0</span>, SEEK_SET);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 从文件读取数据</span></span><br><span class="line">    <span class="keyword">ssize_t</span> bytes_read = <span class="built_in">read</span>(fd, buffer, BUFFER_SIZE);</span><br><span class="line">    <span class="keyword">if</span> (bytes_read == <span class="number">-1</span>) &#123;</span><br><span class="line">        <span class="built_in">perror</span>(<span class="string">&quot;read&quot;</span>);</span><br><span class="line">        <span class="built_in">free</span>(buffer);</span><br><span class="line">        <span class="built_in">close</span>(fd);</span><br><span class="line">        <span class="keyword">return</span> EXIT_FAILURE;</span><br><span class="line">    &#125;</span><br><span class="line">    buffer[bytes_read] = <span class="string">&#x27;\0&#x27;</span>;</span><br><span class="line">    <span class="built_in">printf</span>(<span class="string">&quot;Read %ld bytes from the file: %s\n&quot;</span>, bytes_read, buffer);</span><br><span class="line"></span><br><span class="line">    <span class="comment">// 关闭文件并释放缓冲区内存</span></span><br><span class="line">    <span class="built_in">free</span>(buffer);</span><br><span class="line">    <span class="built_in">close</span>(fd);</span><br><span class="line"></span><br><span class="line">    <span class="keyword">return</span> EXIT_SUCCESS;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h3 id="异步Direct-IO-Asynchronous-IO"><a href="#异步Direct-IO-Asynchronous-IO" class="headerlink" title="异步Direct IO(Asynchronous IO)"></a>异步Direct IO(Asynchronous IO)</h3><p>异步direct I/O 是对direct I/O 的一种改进，其行为与之类似，但能防止调用线程阻塞。相反，应用线程使用io_submit(2)系统调用安排direct I/O 操作，而且该线程不会被阻塞；I/O 操作与常规线程的执行并行进行。另一个独立的系统调用io_getevents(2)用于等待并收集已完成的 I/O 操作的结果。与同步direct I/O一样，内核的页缓存会被绕过，磁盘控制器负责将数据直接复制到用户空间。<br><img src="image-4.png" alt="alt text"></p>
+<h2 id="共性与差异"><a href="#共性与差异" class="headerlink" title="共性与差异"></a>共性与差异</h2><p>不同的访问方法有一些共同的特性，也存在一些差异。下表总结了这些特性，以下将对其进行详细阐述。</p>
+<table>
+<thead>
+<tr>
+<th align="center">特性</th>
+<th align="center">读写操作（R/W）</th>
+<th align="center">内存映射（mmap）</th>
+<th align="center">直接I/O（DIO）</th>
+<th align="center">异步直接I/O（AIO/DIO）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td align="center">缓存控制</td>
+<td align="center">内核</td>
+<td align="center">内核</td>
+<td align="center">用户</td>
+<td align="center">用户</td>
+</tr>
+<tr>
+<td align="center">数据复制(不算磁盘与page cache之间)</td>
+<td align="center">是</td>
+<td align="center">否</td>
+<td align="center">否</td>
+<td align="center">否</td>
+</tr>
+<tr>
+<td align="center">内存管理单元（MMU）活动</td>
+<td align="center">低</td>
+<td align="center">高</td>
+<td align="center">无</td>
+<td align="center">无</td>
+</tr>
+<tr>
+<td align="center">I/O调度</td>
+<td align="center">内核</td>
+<td align="center">内核</td>
+<td align="center">混合</td>
+<td align="center">用户</td>
+</tr>
+<tr>
+<td align="center">线程调度</td>
+<td align="center">内核</td>
+<td align="center">内核</td>
+<td align="center">内核</td>
+<td align="center">用户</td>
+</tr>
+<tr>
+<td align="center">I/O对齐</td>
+<td align="center">自动</td>
+<td align="center">自动</td>
+<td align="center">手动</td>
+<td align="center">手动</td>
+</tr>
+<tr>
+<td align="center">应用复杂度</td>
+<td align="center">低</td>
+<td align="center">低</td>
+<td align="center">中等</td>
+<td align="center">高</td>
+</tr>
+</tbody></table>
+<h3 id="缓存控制"><a href="#缓存控制" class="headerlink" title="缓存控制"></a>缓存控制</h3><p>对于读写操作和内存映射（mmap）来说，缓存管理是内核的职责所在。系统的大部分内存都分配给了页缓存。当内存不足时，内核会决定哪些页面应该被置换出去；当页面需要写回磁盘时，内核也会进行相应处理，并且控制预读操作。应用程序可以通过madvise(2)和fadvise(2)系统调用向内核提供一些指引。</p>
+<p>让内核控制缓存有很大的优势，内核开发者们在过去数十年间投入了大量精力来对缓存所使用的算法进行优化调整。这些算法被成千上万种不同的应用程序所使用，而且通常都很有效。然而，其劣势在于这些算法是通用的，并没有针对具体的应用程序进行优化调整。内核必须推测应用程序接下来的行为，即便应用程序知晓自身的不同情况，通常也没办法帮助内核正确地进行推测。这就导致了可能会错误地置换页面、按错误的顺序调度 I/O，或者针对近期内不会使用的数据安排预读。</p>
+<h3 id="数据复制和-MMU-活动"><a href="#数据复制和-MMU-活动" class="headerlink" title="数据复制和 MMU 活动"></a>数据复制和 MMU 活动</h3><p>内存映射（mmap）方法的一个好处在于，如果数据在缓存中，那么可以完全绕过内核。内核无需将数据在内核空间和用户空间之间来回复制，因此在这一活动上耗费的处理器周期会更少。这对于大部分数据都在缓存中的负载是有利的（例如，当存储容量与内存容量的比例接近 1:1 时）。</p>
+<p>然而，当数据不在缓存中时，mmap 就存在弊端了。这种情况通常在存储容量与内存容量的比例明显高于 1:1 时发生。每一个被调入缓存的页面都会导致另一个页面被置换出去。这些页面需要在页表中插入和移除；内核必须扫描页表以找出不活跃的页面，使其成为可置换的候选页面等等。此外，mmap 需要为页表分配内存。在 x86 处理器上，这需要占用被映射文件大小的 0.2%。这个比例看似很低，但如果应用程序的存储与内存的比例为 100:1，那么结果就是 20% 的内存（0.2%×100）都要用于页表。</p>
+<h3 id="I-O-调度"><a href="#I-O-调度" class="headerlink" title="I/O 调度"></a>I/O 调度</h3><p>让内核控制缓存（针对 mmap 和读写访问方法）存在的一个问题是，应用程序失去了对 I/O 调度的控制权。内核会选择它认为合适的数据块，并安排写入或读取操作。这可能会导致以下问题：</p>
+<ul>
+<li><strong>写入风暴：</strong>当内核安排大量写入操作时，磁盘会忙碌很长一段时间，从而影响读取延迟。</li>
+<li><strong>内核无法区分 “重要” 和 “不重要” 的 I/O</strong>：属于后台任务的 I/O 可能会压过前台任务，进而影响前台任务的延迟。</li>
+</ul>
+<p>通过绕过内核页缓存，应用程序自己承担起了调度 I/O 的责任。这并不意味着问题就此解决了，但意味着只要给予足够的关注和投入精力，这些问题是可以得到解决的。</p>
+<p>使用direct I/O 时，每个线程可以控制何时发起 I/O，但内核控制着线程何时运行，所以发起 I/O 的责任由内核和应用程序共同分担。而对于异步direct I/O（AIO/DIO），应用程序完全掌控着 I/O 发起的时间。</p>
+<h3 id="线程调度"><a href="#线程调度" class="headerlink" title="线程调度"></a>线程调度</h3><p>一个使用 mmap 或读写操作的 I/O 密集型应用程序无法预估其缓存命中率会是多少。因此，它必须运行大量的线程（比其运行机器的核心数多得多）。如果线程数量过少，它们可能都会等待磁盘操作完成，从而导致处理器利用率不足。由于每个线程通常最多只有一个未完成的磁盘 I/O，为了让磁盘始终处于忙碌状态，运行的线程数量必须大致为存储子系统的并发数乘以某个较小的系数。然而，如果缓存命中率足够高，那么这些大量的线程就会相互争抢有限的核心资源。</p>
+<p>使用direct I/O 时，这个问题会有所缓解，因为应用程序确切地知道线程何时因 I/O 操作而阻塞以及何时可以运行，所以应用程序可以根据运行时的情况来调整运行线程的数量。</p>
+<p>对于异步direct I/O（AIO/DIO），应用程序可以完全控制运行线程和等待 I/O（二者完全分离），因此它能够轻松适应内存受限或磁盘受限等各种情况。</p>
+<h3 id="I-O-对齐"><a href="#I-O-对齐" class="headerlink" title="I/O 对齐"></a>I/O 对齐</h3><p>存储设备有其块大小，所有的 I/O 操作都必须按照这个块大小的倍数来执行，通常块大小为 512 字节或 4096 字节。使用读写操作或内存映射（mmap）时，内核会自动进行对齐操作，在内核发起一个小的读写操作之前，会将其扩展到正确的块边界。</p>
+<p>对于direct I/O（DIO），则需要应用程序自行进行块对齐操作。这会增加一定的复杂性，但也有优势：内核通常会将对齐扩展到 4096 字节的边界，即便 512 字节的边界就足够了，但使用 DIO 的用户应用程序可以发起按 512 字节对齐的读取操作，这样对于小数据项可以节省带宽。</p>
+<h3 id="应用复杂度"><a href="#应用复杂度" class="headerlink" title="应用复杂度"></a>应用复杂度</h3><p>尽管前文的讨论表明对于 I/O 密集型应用程序来说异步direct I/O（AIO/DIO）更具优势，但这种方法也有显著的代价：复杂度。将缓存管理的责任交给应用程序意味着它能比内核做出更好的选择，并且以更低的开销做出这些选择。然而，相应的算法需要编写和测试。使用异步 I/O 要求应用程序通过回调、协程或类似的方法来编写，而且这往往会降低许多现有库的可复用性。</p>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>空白
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://shenweikun.github.io/2024/12/03/2024-12-01-Three-ways-to-write-to-SD-card/" title="Linux下不同的IO访问方法：Buffer IO、mmap和Direct IO">https://shenweikun.github.io/2024/12/03/2024-12-01-Three-ways-to-write-to-SD-card/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
+              <a href="/tags/%E5%86%85%E5%AD%98/" rel="tag"><i class="fa fa-tag"></i> 内存</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-11/" rel="prev" title="深入理解Android相机体系结构之十一：手机相机的未来与发展">
+                  <i class="fa fa-angle-left"></i> 深入理解Android相机体系结构之十一：手机相机的未来与发展
+                </a>
+            </div>
+            <div class="post-nav-item">
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2021 – 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">空白</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">452k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">18:49</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+
+  
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"shenweikun/helloworld","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>
