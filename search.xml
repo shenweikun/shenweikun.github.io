@@ -1888,7 +1888,7 @@ xxx.c文件<figure class="highlight c++"><table><tr><td class="code"><pre><span 
 <h2 id="优化方法"><a href="#优化方法" class="headerlink" title="优化方法"></a>优化方法</h2><p>通过设置：<br>adb shell setprop vendor.debug.camera.pass1initrequestnum 4 //可以开启功能4-1=3帧，理论优化耗时3*33=99ms<br>或者直接在代码里面修改</p>
 ]]></content>
       <categories>
-        <category>1. Android Camera</category>
+        <category>6. 性能</category>
       </categories>
       <tags>
         <tag>Android Camera</tag>
@@ -3001,7 +3001,7 @@ xxx.c文件<figure class="highlight c++"><table><tr><td class="code"><pre><span 
 <hr>
 <h3 id="Camera进阶篇"><a href="#Camera进阶篇" class="headerlink" title="Camera进阶篇"></a>Camera进阶篇</h3><h4 id="MTK-Camera"><a href="#MTK-Camera" class="headerlink" title="MTK Camera"></a>MTK Camera</h4><p><a href="https://shenweikun.github.io/2024/11/18/2024-11-20-MTKcam-ISP7-Camsys-Hw-Lib/">ISP7-Camsys Hw-Lib</a><br><a href="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-CamCtrl/">ISP7-CamCtrl</a><br><a href="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-P1-Node/">ISP7-P1 node</a><br><a href="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-enable-fast-launch/">ISP7-enable fastlaunch</a></p>
 <h4 id="Qcom-Camera"><a href="#Qcom-Camera" class="headerlink" title="Qcom Camera"></a>Qcom Camera</h4><h4 id="Camera-feature"><a href="#Camera-feature" class="headerlink" title="Camera feature"></a>Camera feature</h4><h4 id="Camera优化"><a href="#Camera优化" class="headerlink" title="Camera优化"></a>Camera优化</h4><h5 id="内存"><a href="#内存" class="headerlink" title="内存"></a>内存</h5><p><a href="https://shenweikun.github.io/2024/11/20/2024-11-20-memory-libmemunreachable/">Memory libmemunreachable</a><br><a href="https://shenweikun.github.io/2024/12/03/2024-12-01-Three-ways-to-write-to-SD-card/">Linux下不同的IO访问方法：Buffer IO、mmap和Direct IO</a></p>
-<h5 id="性能"><a href="#性能" class="headerlink" title="性能"></a>性能</h5><p><a href="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-enable-fast-launch/">ISP7-enable fastlaunch</a></p>
+<h5 id="性能"><a href="#性能" class="headerlink" title="性能"></a>性能</h5><p><a href="https://shenweikun.github.io/2024/11/19/2024-11-20-MTKcam-ISP7-enable-fast-launch/">Mtkcam ISP7-enable fastlaunch</a><br><a href="https://shenweikun.github.io/2024/12/03/2024-12-02-Which-is-fastest-read-fread-ifstream-or-mmap/">哪种方式最快：read、fread、ifstream还是mmap？</a></p>
 <hr>
 <h3 id="其它知识点"><a href="#其它知识点" class="headerlink" title="其它知识点"></a>其它知识点</h3><p><a href="https://shenweikun.github.io/2021/10/17/2021-10-17-CTS-Introduction/">Camera CTS介绍</a><br><a href="https://shenweikun.github.io/2021/10/24/2021-10-24-BufferQueue/">BufferQueue详解</a></p>
 <hr>
@@ -3173,6 +3173,98 @@ xxx.c文件<figure class="highlight c++"><table><tr><td class="code"><pre><span 
       <tags>
         <tag>Android</tag>
         <tag>内存</tag>
+        <tag>Linux</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>哪种方式最快：read、fread、ifstream还是mmap？</title>
+    <url>/2024/12/03/2024-12-02-Which-is-fastest-read-fread-ifstream-or-mmap/</url>
+    <content><![CDATA[<p>如果你使用 C/C++ 编程，有多种读取文件的方式可供选择：</p>
+<span id="more"></span>
+
+<ul>
+<li><p>标准 C 库提供了低级的read函数。它非常简单直接。<br>低级 I/O：open、read、write属于系统调用，每次调用时都会进行用户空间与内核空间的切换，是无缓冲（Unbuffered）的，使用的是在fcntl.h中定义的int类型的文件描述符，只能读取二进制数据，并且可以打开设备（dev）文件。</p>
+</li>
+<li><p>标准 C 库还提供了更高级别的fread函数。与read函数不同的是，你可以设置缓冲区大小。缓冲区有好有坏，一方面，它能减少磁盘访问次数；另一方面，它在磁盘和你的数据之间引入了一个中间步骤，也就是说，可能会导致数据被不必要地复制。不过通常情况下，缓冲区会使软件运行得更快，因为在内存中复制数据要比从磁盘读取数据快得多。<br>高级 I/O：fopen、fread、fwrite是 C 语言的函数，内置缓冲，不会每次都去调用系统调用，使用的是在stdio.h中定义的FILE类型的文件指针。</p>
+</li>
+<li><p>在 C++ 中，有ifstream。它和fread非常相似，但更具面向对象的风格。</p>
+</li>
+<li><p>最后，你可以使用内存映射（mmap）。它不是按数据块读取，而是将文件内容映射到一个指针上，由操作系统负责填充数据。它向来以速度非常快而闻名，因为磁盘上的数据可以直接映射到内存中，无需进行不必要的复制。然而，以我的经验来看，它的稳定性稍差：使用fread或ifstream不太可能引发总线错误，但在使用内存映射时，稍有差错程序就可能崩溃。</p>
+</li>
+</ul>
+<p>在我的工作中，很多 I/O 操作都是基于顺序访问的。对于这种访问模式，我从未发现内存映射有什么用处。为了佐证我的观点，我编写了一个小程序，它从文件中读取整数数组，并对这些整数进行一些简单的计算。结果表明内存映射并没有优势：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>每秒读取的整数数量（以百万计）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>C <code>read</code></td>
+<td>70</td>
+</tr>
+<tr>
+<td>C <code>fread</code></td>
+<td>124</td>
+</tr>
+<tr>
+<td>C++ <code>ifstream</code></td>
+<td>124</td>
+</tr>
+<tr>
+<td><code>mmap</code></td>
+<td>125</td>
+</tr>
+</tbody></table>
+<p>和往常一样，我的基准测试代码可供查看。我使用一台配备英特尔酷睿 i7 处理器的 Linux 台式机，并使用带有-O3优化标志的 GCC 4.7 编译器进行测试。</p>
+<p><strong>结论</strong>：对于顺序访问而言，fread和ifstream速度一样快。无缓冲的 I/O（read）如预期的那样较慢。内存映射并没有优势。</p>
+<p><strong>警告</strong>：可靠地对 I/O 进行基准测试是比较困难的。测试结果会因配置不同而有所差异。</p>
+<hr>
+<p>原文：<a href="https://lemire.me/blog/2012/06/26/which-is-fastest-read-fread-ifstream-or-mmap/">https://lemire.me/blog/2012/06/26/which-is-fastest-read-fread-ifstream-or-mmap/</a></p>
+<p>If you program in C/C++, you have many options to read files:</p>
+<ul>
+<li>The standard C library offers a low-level read function. It is as simple as it gets.</li>
+<li>The standard C library also offers a higher level fread function. Unlike the read function, you can set a buffer size. Buffers can be good or bad. On the one hand, they reduce the number of disk accesses. On the other hand, they introduce an intermediate step between the disk and you data. That is, they may cause the data to be copied needlessly. Buffers usually makes software faster because copying data in memory is much faster than reading it from disk.</li>
+<li>In C++, you have ifstream. It is very similar to fread, but with a more object-oriented flavor.</li>
+<li>Finally, you can use memory mapping. Instead of reading blocks of data, you map the content of the file to a pointer and the operating system is responsible with filling in the data. It has the reputation to be very fast because the data on disk can be mapped directly to memory without any undue copying. However, in my experience, it is also less stable: you are unlikely to cause a bus error with fread or ifstream, but the slightest mistake with memory mapping and your program can crash.</li>
+</ul>
+<p>For my work, a lot of the IO is based on sequential access. For this kind of access pattern, I have never found memory mapping to be useful. To support my claim, I created a little program that reads arrays of integers from a file, and does some minor computations on them. Memory mapping is not beneficial:</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>每秒读取的整数数量（以百万计）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>C <code>read</code></td>
+<td>70</td>
+</tr>
+<tr>
+<td>C <code>fread</code></td>
+<td>124</td>
+</tr>
+<tr>
+<td>C++ <code>ifstream</code></td>
+<td>124</td>
+</tr>
+<tr>
+<td><code>mmap</code></td>
+<td>125</td>
+</tr>
+</tbody></table>
+<p>As usual, my benchmark code is available for inspection. I used a Linux desktop with an Intel Core i7 processor and GCC 4.7 with the -O3 flag for my tests.</p>
+<p><strong>Conclusion</strong>: For sequential access, both fread and ifstream are equally fast. Unbuffered IO (read) is slower, as expected. Memory mapping is not beneficial.</p>
+<p><strong>Warning</strong>: Benchmarking IO reliably is difficult. Results will vary depending on your configuration.</p>
+]]></content>
+      <categories>
+        <category>6. 性能</category>
+      </categories>
+      <tags>
+        <tag>Android</tag>
+        <tag>性能</tag>
+        <tag>Linux</tag>
       </tags>
   </entry>
 </search>

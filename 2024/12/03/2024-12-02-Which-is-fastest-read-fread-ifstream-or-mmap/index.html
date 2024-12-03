@@ -19,30 +19,29 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"shenweikun.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.21.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":true,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="谷歌根据职能的不同将Camera框架一共划分成了五层，分别是App交互层、Camera Service、Camera Provider、Camera Driver以及Camera Hardware。">
+    <meta name="description" content="如果你使用 C&#x2F;C++ 编程，有多种读取文件的方式可供选择：">
 <meta property="og:type" content="article">
-<meta property="og:title" content="Android Camera架构概述">
-<meta property="og:url" content="https://shenweikun.github.io/2021/10/24/2021-10-24-a-Camera-system-architecture/index.html">
+<meta property="og:title" content="哪种方式最快：read、fread、ifstream还是mmap？">
+<meta property="og:url" content="https://shenweikun.github.io/2024/12/03/2024-12-02-Which-is-fastest-read-fread-ifstream-or-mmap/index.html">
 <meta property="og:site_name" content="Weikun&#39;s Notes">
-<meta property="og:description" content="谷歌根据职能的不同将Camera框架一共划分成了五层，分别是App交互层、Camera Service、Camera Provider、Camera Driver以及Camera Hardware。">
+<meta property="og:description" content="如果你使用 C&#x2F;C++ 编程，有多种读取文件的方式可供选择：">
 <meta property="og:locale" content="zh_CN">
-<meta property="og:image" content="https://shenweikun.github.io/2021/10/24/2021-10-24-a-Camera-system-architecture/Android-camera-%E6%9E%B6%E6%9E%84.jpg">
-<meta property="article:published_time" content="2021-10-24T09:47:57.000Z">
-<meta property="article:modified_time" content="2024-11-20T16:21:36.012Z">
+<meta property="article:published_time" content="2024-12-03T04:46:32.000Z">
+<meta property="article:modified_time" content="2024-12-03T05:35:07.048Z">
 <meta property="article:author" content="空白">
-<meta property="article:tag" content="Android Camera">
-<meta property="article:tag" content="Camera系统">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="性能">
+<meta property="article:tag" content="Linux">
 <meta name="twitter:card" content="summary">
-<meta name="twitter:image" content="https://shenweikun.github.io/2021/10/24/2021-10-24-a-Camera-system-architecture/Android-camera-%E6%9E%B6%E6%9E%84.jpg">
 
 
-<link rel="canonical" href="https://shenweikun.github.io/2021/10/24/2021-10-24-a-Camera-system-architecture/">
+<link rel="canonical" href="https://shenweikun.github.io/2024/12/03/2024-12-02-Which-is-fastest-read-fread-ifstream-or-mmap/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://shenweikun.github.io/2021/10/24/2021-10-24-a-Camera-system-architecture/","path":"2021/10/24/2021-10-24-a-Camera-system-architecture/","title":"Android Camera架构概述"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://shenweikun.github.io/2024/12/03/2024-12-02-Which-is-fastest-read-fread-ifstream-or-mmap/","path":"2024/12/03/2024-12-02-Which-is-fastest-read-fread-ifstream-or-mmap/","title":"哪种方式最快：read、fread、ifstream还是mmap？"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>Android Camera架构概述 | Weikun's Notes</title>
+<title>哪种方式最快：read、fread、ifstream还是mmap？ | Weikun's Notes</title>
   
 
 
@@ -129,7 +128,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+    <div class="sidebar-inner sidebar-overview-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -142,7 +141,6 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#App%E4%BA%A4%E4%BA%92%E5%B1%82"><span class="nav-number">1.</span> <span class="nav-text">App交互层</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Camera-APP"><span class="nav-number">1.1.</span> <span class="nav-text">Camera APP</span></a></li><li class="nav-item nav-level-5"><a class="nav-link" href="#Camera-Framework"><span class="nav-number">1.2.</span> <span class="nav-text">Camera Framework</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Camera-Service"><span class="nav-number">2.</span> <span class="nav-text">Camera Service</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Camera-Provider"><span class="nav-number">3.</span> <span class="nav-text">Camera Provider</span></a><ol class="nav-child"><li class="nav-item nav-level-5"><a class="nav-link" href="#Camera-HAL"><span class="nav-number">3.1.</span> <span class="nav-text">Camera HAL</span></a></li></ol></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Camera-Driver"><span class="nav-number">4.</span> <span class="nav-text">Camera Driver</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#Camera-Hardware"><span class="nav-number">5.</span> <span class="nav-text">Camera Hardware</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -193,7 +191,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://shenweikun.github.io/2021/10/24/2021-10-24-a-Camera-system-architecture/">
+    <link itemprop="mainEntityOfPage" href="https://shenweikun.github.io/2024/12/03/2024-12-02-Which-is-fastest-read-fread-ifstream-or-mmap/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -206,12 +204,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="Android Camera架构概述 | Weikun's Notes">
+      <meta itemprop="name" content="哪种方式最快：read、fread、ifstream还是mmap？ | Weikun's Notes">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          Android Camera架构概述
+          哪种方式最快：read、fread、ifstream还是mmap？
         </h1>
 
         <div class="post-meta-container">
@@ -221,15 +219,9 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
+      
 
-      <time title="创建时间：2021-10-24 17:47:57" itemprop="dateCreated datePublished" datetime="2021-10-24T17:47:57+08:00">2021-10-24</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-11-21 00:21:36" itemprop="dateModified" datetime="2024-11-21T00:21:36+08:00">2024-11-21</time>
+      <time title="创建时间：2024-12-03 12:46:32 / 修改时间：13:35:07" itemprop="dateCreated datePublished" datetime="2024-12-03T12:46:32+08:00">2024-12-03</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -237,7 +229,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/1-Android-Camera/" itemprop="url" rel="index"><span itemprop="name">1. Android Camera</span></a>
+          <a href="/categories/6-%E6%80%A7%E8%83%BD/" itemprop="url" rel="index"><span itemprop="name">6. 性能</span></a>
         </span>
     </span>
 
@@ -254,14 +246,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.9k</span>
+      <span>2.7k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>5 分钟</span>
+      <span>7 分钟</span>
     </span>
 </div>
 
@@ -271,17 +263,84 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p>谷歌根据职能的不同将Camera框架一共划分成了五层，分别是App交互层、Camera Service、Camera Provider、Camera Driver以及Camera Hardware。</p>
+    <div class="post-body" itemprop="articleBody"><p>如果你使用 C/C++ 编程，有多种读取文件的方式可供选择：</p>
 <span id="more"></span>
-<p>Android系统利用分层思想，将各层的接口定义与实现分离开来，以接口作为各层的脉络连接整体框架，将具体实现的主导权交由各自有具体实现需求的平台厂商或者Android 开发者，这样既做到把控全局，也给予了众多开发者足够大的创作空间，这体现出了一个优秀的开源系统应有的胸怀和远见。<br>其中，谷歌根据职能的不同将Camera框架一共划分成了五层，分别是App交互层、Camera Service、Camera Provider、Camera Driver以及Camera Hardware，下面的Camera的整体架构图很清晰地显示出了其五层架构以及相互的关联接口。<br><img src="Android-camera-%E6%9E%B6%E6%9E%84.jpg"> </p>
-<h4 id="App交互层"><a href="#App交互层" class="headerlink" title="App交互层"></a>App交互层</h4><h5 id="Camera-APP"><a href="#Camera-APP" class="headerlink" title="Camera APP"></a>Camera APP</h5><p>应用层处于整个框架的顶端，承担着于用户直接进行交互的责任，承接来自用户直接或者间接的比如预览/拍照/录像等一系列具体需求，一旦接收到用户相关UI操作，便会通过Camera Api v2标准接口将需求发送至Camera Framework部分，并且等待Camera Framework回传处理结果，其中包括了图像数据以及整体相机系统状态参数，之后将结果以一定方式反馈给用户。<br>Camera APP主要由应用开发者自行开发和维护。</p>
-<h5 id="Camera-Framework"><a href="#Camera-Framework" class="headerlink" title="Camera Framework"></a>Camera Framework</h5><p>Camera Framework主要位于Camera App与Camera Service之间，以jar包的形式运行在App进程中，它封装了Camera Api v2接口的实现细节，暴露接口给App进行调用，进而接收来自App的请求，同时维护着请求在内部流转的业务逻辑，最终通过调用Camera AIDL跨进程接口将请求发送至Camera Service中进行处理，紧接着，等待Camera Service结果的回传，进而将最终结果发送至App。<br>Framework由Google负责开发和维护。</p>
-<h4 id="Camera-Service"><a href="#Camera-Service" class="headerlink" title="Camera Service"></a>Camera Service</h4><p>Camera Service层位于Camera Framework与Camera Provider之间，作为一个独立进程存在于Android系统中，在系统启动初期会运行起来，它封装了Camera AIDL跨进程接口，提供给Framework进行调用，进而接收来自Framework的图像请求，同时内部维护着关于请求在该层的处理逻辑，最终通过调用Camera HIDL跨进程接口将请求再次下发到Camera Provider中，并且等待结果的回传，进而将结果上传至Framework中。<br>Camera Service由Google负责开发和维护。</p>
-<h4 id="Camera-Provider"><a href="#Camera-Provider" class="headerlink" title="Camera Provider"></a>Camera Provider</h4><p>Camera Provider部分一般由一个独立的进程，例如高通叫provider进程，MTK叫camerahalserver进程。对上通过HIDL接口负责与Camera Service的跨进程通信，接收来自Camera Service的图像请求，对下通过标准的HAL3接口下发Camera的实际操作，控制着具体的Camera HAL。</p>
-<h5 id="Camera-HAL"><a href="#Camera-HAL" class="headerlink" title="Camera HAL"></a>Camera HAL</h5><p>Camera HAL为各个ODM/OEM厂商负责开发和维护，是各个厂商对自身硬件的抽象，该部分是各个ODM/OEM厂商对谷歌Camera HAL3接口的实现，以so库的形式被加载至Camera Provider中。<br>现今，高通对此部分的实作是CamX-CHI架构，MTK对此部分的此部分的实作是mtkcam3架构。</p>
-<h4 id="Camera-Driver"><a href="#Camera-Driver" class="headerlink" title="Camera Driver"></a>Camera Driver</h4><p>Camera Driver位于HAL Moudle与硬件层之间，借助Linux内核驱动框架（V4L2），实现对硬件的驱动和控制。HAL Moudle通过标准文件访问接口，从而能将请求顺利下发内核中。其中，I2C用于对Camera硬件的控制，MIPI用于传输图像数据。</p>
-<h4 id="Camera-Hardware"><a href="#Camera-Hardware" class="headerlink" title="Camera Hardware"></a>Camera Hardware</h4><p>相机硬件处在整个相机体系的最底层，是相机系统的物理实现部分，该部分包括镜头、感光器、ISP三个最重要的模块，还有对焦马达、闪光灯、滤光片、光圈等辅助模块。镜头的作用是汇聚光线，利用光的折射性把射入的光线汇聚到感光器上。感光器的作用是负责光电转换，通过内部感光元件将接收到的光信号转换为电子信号进而通过数电转换模块转为数字信号，并最后传给ISP。ISP负责对数字图像进行一些算法处理，如白平衡、降噪、去马赛克等。</p>
-<p>从整体结构上看，Android Camera系统根据职能的不同，有着严格的分层，层与层之间通过标准的接口进行连接。极大的降低了开发的耦合性，保持了各层的相互独立，使得不同的开发者能够专注于实现自己的业务逻辑，互不干扰又可以协同运行。</p>
+
+<ul>
+<li><p>标准 C 库提供了低级的read函数。它非常简单直接。<br>低级 I/O：open、read、write属于系统调用，每次调用时都会进行用户空间与内核空间的切换，是无缓冲（Unbuffered）的，使用的是在fcntl.h中定义的int类型的文件描述符，只能读取二进制数据，并且可以打开设备（dev）文件。</p>
+</li>
+<li><p>标准 C 库还提供了更高级别的fread函数。与read函数不同的是，你可以设置缓冲区大小。缓冲区有好有坏，一方面，它能减少磁盘访问次数；另一方面，它在磁盘和你的数据之间引入了一个中间步骤，也就是说，可能会导致数据被不必要地复制。不过通常情况下，缓冲区会使软件运行得更快，因为在内存中复制数据要比从磁盘读取数据快得多。<br>高级 I/O：fopen、fread、fwrite是 C 语言的函数，内置缓冲，不会每次都去调用系统调用，使用的是在stdio.h中定义的FILE类型的文件指针。</p>
+</li>
+<li><p>在 C++ 中，有ifstream。它和fread非常相似，但更具面向对象的风格。</p>
+</li>
+<li><p>最后，你可以使用内存映射（mmap）。它不是按数据块读取，而是将文件内容映射到一个指针上，由操作系统负责填充数据。它向来以速度非常快而闻名，因为磁盘上的数据可以直接映射到内存中，无需进行不必要的复制。然而，以我的经验来看，它的稳定性稍差：使用fread或ifstream不太可能引发总线错误，但在使用内存映射时，稍有差错程序就可能崩溃。</p>
+</li>
+</ul>
+<p>在我的工作中，很多 I/O 操作都是基于顺序访问的。对于这种访问模式，我从未发现内存映射有什么用处。为了佐证我的观点，我编写了一个小程序，它从文件中读取整数数组，并对这些整数进行一些简单的计算。结果表明内存映射并没有优势：</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>每秒读取的整数数量（以百万计）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>C <code>read</code></td>
+<td>70</td>
+</tr>
+<tr>
+<td>C <code>fread</code></td>
+<td>124</td>
+</tr>
+<tr>
+<td>C++ <code>ifstream</code></td>
+<td>124</td>
+</tr>
+<tr>
+<td><code>mmap</code></td>
+<td>125</td>
+</tr>
+</tbody></table>
+<p>和往常一样，我的基准测试代码可供查看。我使用一台配备英特尔酷睿 i7 处理器的 Linux 台式机，并使用带有-O3优化标志的 GCC 4.7 编译器进行测试。</p>
+<p><strong>结论</strong>：对于顺序访问而言，fread和ifstream速度一样快。无缓冲的 I/O（read）如预期的那样较慢。内存映射并没有优势。</p>
+<p><strong>警告</strong>：可靠地对 I/O 进行基准测试是比较困难的。测试结果会因配置不同而有所差异。</p>
+<hr>
+<p>原文：<a target="_blank" rel="noopener" href="https://lemire.me/blog/2012/06/26/which-is-fastest-read-fread-ifstream-or-mmap/">https://lemire.me/blog/2012/06/26/which-is-fastest-read-fread-ifstream-or-mmap/</a></p>
+<p>If you program in C/C++, you have many options to read files:</p>
+<ul>
+<li>The standard C library offers a low-level read function. It is as simple as it gets.</li>
+<li>The standard C library also offers a higher level fread function. Unlike the read function, you can set a buffer size. Buffers can be good or bad. On the one hand, they reduce the number of disk accesses. On the other hand, they introduce an intermediate step between the disk and you data. That is, they may cause the data to be copied needlessly. Buffers usually makes software faster because copying data in memory is much faster than reading it from disk.</li>
+<li>In C++, you have ifstream. It is very similar to fread, but with a more object-oriented flavor.</li>
+<li>Finally, you can use memory mapping. Instead of reading blocks of data, you map the content of the file to a pointer and the operating system is responsible with filling in the data. It has the reputation to be very fast because the data on disk can be mapped directly to memory without any undue copying. However, in my experience, it is also less stable: you are unlikely to cause a bus error with fread or ifstream, but the slightest mistake with memory mapping and your program can crash.</li>
+</ul>
+<p>For my work, a lot of the IO is based on sequential access. For this kind of access pattern, I have never found memory mapping to be useful. To support my claim, I created a little program that reads arrays of integers from a file, and does some minor computations on them. Memory mapping is not beneficial:</p>
+<table>
+<thead>
+<tr>
+<th>方法</th>
+<th>每秒读取的整数数量（以百万计）</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>C <code>read</code></td>
+<td>70</td>
+</tr>
+<tr>
+<td>C <code>fread</code></td>
+<td>124</td>
+</tr>
+<tr>
+<td>C++ <code>ifstream</code></td>
+<td>124</td>
+</tr>
+<tr>
+<td><code>mmap</code></td>
+<td>125</td>
+</tr>
+</tbody></table>
+<p>As usual, my benchmark code is available for inspection. I used a Linux desktop with an Intel Core i7 processor and GCC 4.7 with the -O3 flag for my tests.</p>
+<p><strong>Conclusion</strong>: For sequential access, both fread and ifstream are equally fast. Unbuffered IO (read) is slower, as expected. Memory mapping is not beneficial.</p>
+<p><strong>Warning</strong>: Benchmarking IO reliably is difficult. Results will vary depending on your configuration.</p>
 
     </div>
 
@@ -299,7 +358,7 @@
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://shenweikun.github.io/2021/10/24/2021-10-24-a-Camera-system-architecture/" title="Android Camera架构概述">https://shenweikun.github.io/2021/10/24/2021-10-24-a-Camera-system-architecture/</a>
+      <a href="https://shenweikun.github.io/2024/12/03/2024-12-02-Which-is-fastest-read-fread-ifstream-or-mmap/" title="哪种方式最快：read、fread、ifstream还是mmap？">https://shenweikun.github.io/2024/12/03/2024-12-02-Which-is-fastest-read-fread-ifstream-or-mmap/</a>
   </li>
   <li class="post-copyright-license">
       <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -308,22 +367,20 @@
 </div>
 
           <div class="post-tags">
-              <a href="/tags/Android-Camera/" rel="tag"><i class="fa fa-tag"></i> Android Camera</a>
-              <a href="/tags/Camera%E7%B3%BB%E7%BB%9F/" rel="tag"><i class="fa fa-tag"></i> Camera系统</a>
+              <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
+              <a href="/tags/%E6%80%A7%E8%83%BD/" rel="tag"><i class="fa fa-tag"></i> 性能</a>
+              <a href="/tags/Linux/" rel="tag"><i class="fa fa-tag"></i> Linux</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2021/10/17/2021-10-17-CTS-Introduction/" rel="prev" title="Camera CTS 介绍">
-                  <i class="fa fa-angle-left"></i> Camera CTS 介绍
+                <a href="/2024/12/03/2024-12-01-Three-ways-to-write-to-SD-card/" rel="prev" title="Linux下不同的IO访问方法：Buffer IO、mmap和Direct IO">
+                  <i class="fa fa-angle-left"></i> Linux下不同的IO访问方法：Buffer IO、mmap和Direct IO
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2021/10/24/2021-10-24-BufferQueue/" rel="next" title="BufferQueue详解">
-                  BufferQueue详解 <i class="fa fa-angle-right"></i>
-                </a>
             </div>
           </div>
     </footer>
