@@ -3028,8 +3028,8 @@ xxx.c文件<figure class="highlight c++"><table><tr><td class="code"><pre><span 
 <li>脏页在内存中驻留超过一个特定的阈值时。</li>
 <li>当用户进程调用 sync() 和 fsync() 系统调用时。</li>
 </ul>
-<h3 id="清楚缓存"><a href="#清楚缓存" class="headerlink" title="清楚缓存"></a>清楚缓存</h3><p>可以用 echo 3 &gt; drop_cache 把 cache/buffer 清除。</p>
-<h2 id="Buffer-IO"><a href="#Buffer-IO" class="headerlink" title="Buffer IO"></a>Buffer IO</h2><p>Buffer IO是传统的文件操作，对性能、吞吐量没有特殊要求，由kernel通过page cache统一管理缓存，page cache的创建和回收由kernel控制。</p>
+<h3 id="清除缓存"><a href="#清除缓存" class="headerlink" title="清除缓存"></a>清除缓存</h3><p>可以用 echo 3 &gt; drop_cache 把 cache/buffer 清除。</p>
+<h2 id="Buffer-IO"><a href="#Buffer-IO" class="headerlink" title="Buffer IO"></a>Buffer IO</h2><p>Buffer IO是传统的文件操作方式，由kernel通过page cache统一管理缓存，page cache的创建和回收由kernel控制。</p>
 <p>read/fread调用要求内核读取文件的一部分并将数据复制到调用进程地址空间中。如果所有请求的数据都在page cache中，内核将复制它并立即返回；否则，它将安排磁盘将请求的数据读取到page cache中，阻塞调用线程，当数据可用时，它将恢复线程并复制数据。</p>
 <p>write/fwrite调用默认是异步写，只是将数据复制到page cache中并立即返回，内核将在一段时间后将page cache写回磁盘；如果使用sync，则是同步写，保证该文件所有的脏页落盘后才返回<br><img src="image-1.png" alt="alt text"></p>
 <p><strong>整个过程有几次拷贝？</strong>从磁盘到 Page Cache 算第一次的话，从 Page Cache 到用户态 buffer 就是第二次。</p>
@@ -3125,6 +3125,47 @@ xxx.c文件<figure class="highlight c++"><table><tr><td class="code"><pre><span 
 <h3 id="I-O-对齐"><a href="#I-O-对齐" class="headerlink" title="I/O 对齐"></a>I/O 对齐</h3><p>存储设备有其块大小，所有的 I/O 操作都必须按照这个块大小的倍数来执行，通常块大小为 512 字节或 4096 字节。使用读写操作或内存映射（mmap）时，内核会自动进行对齐操作，在内核发起一个小的读写操作之前，会将其扩展到正确的块边界。</p>
 <p>对于direct I/O（DIO），则需要应用程序自行进行块对齐操作。这会增加一定的复杂性，但也有优势：内核通常会将对齐扩展到 4096 字节的边界，即便 512 字节的边界就足够了，但使用 DIO 的用户应用程序可以发起按 512 字节对齐的读取操作，这样对于小数据项可以节省带宽。</p>
 <h3 id="应用复杂度"><a href="#应用复杂度" class="headerlink" title="应用复杂度"></a>应用复杂度</h3><p>尽管前文的讨论表明对于 I/O 密集型应用程序来说异步direct I/O（AIO/DIO）更具优势，但这种方法也有显著的代价：复杂度。将缓存管理的责任交给应用程序意味着它能比内核做出更好的选择，并且以更低的开销做出这些选择。然而，相应的算法需要编写和测试。使用异步 I/O 要求应用程序通过回调、协程或类似的方法来编写，而且这往往会降低许多现有库的可复用性。</p>
+<h2 id="总结与选择"><a href="#总结与选择" class="headerlink" title="总结与选择"></a>总结与选择</h2><p>前面我们展示了在 Linux 系统上执行磁盘 I/O 的三种不同方式以及它们各自涉及的共性与差异。以下是对 Buffer IO（对应文中提到的传统读写方式，基于read/write系统调用等情况）、mmap（内存映射）和 Direct IO（直接 I/O）三种方式选择相关要点的总结：</p>
+<h3 id="Buffer-IO-1"><a href="#Buffer-IO-1" class="headerlink" title="Buffer IO"></a>Buffer IO</h3><ul>
+<li><strong>优势</strong>：<ul>
+<li><strong>简单易用</strong>：是传统且很早就存在的方法，使用常见的read和write等系统调用即可，上手容易，对于一些对 I/O 性能要求不是极致苛刻、开发便捷性优先的应用场景来说容易实现。</li>
+<li><strong>内核管理缓存</strong>：缓存管理由内核负责，内核开发者投入大量精力优化缓存算法，能适用于众多不同应用，在很多常规情况下表现稳定有效。例如当所请求数据在页缓存时，能快速复制数据并返回，对应用开发者而言无需操心复杂的缓存管理逻辑。</li>
+</ul>
+</li>
+<li><strong>劣势</strong>：<ul>
+<li><strong>缺乏针对性优化</strong>：内核使用的缓存算法是通用的，没办法针对具体某个应用的使用模式精准优化，可能出现内核猜错应用行为的情况，像错误置换页面、I/O 调度顺序不合理、预读不契合应用后续需求等问题，进而影响性能。</li>
+<li><strong>应用失去 I/O 调度控制权</strong>：应用无法自主决定 I/O 调度，完全依赖内核选择合适的数据块进行读写安排，可能出现如写入风暴影响读延迟、无法区分重要和不重要 I/O 导致后台任务 I/O 干扰前台任务等情况。</li>
+</ul>
+</li>
+<li><strong>适用场景</strong>：适用于对 I/O 性能要求不极端高、应用逻辑相对简单、希望依靠内核通用缓存管理机制就能满足基本读写需求的场景，比如一些简单的小型文件读写操作为主的应用。</li>
+</ul>
+<h3 id="mmap（内存映射）"><a href="#mmap（内存映射）" class="headerlink" title="mmap（内存映射）"></a>mmap（内存映射）</h3><ul>
+<li><strong>优势</strong>：<ul>
+<li><strong>缓存优势（部分情况）</strong>：如果数据已经在缓存中，可完全绕过内核进行数据访问，避免了内核在用户空间和内核空间来回复制数据的操作，能节省处理器周期，在存储容量与内存容量比例接近 1:1、数据大多在缓存的负载场景下表现较好。</li>
+<li><strong>自动对齐</strong>：在进行 I/O 操作时，能自动进行 I/O 对齐，小的读写操作会被内核自动扩展到正确的存储设备块边界，对开发者来说操作相对省心。</li>
+</ul>
+</li>
+<li><strong>劣势</strong>：<ul>
+<li><strong>缓存相关劣势（部分情况）</strong>：当存储容量与内存容量比例显著高于 1:1，数据不在缓存时，会出现频繁的页面置换等情况，导致需要耗费较多资源在页表操作上，且会占用一定内存用于页表（如在 x86 处理器上会占用映射文件大小 0.2% 的内存用于页表，在特定高存储内存比场景下影响较大）。</li>
+<li><strong>应用复杂度与调度问题</strong>：同样无法自主控制 I/O 调度，存在类似 Buffer IO 中因内核调度导致的相关问题；并且 I/O 密集型应用难以预估缓存命中率，为保证磁盘利用率需运行大量线程，在缓存命中率高时这些线程又易争抢核心资源。</li>
+</ul>
+</li>
+<li><strong>适用场景</strong>：适合那些数据在缓存中概率相对较高、对读写操作时的数据复制开销比较敏感、对 I/O 调度精细控制要求不高的应用场景，比如一些内存中经常会缓存大部分常用数据的数据分析类应用（前提是内存能较好容纳常用数据部分）。</li>
+</ul>
+<h3 id="Direct-IO（直接-I-O）"><a href="#Direct-IO（直接-I-O）" class="headerlink" title="Direct IO（直接 I/O）"></a>Direct IO（直接 I/O）</h3><ul>
+<li><strong>优势</strong>：<ul>
+<li><strong>用户掌控缓存与 I/O 调度</strong>：将缓存控制和 I/O 调度的部分权力交给了用户，应用可以根据自身需求决定何时进行磁盘读写等操作，虽然仍与内核共同承担部分责任（比如内核控制线程运行时间），但相比前两者在调度自主性上有提升，可在一定程度上解决因内核通用调度带来的问题。</li>
+<li><strong>精准 I/O 对齐控制（手动）</strong>：虽然需要应用自己进行块对齐操作增加了一定复杂性，但也提供了更精准控制的机会，例如可以按需采用更贴合实际需求的较小对齐边界（如 512 字节对齐）节省带宽，不像内核通常会过度对齐到 4096 字节边界。</li>
+</ul>
+</li>
+<li><strong>劣势</strong>：<ul>
+<li><strong>应用复杂度增加</strong>：应用需要承担更多责任，如手动管理缓存、手动进行 I/O 对齐等，开发难度相比前两者有所上升，需要编写和测试相关管理算法，对开发团队技术能力要求更高。</li>
+<li><strong>线程调度仍部分依赖内核</strong>：尽管相比前两者在 I/O 调度上更自主，但线程何时运行仍受内核控制，在一定程度上限制了应用对整体执行情况的完全把控。</li>
+</ul>
+</li>
+<li><strong>适用场景</strong>：适用于对 I/O 性能有较高要求、需要根据应用自身逻辑精细控制 I/O 调度和缓存管理、对应用复杂度增加有一定应对能力的 I/O 密集型应用，比如数据库管理系统（像文中提到的 ScyllaDB）等需要高性能磁盘 I/O 操作且要精准控制读写以满足复杂业务逻辑的场景。</li>
+</ul>
+<p>总体而言，选择哪种方式要综合考虑应用对性能的需求、开发团队对复杂度的把控能力、应用的数据缓存特点以及对 I/O 调度自主控制的期望等多方面因素来决定。</p>
 ]]></content>
       <categories>
         <category>5. Memory</category>
