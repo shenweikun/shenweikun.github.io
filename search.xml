@@ -3013,9 +3013,9 @@ xxx.c文件<figure class="highlight c++"><table><tr><td class="code"><pre><span 
   <entry>
     <title>Linux下不同的IO访问方法：Buffer IO、mmap和Direct IO</title>
     <url>/2024/12/03/2024-12-01-Three-ways-to-write-to-SD-card/</url>
-    <content><![CDATA[<p>在Linux系统中，常见的IO访问方法有Buffer IO、mmap和Direct IO三种，其IO栈区别可以简化成如图：<br><img src="image.png" alt="alt text"></p>
+    <content><![CDATA[<p>在Linux系统中，常见的IO访问方法有Buffer IO、mmap和Direct IO三种，其IO栈区别可以简化成如图：</p>
 <span id="more"></span>
-
+<p><img src="image.png" alt="alt text"></p>
 <h2 id="PageCache"><a href="#PageCache" class="headerlink" title="PageCache"></a>PageCache</h2><p>在介绍三种IO访问方式之前，先了解一下什么是页缓存。页缓存（PageCache）是操作系统对文件的缓存，用来减少对磁盘的 I/O 操作，以页为单位的，内容就是磁盘上的物理块，页缓存能帮助程序对文件进行顺序读写的速度几乎接近于内存的读写速度，主要原因就是由于 OS 使用 PageCache 机制对读写访问操作进行了性能优化。</p>
 <h3 id="页缓存读取策略："><a href="#页缓存读取策略：" class="headerlink" title="页缓存读取策略："></a>页缓存读取策略：</h3><p>当进程发起一个读操作 （比如，进程发起一个 read() 系统调用），它首先会检查需要的数据是否在页缓存中：</p>
 <ul>
