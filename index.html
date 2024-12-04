@@ -148,7 +148,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">44</span>
+          <span class="site-state-item-count">45</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -255,6 +255,108 @@
           <!--noindex-->
             <div class="post-button">
               <a class="btn" href="/2021/10/25/hello-world/#more" rel="contents">
+                阅读全文 &raquo;
+              </a>
+            </div>
+          <!--/noindex-->
+        
+      
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+        <div class="post-eof"></div>
+      
+    </footer>
+  </article>
+</div>
+
+
+
+
+    
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
+    <link itemprop="mainEntityOfPage" href="https://shenweikun.github.io/2024/12/05/2024-12-04-memory-Classification-of-memory-problems/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="空白">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Weikun's Notes">
+      <meta itemprop="description" content="记录生活与职业中的点滴">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="undefined | Weikun's Notes">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h2 class="post-title" itemprop="name headline">
+          <a href="/2024/12/05/2024-12-04-memory-Classification-of-memory-problems/" class="post-title-link" itemprop="url">相机内存优化分类</a>
+        </h2>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+      
+
+      <time title="创建时间：2024-12-05 01:23:47 / 修改时间：02:15:00" itemprop="dateCreated datePublished" datetime="2024-12-05T01:23:47+08:00">2024-12-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/5-Memory/" itemprop="url" rel="index"><span itemprop="name">5. Memory</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>937</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>2 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+          <p>相机内存优化与安卓系统内存优化基本一样，区别只是针对的对象不同。后者针对整个安卓系统的所有进程，而相机内存优化仅针对相机相关的进程。</p>
+<p>相机相关进程一般有三个：<strong>APP，CameraServer，CameraProvider</strong>(CameraHal)。部分手机厂可能会有第四个，如：自家的第三方算法处理进程，这里不做考虑，默认第三方集成于CameraProvider进程。</p>
+<p>优化项包括：开机内存优化，内存峰值超标，内存泄露，内存驻留优化，后台任务驻留优化。</p>
+          <!--noindex-->
+            <div class="post-button">
+              <a class="btn" href="/2024/12/05/2024-12-04-memory-Classification-of-memory-problems/#more" rel="contents">
                 阅读全文 &raquo;
               </a>
             </div>
@@ -1090,112 +1192,6 @@
 
 
 
-    
-
-
-<div class="post-block">
-  
-  
-
-  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="">
-    <link itemprop="mainEntityOfPage" href="https://shenweikun.github.io/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-7/">
-
-    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
-      <meta itemprop="image" content="/images/avatar.gif">
-      <meta itemprop="name" content="空白">
-    </span>
-
-    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
-      <meta itemprop="name" content="Weikun's Notes">
-      <meta itemprop="description" content="记录生活与职业中的点滴">
-    </span>
-
-    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="undefined | Weikun's Notes">
-      <meta itemprop="description" content="">
-    </span>
-      <header class="post-header">
-        <h2 class="post-title" itemprop="name headline">
-          <a href="/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-7/" class="post-title-link" itemprop="url">深入理解Android相机体系结构之七：相机驱动层–V4L2框架解析</a>
-        </h2>
-
-        <div class="post-meta-container">
-          <div class="post-meta">
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar"></i>
-      </span>
-      <span class="post-meta-item-text">发表于</span>
-
-      <time title="创建时间：2024-11-21 00:25:56" itemprop="dateCreated datePublished" datetime="2024-11-21T00:25:56+08:00">2024-11-21</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-calendar-check"></i>
-      </span>
-      <span class="post-meta-item-text">更新于</span>
-      <time title="修改时间：2024-11-23 03:03:46" itemprop="dateModified" datetime="2024-11-23T03:03:46+08:00">2024-11-23</time>
-    </span>
-    <span class="post-meta-item">
-      <span class="post-meta-item-icon">
-        <i class="far fa-folder"></i>
-      </span>
-      <span class="post-meta-item-text">分类于</span>
-        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/1-Android-Camera/" itemprop="url" rel="index"><span itemprop="name">1. Android Camera</span></a>
-        </span>
-    </span>
-
-  
-    <span class="post-meta-item" title="本文字数">
-      <span class="post-meta-item-icon">
-        <i class="far fa-file-word"></i>
-      </span>
-      <span class="post-meta-item-text">本文字数：</span>
-      <span>12k</span>
-    </span>
-    <span class="post-meta-item" title="阅读时长">
-      <span class="post-meta-item-icon">
-        <i class="far fa-clock"></i>
-      </span>
-      <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>29 分钟</span>
-    </span>
-</div>
-
-        </div>
-      </header>
-
-    
-    
-    
-    <div class="post-body" itemprop="articleBody">
-          <h2 id="一、概览"><a href="#一、概览" class="headerlink" title="一、概览"></a>一、概览</h2><p>相机驱动层位于HAL Moudle与硬件层之间，借助linux内核驱动框架，以文件节点的方式暴露接口给用户空间，让HAL Module通过标准的文件访问接口，从而能够将请求顺利地下发到内核中，而在内核中，为了更好的支持视频流的操作，早先提出了v4l视频处理框架，但是由于操作复杂，并且代码无法进行较好的重构，难以维护等原因，之后便衍生出了v4l2框架。</p>
-          <!--noindex-->
-            <div class="post-button">
-              <a class="btn" href="/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-7/#more" rel="contents">
-                阅读全文 &raquo;
-              </a>
-            </div>
-          <!--/noindex-->
-        
-      
-    </div>
-
-    
-    
-    
-
-    <footer class="post-footer">
-        <div class="post-eof"></div>
-      
-    </footer>
-  </article>
-</div>
-
-
-
-
   <nav class="pagination">
     <span class="page-number current">1</span><a class="page-number" href="/page/2/">2</a><span class="space">&hellip;</span><a class="page-number" href="/page/5/">5</a><a class="extend next" rel="next" title="下一页" aria-label="下一页" href="/page/2/"><i class="fa fa-angle-right"></i></a>
   </nav>
@@ -1219,13 +1215,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">460k</span>
+    <span title="站点总字数">461k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">19:10</span>
+    <span title="站点阅读时长">19:12</span>
   </span>
 </div>
 <div class="busuanzi-count">

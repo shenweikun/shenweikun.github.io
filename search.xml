@@ -3444,4 +3444,34 @@ xxx.c文件<figure class="highlight c++"><table><tr><td class="code"><pre><span 
         <tag>内存</tag>
       </tags>
   </entry>
+  <entry>
+    <title>相机内存优化分类</title>
+    <url>/2024/12/05/2024-12-04-memory-Classification-of-memory-problems/</url>
+    <content><![CDATA[<p>相机内存优化与安卓系统内存优化基本一样，区别只是针对的对象不同。后者针对整个安卓系统的所有进程，而相机内存优化仅针对相机相关的进程。</p>
+<p>相机相关进程一般有三个：<strong>APP，CameraServer，CameraProvider</strong>(CameraHal)。部分手机厂可能会有第四个，如：自家的第三方算法处理进程，这里不做考虑，默认第三方集成于CameraProvider进程。</p>
+<p>优化项包括：开机内存优化，内存峰值超标，内存泄露，内存驻留优化，后台任务驻留优化。</p>
+<span id="more"></span>
+<h2 id="开机剩余内存优化"><a href="#开机剩余内存优化" class="headerlink" title="开机剩余内存优化"></a>开机剩余内存优化</h2><p>安卓开机剩余可用内存是指安卓设备在完成开机启动过程后，系统和已经自动运行的应用程序占用一部分内存后，剩余的可以被其他应用程序或系统进程使用的内存空间。这部分内存对于设备的流畅运行非常关键，它决定了在开机后还能同时运行多少其他应用。</p>
+<p>相机相关的三个进程中，CameraServer和CameraProvider是守护进程，就像一个默默工作的 “守护者”，在系统启动后就自动运行，不需要用户手动开启，并且在系统运行期间一直处于活动状态，为系统和应用提供拍照、录像和扫码等服务。因此，它们不可避免的会在开机后占用一直内存。</p>
+<p>CameraServer占用内存较小，因为其主要包含了Google对相机的Native实现所必须的代码段和数据段。<br>CameraProvider占用内存较多，是相机进程的内存占用主要来源。CameraProvider主要负责管理相机设备的底层硬件资源，其包含了平台厂商对于硬件抽象层的实现，且很多手机厂商为了做影像能力开放，往往会将第三方算法集成在CameraProvider中，导致其占用的内存往往较大。</p>
+<p><strong>主要优化思路，针对CameraServer和CameraProvider</strong>：</p>
+<ol>
+<li>减少开机阶段，CameraServer和CameraProvider不必要的自运行流程，降低堆栈内存和so map等</li>
+<li>尽量较少不必要的pin so操作</li>
+<li>尽量减少相机tuning bin和sensor bin的大小，去处不必要或者冗余部分</li>
+</ol>
+<h2 id="内存泄露"><a href="#内存泄露" class="headerlink" title="内存泄露"></a>内存泄露</h2><p>待完成…</p>
+<h3 id="heap泄露"><a href="#heap泄露" class="headerlink" title="heap泄露"></a>heap泄露</h3><h3 id="DMA泄露"><a href="#DMA泄露" class="headerlink" title="DMA泄露"></a>DMA泄露</h3><h2 id="内存峰值超标"><a href="#内存峰值超标" class="headerlink" title="内存峰值超标"></a>内存峰值超标</h2><p>为了应对用户对相机体验要求的日益提升，相机功能堆叠越来越多，也越来越复杂，<br>待完成…</p>
+<h3 id="heap"><a href="#heap" class="headerlink" title="heap"></a>heap</h3><h3 id="DMA"><a href="#DMA" class="headerlink" title="DMA"></a>DMA</h3><h2 id="内存驻留优化"><a href="#内存驻留优化" class="headerlink" title="内存驻留优化"></a>内存驻留优化</h2><p>待完成…</p>
+<h2 id="相机场景，后台任务驻留优化"><a href="#相机场景，后台任务驻留优化" class="headerlink" title="相机场景，后台任务驻留优化"></a>相机场景，后台任务驻留优化</h2><p>待完成…</p>
+]]></content>
+      <categories>
+        <category>5. Memory</category>
+      </categories>
+      <tags>
+        <tag>Android Camera</tag>
+        <tag>Android</tag>
+        <tag>内存</tag>
+      </tags>
+  </entry>
 </search>

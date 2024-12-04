@@ -19,28 +19,29 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"shenweikun.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.21.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":true,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="Android 相机体系庞大且复杂，在我刚开始接触到该框架的时候，如盲人摸象一般，一点一点地在代码的世界中探索，在很长的一段时间内，都只能局限于某一个特定的区域，而且在解决问题的过程中，虽然通过对代码的深入梳理，最终都会顺利解决难题，但是到最后依然缺乏一个对于整个框架的理解，正如管中窥豹一般，只见细节而无法把握全貌。但是进入现在的公司之后，通过与相机前辈的沟通，我发现框架思维能力尤为重要，针对整个">
+    <meta name="description" content="相机内存优化与安卓系统内存优化基本一样，区别只是针对的对象不同。后者针对整个安卓系统的所有进程，而相机内存优化仅针对相机相关的进程。 相机相关进程一般有三个：APP，CameraServer，CameraProvider(CameraHal)。部分手机厂可能会有第四个，如：自家的第三方算法处理进程，这里不做考虑，默认第三方集成于CameraProvider进程。 优化项包括：开机内存优化，内存峰值">
 <meta property="og:type" content="article">
-<meta property="og:title" content="深入理解Android相机体系结构之十：安卓相机架构总结">
-<meta property="og:url" content="https://shenweikun.github.io/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-10/index.html">
+<meta property="og:title" content="相机内存优化分类">
+<meta property="og:url" content="https://shenweikun.github.io/2024/12/05/2024-12-04-memory-Classification-of-memory-problems/index.html">
 <meta property="og:site_name" content="Weikun&#39;s Notes">
-<meta property="og:description" content="Android 相机体系庞大且复杂，在我刚开始接触到该框架的时候，如盲人摸象一般，一点一点地在代码的世界中探索，在很长的一段时间内，都只能局限于某一个特定的区域，而且在解决问题的过程中，虽然通过对代码的深入梳理，最终都会顺利解决难题，但是到最后依然缺乏一个对于整个框架的理解，正如管中窥豹一般，只见细节而无法把握全貌。但是进入现在的公司之后，通过与相机前辈的沟通，我发现框架思维能力尤为重要，针对整个">
+<meta property="og:description" content="相机内存优化与安卓系统内存优化基本一样，区别只是针对的对象不同。后者针对整个安卓系统的所有进程，而相机内存优化仅针对相机相关的进程。 相机相关进程一般有三个：APP，CameraServer，CameraProvider(CameraHal)。部分手机厂可能会有第四个，如：自家的第三方算法处理进程，这里不做考虑，默认第三方集成于CameraProvider进程。 优化项包括：开机内存优化，内存峰值">
 <meta property="og:locale" content="zh_CN">
-<meta property="article:published_time" content="2024-11-20T16:26:07.000Z">
-<meta property="article:modified_time" content="2024-11-21T09:56:44.735Z">
+<meta property="article:published_time" content="2024-12-04T17:23:47.000Z">
+<meta property="article:modified_time" content="2024-12-04T18:15:00.820Z">
 <meta property="article:author" content="空白">
 <meta property="article:tag" content="Android Camera">
-<meta property="article:tag" content="Camera系统">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="内存">
 <meta name="twitter:card" content="summary">
 
 
-<link rel="canonical" href="https://shenweikun.github.io/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-10/">
+<link rel="canonical" href="https://shenweikun.github.io/2024/12/05/2024-12-04-memory-Classification-of-memory-problems/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://shenweikun.github.io/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-10/","path":"2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-10/","title":"深入理解Android相机体系结构之十：安卓相机架构总结"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://shenweikun.github.io/2024/12/05/2024-12-04-memory-Classification-of-memory-problems/","path":"2024/12/05/2024-12-04-memory-Classification-of-memory-problems/","title":"相机内存优化分类"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>深入理解Android相机体系结构之十：安卓相机架构总结 | Weikun's Notes</title>
+<title>相机内存优化分类 | Weikun's Notes</title>
   
 
 
@@ -127,7 +128,7 @@
   
   <aside class="sidebar">
 
-    <div class="sidebar-inner sidebar-overview-active">
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
       <ul class="sidebar-nav">
         <li class="sidebar-nav-toc">
           文章目录
@@ -140,6 +141,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E6%9C%BA%E5%89%A9%E4%BD%99%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96"><span class="nav-number">1.</span> <span class="nav-text">开机剩余内存优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2"><span class="nav-number">2.</span> <span class="nav-text">内存泄露</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#heap%E6%B3%84%E9%9C%B2"><span class="nav-number">2.1.</span> <span class="nav-text">heap泄露</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DMA%E6%B3%84%E9%9C%B2"><span class="nav-number">2.2.</span> <span class="nav-text">DMA泄露</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%B3%B0%E5%80%BC%E8%B6%85%E6%A0%87"><span class="nav-number">3.</span> <span class="nav-text">内存峰值超标</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#heap"><span class="nav-number">3.1.</span> <span class="nav-text">heap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DMA"><span class="nav-number">3.2.</span> <span class="nav-text">DMA</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E9%A9%BB%E7%95%99%E4%BC%98%E5%8C%96"><span class="nav-number">4.</span> <span class="nav-text">内存驻留优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E6%9C%BA%E5%9C%BA%E6%99%AF%EF%BC%8C%E5%90%8E%E5%8F%B0%E4%BB%BB%E5%8A%A1%E9%A9%BB%E7%95%99%E4%BC%98%E5%8C%96"><span class="nav-number">5.</span> <span class="nav-text">相机场景，后台任务驻留优化</span></a></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -190,7 +192,7 @@
   
 
   <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
-    <link itemprop="mainEntityOfPage" href="https://shenweikun.github.io/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-10/">
+    <link itemprop="mainEntityOfPage" href="https://shenweikun.github.io/2024/12/05/2024-12-04-memory-Classification-of-memory-problems/">
 
     <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
       <meta itemprop="image" content="/images/avatar.gif">
@@ -203,12 +205,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="深入理解Android相机体系结构之十：安卓相机架构总结 | Weikun's Notes">
+      <meta itemprop="name" content="相机内存优化分类 | Weikun's Notes">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          深入理解Android相机体系结构之十：安卓相机架构总结
+          相机内存优化分类
         </h1>
 
         <div class="post-meta-container">
@@ -220,7 +222,7 @@
       <span class="post-meta-item-text">发表于</span>
       
 
-      <time title="创建时间：2024-11-21 00:26:07 / 修改时间：17:56:44" itemprop="dateCreated datePublished" datetime="2024-11-21T00:26:07+08:00">2024-11-21</time>
+      <time title="创建时间：2024-12-05 01:23:47 / 修改时间：02:15:00" itemprop="dateCreated datePublished" datetime="2024-12-05T01:23:47+08:00">2024-12-05</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -228,7 +230,7 @@
       </span>
       <span class="post-meta-item-text">分类于</span>
         <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
-          <a href="/categories/1-Android-Camera/" itemprop="url" rel="index"><span itemprop="name">1. Android Camera</span></a>
+          <a href="/categories/5-Memory/" itemprop="url" rel="index"><span itemprop="name">5. Memory</span></a>
         </span>
     </span>
 
@@ -245,14 +247,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>1.8k</span>
+      <span>937</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>5 分钟</span>
+      <span>2 分钟</span>
     </span>
 </div>
 
@@ -262,14 +264,23 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p>Android 相机体系庞大且复杂，在我刚开始接触到该框架的时候，如盲人摸象一般，一点一点地在代码的世界中探索，在很长的一段时间内，都只能局限于某一个特定的区域，而且在解决问题的过程中，虽然通过对代码的深入梳理，最终都会顺利解决难题，但是到最后依然缺乏一个对于整个框架的理解，正如管中窥豹一般，只见细节而无法把握全貌。但是进入现在的公司之后，通过与相机前辈的沟通，我发现框架思维能力尤为重要，针对整个框架结构需要做到掌控全局，这样在遇到问题的时候便可以迅速定位，此时再进行代码层面的深入研究，发现问题根源，进而达到最终解决问题的目的。</p>
+    <div class="post-body" itemprop="articleBody"><p>相机内存优化与安卓系统内存优化基本一样，区别只是针对的对象不同。后者针对整个安卓系统的所有进程，而相机内存优化仅针对相机相关的进程。</p>
+<p>相机相关进程一般有三个：<strong>APP，CameraServer，CameraProvider</strong>(CameraHal)。部分手机厂可能会有第四个，如：自家的第三方算法处理进程，这里不做考虑，默认第三方集成于CameraProvider进程。</p>
+<p>优化项包括：开机内存优化，内存峰值超标，内存泄露，内存驻留优化，后台任务驻留优化。</p>
 <span id="more"></span>
-<p>Android相机体系随处可见接口与实现相分离的设计思想，而之前提及的对于体系结构的梳理正是按照其接口的逻辑定义来完成，再结合其接口具体实现，进而完善整个框架体系的代码地图的构建，而在本人六年多的相机开发过程中，经历了多次的Android 相机的框架调整，接口演变，接下来以个人经历为主线，简单为整个相机架构做一个总结。</p>
-<p>起初，首先接触到的相机框架部分便是驱动，那时接触的是高通MSM8953平台，该平台还是采用的QCamera &amp; MM-Camera框架，底层驱动并没有负责复杂业务逻辑控制，而是主要用于控制上下电，以及数据流的开启以及停止等，并且依然使用的是vb2进行图像帧缓冲区的管理，但是现如今的7150，其驱动部分俨然发生了翻天覆地的变化，高通为了配合UMD的业务处理，为驱动设计了一套KMD的框架，包含了复杂的业务处理流程，并且数据的管理也摒弃了vb2，采用了新的管理手段，赋予了驱动更多的职能。</p>
-<p>之后由于工作需要，进一步将工作重心过渡到Camera HAL层，开发的平台依然是8953平台上，当时采用还是QCamera &amp; MM-Camera框架，在该平台上见证了HAL接口的演变，首先接触最多的便是HAL1接口，该接口使用起来比较简单，通过几个特定接口分别实现预览、拍照以及录像的功能，此时，谷歌已经意识到该接口具有一定的局限，所以自然而然地进行接口的升级，提出了HAL2接口，但是由于接口定义存在问题，所有很快谷歌便摒弃了该接口，迅速推出HAL3接口，并且一直沿用至今。HAL3接口相比于HAL1，优势明显，通过将所有的采集流程高度抽象为一个统一逻辑，所有的场景都可以通过这一统一逻辑进行扩展，使该接口具有很强的灵活性和扩展性，所以通过这几代HAL接口的演变，不难得出一个结论，那便是接口的定义需要高度抽象，而抽象的目的就是为了更好的灵活性和可扩展性，就单单这一点而言，HAL3接口可以说是成功的。</p>
-<p>在后续HAL层的开发过程中，也见证了HIDL接口的诞生，在进行Android 8.0系统的升级过程中，发现谷歌将Camera Hal Module从Camera Service 解耦出来，放入一个独立的进程Camera Provider中进行管理，而该进程负责向外暴露HIDL接口，对内完成对其的实现，并且开始针对system分区以及vendor分区进行了严格的权限控制，该目的显而易见，那边是将平台厂商的实现与谷歌Framework相分离，这样便可以进行快速的迭代升级。</p>
-<p>进入现在的公司之后，工作内容进一步扩大，涉及到了App部分，而这部分在之前也有所接触，但是并不深入，那个时候还是使用Camera Api v1接口，其定义和HAL1类似，但为了增加其灵活性和扩展性，之后谷歌提出了Camera Api v2接口，现在主要接触的便是该接口，通过简单的几个控制语句便可以实现图像的采集，使用起来比较简单，进一步降低了开发者的门槛，这也从侧面体现出了该接口定义的巧妙。同时，对于Camera Api v2的实现，是通过Camera Framework来完成的，而该层也有着一次不小的演变，刚开始Framework层并不是直接通过AIDL接口与Camera Service进行通信，而是通过一个JNI层来完成从Java到Native的转换，而Native部分作为客户端，保持对Service的通信。这种设计，很显然会比较臃肿，并且代码难以维护，所以之后由于AIDL接口的提出，谷歌直接将其加入到相机框架中，用于保持Framework与Service的通信，进而摈弃了JNI层，进一步减少了不必要的层级结构，保持了整个体系简洁性。</p>
-<p>整个相机体系，经历了多次的发展，最终形成了而今的框架结构，一路走来，不难发现都是对于接口的升级，而其升级主要是更新其逻辑定义，完善其具体实现。</p>
+<h2 id="开机剩余内存优化"><a href="#开机剩余内存优化" class="headerlink" title="开机剩余内存优化"></a>开机剩余内存优化</h2><p>安卓开机剩余可用内存是指安卓设备在完成开机启动过程后，系统和已经自动运行的应用程序占用一部分内存后，剩余的可以被其他应用程序或系统进程使用的内存空间。这部分内存对于设备的流畅运行非常关键，它决定了在开机后还能同时运行多少其他应用。</p>
+<p>相机相关的三个进程中，CameraServer和CameraProvider是守护进程，就像一个默默工作的 “守护者”，在系统启动后就自动运行，不需要用户手动开启，并且在系统运行期间一直处于活动状态，为系统和应用提供拍照、录像和扫码等服务。因此，它们不可避免的会在开机后占用一直内存。</p>
+<p>CameraServer占用内存较小，因为其主要包含了Google对相机的Native实现所必须的代码段和数据段。<br>CameraProvider占用内存较多，是相机进程的内存占用主要来源。CameraProvider主要负责管理相机设备的底层硬件资源，其包含了平台厂商对于硬件抽象层的实现，且很多手机厂商为了做影像能力开放，往往会将第三方算法集成在CameraProvider中，导致其占用的内存往往较大。</p>
+<p><strong>主要优化思路，针对CameraServer和CameraProvider</strong>：</p>
+<ol>
+<li>减少开机阶段，CameraServer和CameraProvider不必要的自运行流程，降低堆栈内存和so map等</li>
+<li>尽量较少不必要的pin so操作</li>
+<li>尽量减少相机tuning bin和sensor bin的大小，去处不必要或者冗余部分</li>
+</ol>
+<h2 id="内存泄露"><a href="#内存泄露" class="headerlink" title="内存泄露"></a>内存泄露</h2><p>待完成…</p>
+<h3 id="heap泄露"><a href="#heap泄露" class="headerlink" title="heap泄露"></a>heap泄露</h3><h3 id="DMA泄露"><a href="#DMA泄露" class="headerlink" title="DMA泄露"></a>DMA泄露</h3><h2 id="内存峰值超标"><a href="#内存峰值超标" class="headerlink" title="内存峰值超标"></a>内存峰值超标</h2><p>为了应对用户对相机体验要求的日益提升，相机功能堆叠越来越多，也越来越复杂，<br>待完成…</p>
+<h3 id="heap"><a href="#heap" class="headerlink" title="heap"></a>heap</h3><h3 id="DMA"><a href="#DMA" class="headerlink" title="DMA"></a>DMA</h3><h2 id="内存驻留优化"><a href="#内存驻留优化" class="headerlink" title="内存驻留优化"></a>内存驻留优化</h2><p>待完成…</p>
+<h2 id="相机场景，后台任务驻留优化"><a href="#相机场景，后台任务驻留优化" class="headerlink" title="相机场景，后台任务驻留优化"></a>相机场景，后台任务驻留优化</h2><p>待完成…</p>
 
     </div>
 
@@ -287,7 +298,7 @@
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://shenweikun.github.io/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-10/" title="深入理解Android相机体系结构之十：安卓相机架构总结">https://shenweikun.github.io/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-10/</a>
+      <a href="https://shenweikun.github.io/2024/12/05/2024-12-04-memory-Classification-of-memory-problems/" title="相机内存优化分类">https://shenweikun.github.io/2024/12/05/2024-12-04-memory-Classification-of-memory-problems/</a>
   </li>
   <li class="post-copyright-license">
       <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -297,21 +308,19 @@
 
           <div class="post-tags">
               <a href="/tags/Android-Camera/" rel="tag"><i class="fa fa-tag"></i> Android Camera</a>
-              <a href="/tags/Camera%E7%B3%BB%E7%BB%9F/" rel="tag"><i class="fa fa-tag"></i> Camera系统</a>
+              <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
+              <a href="/tags/%E5%86%85%E5%AD%98/" rel="tag"><i class="fa fa-tag"></i> 内存</a>
           </div>
 
         
 
           <div class="post-nav">
             <div class="post-nav-item">
-                <a href="/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-9/" rel="prev" title="深入理解Android相机体系结构之九：相机硬件层">
-                  <i class="fa fa-angle-left"></i> 深入理解Android相机体系结构之九：相机硬件层
+                <a href="/2024/12/04/2024-12-03-Android-Memory-Overview/" rel="prev" title="Android内存概述">
+                  <i class="fa fa-angle-left"></i> Android内存概述
                 </a>
             </div>
             <div class="post-nav-item">
-                <a href="/2024/11/21/2024-11-21-In-depth-understanding-of-Android-camera-11/" rel="next" title="深入理解Android相机体系结构之十一：手机相机的未来与发展">
-                  深入理解Android相机体系结构之十一：手机相机的未来与发展 <i class="fa fa-angle-right"></i>
-                </a>
             </div>
           </div>
     </footer>
