@@ -19,15 +19,15 @@
 
 <script class="next-config" data-name="main" type="application/json">{"hostname":"shenweikun.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.21.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":true,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
 
-    <meta name="description" content="相机内存优化与安卓系统内存优化基本一样，区别只是针对的对象不同。后者针对整个安卓系统的所有进程，而相机内存优化仅针对相机相关的进程。 相机相关进程一般有三个：APP，CameraServer，CameraProvider(CameraHal)。部分手机厂可能会有第四个，如：自家的第三方算法处理进程，这里不做考虑，默认第三方集成于CameraProvider进程。 优化项包括：开机内存优化，内存峰值">
+    <meta name="description" content="安卓相机内存优化与安卓系统内存优化基本一样，区别只是针对的对象不同。后者针对整个安卓系统的所有进程，而相机内存优化仅针对相机相关的进程。 相机相关进程一般有三个：APP，CameraServer，CameraProvider(CameraHal)。部分手机厂可能会有第四个，如：自家的第三方算法处理进程，这里不做考虑，默认第三方集成于CameraProvider进程。 优化项包括：开机内存优化，内存">
 <meta property="og:type" content="article">
-<meta property="og:title" content="相机内存优化分类">
+<meta property="og:title" content="相机内存优化">
 <meta property="og:url" content="https://shenweikun.github.io/2024/12/05/2024-12-04-memory-Classification-of-memory-problems/index.html">
 <meta property="og:site_name" content="Weikun&#39;s Notes">
-<meta property="og:description" content="相机内存优化与安卓系统内存优化基本一样，区别只是针对的对象不同。后者针对整个安卓系统的所有进程，而相机内存优化仅针对相机相关的进程。 相机相关进程一般有三个：APP，CameraServer，CameraProvider(CameraHal)。部分手机厂可能会有第四个，如：自家的第三方算法处理进程，这里不做考虑，默认第三方集成于CameraProvider进程。 优化项包括：开机内存优化，内存峰值">
+<meta property="og:description" content="安卓相机内存优化与安卓系统内存优化基本一样，区别只是针对的对象不同。后者针对整个安卓系统的所有进程，而相机内存优化仅针对相机相关的进程。 相机相关进程一般有三个：APP，CameraServer，CameraProvider(CameraHal)。部分手机厂可能会有第四个，如：自家的第三方算法处理进程，这里不做考虑，默认第三方集成于CameraProvider进程。 优化项包括：开机内存优化，内存">
 <meta property="og:locale" content="zh_CN">
 <meta property="article:published_time" content="2024-12-04T17:23:47.000Z">
-<meta property="article:modified_time" content="2024-12-04T18:15:00.820Z">
+<meta property="article:modified_time" content="2024-12-09T14:03:15.869Z">
 <meta property="article:author" content="空白">
 <meta property="article:tag" content="Android Camera">
 <meta property="article:tag" content="Android">
@@ -38,10 +38,10 @@
 <link rel="canonical" href="https://shenweikun.github.io/2024/12/05/2024-12-04-memory-Classification-of-memory-problems/">
 
 
-<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://shenweikun.github.io/2024/12/05/2024-12-04-memory-Classification-of-memory-problems/","path":"2024/12/05/2024-12-04-memory-Classification-of-memory-problems/","title":"相机内存优化分类"}</script>
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://shenweikun.github.io/2024/12/05/2024-12-04-memory-Classification-of-memory-problems/","path":"2024/12/05/2024-12-04-memory-Classification-of-memory-problems/","title":"相机内存优化"}</script>
 
 <script class="next-config" data-name="calendar" type="application/json">""</script>
-<title>相机内存优化分类 | Weikun's Notes</title>
+<title>相机内存优化 | Weikun's Notes</title>
   
 
 
@@ -141,7 +141,7 @@
       <div class="sidebar-panel-container">
         <!--noindex-->
         <div class="post-toc-wrap sidebar-panel">
-            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%80%E6%9C%BA%E5%89%A9%E4%BD%99%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96"><span class="nav-number">1.</span> <span class="nav-text">开机剩余内存优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2"><span class="nav-number">2.</span> <span class="nav-text">内存泄露</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#heap%E6%B3%84%E9%9C%B2"><span class="nav-number">2.1.</span> <span class="nav-text">heap泄露</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DMA%E6%B3%84%E9%9C%B2"><span class="nav-number">2.2.</span> <span class="nav-text">DMA泄露</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%B3%B0%E5%80%BC%E8%B6%85%E6%A0%87"><span class="nav-number">3.</span> <span class="nav-text">内存峰值超标</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#heap"><span class="nav-number">3.1.</span> <span class="nav-text">heap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#DMA"><span class="nav-number">3.2.</span> <span class="nav-text">DMA</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E9%A9%BB%E7%95%99%E4%BC%98%E5%8C%96"><span class="nav-number">4.</span> <span class="nav-text">内存驻留优化</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E7%9B%B8%E6%9C%BA%E5%9C%BA%E6%99%AF%EF%BC%8C%E5%90%8E%E5%8F%B0%E4%BB%BB%E5%8A%A1%E9%A9%BB%E7%95%99%E4%BC%98%E5%8C%96"><span class="nav-number">5.</span> <span class="nav-text">相机场景，后台任务驻留优化</span></a></li></ol></div>
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%8C%87%E6%A0%87%E4%B8%8E%E5%88%86%E6%9E%90%E5%91%BD%E4%BB%A4"><span class="nav-number">1.</span> <span class="nav-text">内存指标与分析命令</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%8C%87%E6%A0%87"><span class="nav-number">1.1.</span> <span class="nav-text">内存指标</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E5%86%85%E5%AD%98%E5%88%86%E6%9E%90%E5%91%BD%E4%BB%A4"><span class="nav-number">1.2.</span> <span class="nav-text">常用内存分析命令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E7%BB%9F%E8%AE%A1"><span class="nav-number">2.</span> <span class="nav-text">内存统计</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%BC%82%E5%B8%B8%E5%88%86%E6%9E%90%E6%96%B9%E5%90%91"><span class="nav-number">3.</span> <span class="nav-text">异常分析方向</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#Code"><span class="nav-number">3.1.</span> <span class="nav-text">Code</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Java-Heap"><span class="nav-number">3.2.</span> <span class="nav-text">Java Heap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Native-Heap"><span class="nav-number">3.3.</span> <span class="nav-text">Native Heap</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Graphics"><span class="nav-number">3.4.</span> <span class="nav-text">Graphics</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Objects"><span class="nav-number">3.5.</span> <span class="nav-text">Objects</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%B8%B8%E7%94%A8%E5%91%BD%E4%BB%A4"><span class="nav-number">3.6.</span> <span class="nav-text">常用命令</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96%E9%A1%B9"><span class="nav-number">4.</span> <span class="nav-text">内存优化项</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%BC%80%E6%9C%BA%E5%89%A9%E4%BD%99%E5%86%85%E5%AD%98%E4%BC%98%E5%8C%96"><span class="nav-number">4.1.</span> <span class="nav-text">开机剩余内存优化</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#%E6%8B%86%E8%A7%A3%E6%96%B9%E6%B3%95%EF%BC%9A"><span class="nav-number">4.1.1.</span> <span class="nav-text">拆解方法：</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#%E4%BC%98%E5%8C%96%E6%80%9D%E8%B7%AF%EF%BC%9A"><span class="nav-number">4.1.2.</span> <span class="nav-text">优化思路：</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E6%B3%84%E9%9C%B2"><span class="nav-number">4.2.</span> <span class="nav-text">内存泄露</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#heap%E6%B3%84%E9%9C%B2"><span class="nav-number">4.2.1.</span> <span class="nav-text">heap泄露</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DMA%E6%B3%84%E9%9C%B2"><span class="nav-number">4.2.2.</span> <span class="nav-text">DMA泄露</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E5%B3%B0%E5%80%BC%E8%B6%85%E6%A0%87"><span class="nav-number">4.3.</span> <span class="nav-text">内存峰值超标</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#heap"><span class="nav-number">4.3.1.</span> <span class="nav-text">heap</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#DMA"><span class="nav-number">4.3.2.</span> <span class="nav-text">DMA</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E5%86%85%E5%AD%98%E9%A9%BB%E7%95%99%E4%BC%98%E5%8C%96"><span class="nav-number">4.4.</span> <span class="nav-text">内存驻留优化</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%9B%B8%E6%9C%BA%E5%9C%BA%E6%99%AF%EF%BC%8C%E5%90%8E%E5%8F%B0%E4%BB%BB%E5%8A%A1%E9%A9%BB%E7%95%99%E4%BC%98%E5%8C%96"><span class="nav-number">4.5.</span> <span class="nav-text">相机场景，后台任务驻留优化</span></a></li></ol></li></ol></div>
         </div>
         <!--/noindex-->
 
@@ -154,7 +154,7 @@
   <nav class="site-state">
       <div class="site-state-item site-state-posts">
         <a href="/archives/">
-          <span class="site-state-item-count">45</span>
+          <span class="site-state-item-count">48</span>
           <span class="site-state-item-name">日志</span>
         </a>
       </div>
@@ -205,12 +205,12 @@
     </span>
 
     <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
-      <meta itemprop="name" content="相机内存优化分类 | Weikun's Notes">
+      <meta itemprop="name" content="相机内存优化 | Weikun's Notes">
       <meta itemprop="description" content="">
     </span>
       <header class="post-header">
         <h1 class="post-title" itemprop="name headline">
-          相机内存优化分类
+          相机内存优化
         </h1>
 
         <div class="post-meta-container">
@@ -220,9 +220,15 @@
         <i class="far fa-calendar"></i>
       </span>
       <span class="post-meta-item-text">发表于</span>
-      
 
-      <time title="创建时间：2024-12-05 01:23:47 / 修改时间：02:15:00" itemprop="dateCreated datePublished" datetime="2024-12-05T01:23:47+08:00">2024-12-05</time>
+      <time title="创建时间：2024-12-05 01:23:47" itemprop="dateCreated datePublished" datetime="2024-12-05T01:23:47+08:00">2024-12-05</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-12-09 22:03:15" itemprop="dateModified" datetime="2024-12-09T22:03:15+08:00">2024-12-09</time>
     </span>
     <span class="post-meta-item">
       <span class="post-meta-item-icon">
@@ -247,14 +253,14 @@
         <i class="far fa-file-word"></i>
       </span>
       <span class="post-meta-item-text">本文字数：</span>
-      <span>937</span>
+      <span>1.8k</span>
     </span>
     <span class="post-meta-item" title="阅读时长">
       <span class="post-meta-item-icon">
         <i class="far fa-clock"></i>
       </span>
       <span class="post-meta-item-text">阅读时长 &asymp;</span>
-      <span>2 分钟</span>
+      <span>5 分钟</span>
     </span>
 </div>
 
@@ -264,23 +270,66 @@
     
     
     
-    <div class="post-body" itemprop="articleBody"><p>相机内存优化与安卓系统内存优化基本一样，区别只是针对的对象不同。后者针对整个安卓系统的所有进程，而相机内存优化仅针对相机相关的进程。</p>
+    <div class="post-body" itemprop="articleBody"><p>安卓相机内存优化与安卓系统内存优化基本一样，区别只是针对的对象不同。后者针对整个安卓系统的所有进程，而相机内存优化仅针对相机相关的进程。</p>
 <p>相机相关进程一般有三个：<strong>APP，CameraServer，CameraProvider</strong>(CameraHal)。部分手机厂可能会有第四个，如：自家的第三方算法处理进程，这里不做考虑，默认第三方集成于CameraProvider进程。</p>
 <p>优化项包括：开机内存优化，内存峰值超标，内存泄露，内存驻留优化，后台任务驻留优化。</p>
 <span id="more"></span>
-<h2 id="开机剩余内存优化"><a href="#开机剩余内存优化" class="headerlink" title="开机剩余内存优化"></a>开机剩余内存优化</h2><p>安卓开机剩余可用内存是指安卓设备在完成开机启动过程后，系统和已经自动运行的应用程序占用一部分内存后，剩余的可以被其他应用程序或系统进程使用的内存空间。这部分内存对于设备的流畅运行非常关键，它决定了在开机后还能同时运行多少其他应用。</p>
+<h2 id="内存指标与分析命令"><a href="#内存指标与分析命令" class="headerlink" title="内存指标与分析命令"></a>内存指标与分析命令</h2><h3 id="内存指标"><a href="#内存指标" class="headerlink" title="内存指标"></a>内存指标</h3><p>在介绍相机内存优化之前，让我们先来了解一下如下几个概念：</p>
+<table>
+<thead>
+<tr>
+<th>指标</th>
+<th>定义</th>
+<th>特点</th>
+</tr>
+</thead>
+<tbody><tr>
+<td><strong>VSS（Virtual Set Size）虚拟内存集大小</strong></td>
+<td>进程可以访问的所有内存页面的大小总和，包括共享库、代码、数据以及堆和栈内存等所有部分，包含未加载到物理内存中的部分</td>
+<td>值通常最大，不能很好地反映进程实际占用的物理内存量</td>
+</tr>
+<tr>
+<td><strong>RSS（Resident Set Size）常驻内存集大小</strong></td>
+<td>进程当前驻留在物理内存中的页面大小总和，包括进程的代码段、数据段、堆和栈等部分实际占用的物理内存，但共享库被多个进程共享的部分会被重复计算</td>
+<td>比VSS更能反映进程实际占用物理内存情况，但会高估实际内存使用量，因共享库重复计算</td>
+</tr>
+<tr>
+<td><strong>PSS（Proportional Set Size）比例内存集大小</strong></td>
+<td>在RSS基础上，考虑共享内存因素，将共享库等共享内存按共享的进程数量平均分配后计算每个进程的内存使用量</td>
+<td>值介于RSS和USS之间，更准确衡量进程在共享内存环境下的实际内存占用情况，是分析多进程系统内存使用的有用指标</td>
+</tr>
+<tr>
+<td><strong>USS（Unique Set Size）独占内存集大小</strong></td>
+<td>进程独占的物理内存大小，不包括共享库等共享内存部分，只计算进程自身的代码、数据、堆和栈等独占部分的物理内存占用</td>
+<td>最能准确反映进程真正独占物理内存的指标，对分析内存泄漏等问题有帮助</td>
+</tr>
+</tbody></table>
+<p>内存的大小关系：<strong>VSS&gt;RSS&gt;=PSS&gt;=USS</strong><br><strong>在实际分析中，一般是以PSS的内存为准，且也是最符合实际情况的统计值</strong></p>
+<h3 id="常用内存分析命令"><a href="#常用内存分析命令" class="headerlink" title="常用内存分析命令"></a>常用内存分析命令</h3><ul>
+<li><a href="https://shenweikun.github.io/2024/12/06/2024-12-05-memory-dumpsys-meminfo-interpretation/">dumpsys meminfo</a></li>
+<li><a href="https://shenweikun.github.io/2024/12/06/2024-12-05-memory-dmabuf-dump/">dmabuf_dump</a></li>
+<li><a href="https://shenweikun.github.io/2024/12/06/2024-12-05-memory-showmap/">showmap</a><br>……</li>
+</ul>
+<h2 id="内存统计"><a href="#内存统计" class="headerlink" title="内存统计"></a>内存统计</h2><p>待完成…</p>
+<h2 id="异常分析方向"><a href="#异常分析方向" class="headerlink" title="异常分析方向"></a>异常分析方向</h2><p>待完成</p>
+<h3 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h3><h3 id="Java-Heap"><a href="#Java-Heap" class="headerlink" title="Java Heap"></a>Java Heap</h3><h3 id="Native-Heap"><a href="#Native-Heap" class="headerlink" title="Native Heap"></a>Native Heap</h3><h3 id="Graphics"><a href="#Graphics" class="headerlink" title="Graphics"></a>Graphics</h3><h3 id="Objects"><a href="#Objects" class="headerlink" title="Objects"></a>Objects</h3><h3 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h3><h2 id="内存优化项"><a href="#内存优化项" class="headerlink" title="内存优化项"></a>内存优化项</h2><h3 id="开机剩余内存优化"><a href="#开机剩余内存优化" class="headerlink" title="开机剩余内存优化"></a>开机剩余内存优化</h3><p>安卓开机剩余可用内存是指安卓设备在完成开机启动过程后，系统和已经自动运行的应用程序占用一部分内存后，剩余的可以被其他应用程序或系统进程使用的内存空间。这部分内存对于设备的流畅运行非常关键，它决定了在开机后还能同时运行多少其他应用。</p>
 <p>相机相关的三个进程中，CameraServer和CameraProvider是守护进程，就像一个默默工作的 “守护者”，在系统启动后就自动运行，不需要用户手动开启，并且在系统运行期间一直处于活动状态，为系统和应用提供拍照、录像和扫码等服务。因此，它们不可避免的会在开机后占用一直内存。</p>
 <p>CameraServer占用内存较小，因为其主要包含了Google对相机的Native实现所必须的代码段和数据段。<br>CameraProvider占用内存较多，是相机进程的内存占用主要来源。CameraProvider主要负责管理相机设备的底层硬件资源，其包含了平台厂商对于硬件抽象层的实现，且很多手机厂商为了做影像能力开放，往往会将第三方算法集成在CameraProvider中，导致其占用的内存往往较大。</p>
-<p><strong>主要优化思路，针对CameraServer和CameraProvider</strong>：</p>
+<h4 id="拆解方法："><a href="#拆解方法：" class="headerlink" title="拆解方法："></a>拆解方法：</h4><ol>
+<li>使用dumpsys meminfo当前时刻app的内存占用情况<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb shell dumpsys meminfo package_name|pid [-d]</span><br></pre></td></tr></table></figure>
+关于 meminfo 的内容描述可查看：<a href="https://shenweikun.github.io/2024/12/06/2024-12-05-memory-dumpsys-meminfo-interpretation/#dumpsys-meminfo%E6%8F%8F%E8%BF%B0">dumpsys meminfo 描述</a> </li>
+<li>根据 dumpsys meminfo 中具体的占用项进行针对性优化</li>
+</ol>
+<h4 id="优化思路："><a href="#优化思路：" class="headerlink" title="优化思路："></a>优化思路：</h4><p><strong>主要优化思路，针对CameraServer和CameraProvider</strong>：</p>
 <ol>
 <li>减少开机阶段，CameraServer和CameraProvider不必要的自运行流程，降低堆栈内存和so map等</li>
 <li>尽量较少不必要的pin so操作</li>
-<li>尽量减少相机tuning bin和sensor bin的大小，去处不必要或者冗余部分</li>
+<li>尽量减少相机tuning bin和sensor bin的大小，去除不必要或者冗余部分</li>
 </ol>
-<h2 id="内存泄露"><a href="#内存泄露" class="headerlink" title="内存泄露"></a>内存泄露</h2><p>待完成…</p>
-<h3 id="heap泄露"><a href="#heap泄露" class="headerlink" title="heap泄露"></a>heap泄露</h3><h3 id="DMA泄露"><a href="#DMA泄露" class="headerlink" title="DMA泄露"></a>DMA泄露</h3><h2 id="内存峰值超标"><a href="#内存峰值超标" class="headerlink" title="内存峰值超标"></a>内存峰值超标</h2><p>为了应对用户对相机体验要求的日益提升，相机功能堆叠越来越多，也越来越复杂，<br>待完成…</p>
-<h3 id="heap"><a href="#heap" class="headerlink" title="heap"></a>heap</h3><h3 id="DMA"><a href="#DMA" class="headerlink" title="DMA"></a>DMA</h3><h2 id="内存驻留优化"><a href="#内存驻留优化" class="headerlink" title="内存驻留优化"></a>内存驻留优化</h2><p>待完成…</p>
-<h2 id="相机场景，后台任务驻留优化"><a href="#相机场景，后台任务驻留优化" class="headerlink" title="相机场景，后台任务驻留优化"></a>相机场景，后台任务驻留优化</h2><p>待完成…</p>
+<h3 id="内存泄露"><a href="#内存泄露" class="headerlink" title="内存泄露"></a>内存泄露</h3><p>待完成…</p>
+<h4 id="heap泄露"><a href="#heap泄露" class="headerlink" title="heap泄露"></a>heap泄露</h4><h4 id="DMA泄露"><a href="#DMA泄露" class="headerlink" title="DMA泄露"></a>DMA泄露</h4><h3 id="内存峰值超标"><a href="#内存峰值超标" class="headerlink" title="内存峰值超标"></a>内存峰值超标</h3><p>为了应对用户对相机体验要求的日益提升，相机功能堆叠越来越多，也越来越复杂，<br>待完成…</p>
+<h4 id="heap"><a href="#heap" class="headerlink" title="heap"></a>heap</h4><h4 id="DMA"><a href="#DMA" class="headerlink" title="DMA"></a>DMA</h4><h3 id="内存驻留优化"><a href="#内存驻留优化" class="headerlink" title="内存驻留优化"></a>内存驻留优化</h3><p>待完成…</p>
+<h3 id="相机场景，后台任务驻留优化"><a href="#相机场景，后台任务驻留优化" class="headerlink" title="相机场景，后台任务驻留优化"></a>相机场景，后台任务驻留优化</h3><p>待完成…</p>
 
     </div>
 
@@ -298,7 +347,7 @@
   </li>
   <li class="post-copyright-link">
       <strong>本文链接：</strong>
-      <a href="https://shenweikun.github.io/2024/12/05/2024-12-04-memory-Classification-of-memory-problems/" title="相机内存优化分类">https://shenweikun.github.io/2024/12/05/2024-12-04-memory-Classification-of-memory-problems/</a>
+      <a href="https://shenweikun.github.io/2024/12/05/2024-12-04-memory-Classification-of-memory-problems/" title="相机内存优化">https://shenweikun.github.io/2024/12/05/2024-12-04-memory-Classification-of-memory-problems/</a>
   </li>
   <li class="post-copyright-license">
       <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
@@ -321,6 +370,9 @@
                 </a>
             </div>
             <div class="post-nav-item">
+                <a href="/2024/12/06/2024-12-05-memory-dumpsys-meminfo-interpretation/" rel="next" title="dumpsys meminfo 详解">
+                  dumpsys meminfo 详解 <i class="fa fa-angle-right"></i>
+                </a>
             </div>
           </div>
     </footer>
@@ -352,13 +404,13 @@
     <span class="post-meta-item-icon">
       <i class="fa fa-chart-line"></i>
     </span>
-    <span title="站点总字数">461k</span>
+    <span title="站点总字数">473k</span>
   </span>
   <span class="post-meta-item">
     <span class="post-meta-item-icon">
       <i class="fa fa-coffee"></i>
     </span>
-    <span title="站点阅读时长">19:12</span>
+    <span title="站点阅读时长">19:43</span>
   </span>
 </div>
 <div class="busuanzi-count">

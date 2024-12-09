@@ -1,0 +1,768 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width">
+<meta name="theme-color" content="#222"><meta name="generator" content="Hexo 5.4.0">
+
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png">
+  <link rel="mask-icon" href="/images/logo.svg" color="#222">
+
+<link rel="stylesheet" href="/css/main.css">
+
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Lato:ital,wght@0,300;0,400;0,700;1,300;1,400;1,700&display=swap&subset=latin,latin-ext">
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" integrity="sha256-5eIC48iZUHmSlSUz9XtjRyK2mzQkHScZY1WdMaoz74E=" crossorigin="anonymous">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.css" integrity="sha256-gkQVf8UKZgQ0HyuxL/VnacadJ+D2Kox2TCEBuNQg5+w=" crossorigin="anonymous">
+
+<script class="next-config" data-name="main" type="application/json">{"hostname":"shenweikun.github.io","root":"/","images":"/images","scheme":"Gemini","darkmode":false,"version":"8.21.1","exturl":false,"sidebar":{"position":"left","width_expanded":320,"width_dual_column":240,"display":"post","padding":18,"offset":12},"hljswrap":true,"copycode":{"enable":true,"style":null},"fold":{"enable":true,"height":500},"bookmark":{"enable":false,"color":"#222","save":"auto"},"mediumzoom":false,"lazyload":false,"pangu":true,"comments":{"style":"tabs","active":null,"storage":true,"lazyload":false,"nav":null},"stickytabs":false,"motion":{"enable":false,"async":false,"duration":200,"transition":{"menu_item":"fadeInDown","post_block":"fadeIn","post_header":"fadeInDown","post_body":"fadeInDown","coll_header":"fadeInLeft","sidebar":"fadeInUp"}},"prism":false,"i18n":{"placeholder":"搜索...","empty":"没有找到任何搜索结果：${query}","hits_time":"找到 ${hits} 个搜索结果（用时 ${time} 毫秒）","hits":"找到 ${hits} 个搜索结果"},"path":"/search.xml","localsearch":{"enable":true,"top_n_per_article":1,"unescape":false,"preload":false}}</script><script src="/js/config.js"></script>
+
+    <meta name="description" content="概述dumpsys meminfo是 Android 系统中一个非常有用的命令行工具。它用于获取有关系统内存使用情况的详细信息。开发人员、测试人员和系统管理员可以使用这个工具来分析应用程序和系统服务的内存占用，以优化性能、检测内存泄漏等问题。">
+<meta property="og:type" content="article">
+<meta property="og:title" content="dumpsys meminfo 详解">
+<meta property="og:url" content="https://shenweikun.github.io/2024/12/06/2024-12-05-memory-dumpsys-meminfo-interpretation/index.html">
+<meta property="og:site_name" content="Weikun&#39;s Notes">
+<meta property="og:description" content="概述dumpsys meminfo是 Android 系统中一个非常有用的命令行工具。它用于获取有关系统内存使用情况的详细信息。开发人员、测试人员和系统管理员可以使用这个工具来分析应用程序和系统服务的内存占用，以优化性能、检测内存泄漏等问题。">
+<meta property="og:locale" content="zh_CN">
+<meta property="og:image" content="https://shenweikun.github.io/2024/12/06/2024-12-05-memory-dumpsys-meminfo-interpretation/image.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/12/06/2024-12-05-memory-dumpsys-meminfo-interpretation/image-1.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/12/06/2024-12-05-memory-dumpsys-meminfo-interpretation/image-2.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/12/06/2024-12-05-memory-dumpsys-meminfo-interpretation/image-3.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/12/06/2024-12-05-memory-dumpsys-meminfo-interpretation/image-4.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/12/06/2024-12-05-memory-dumpsys-meminfo-interpretation/image-5.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/12/06/2024-12-05-memory-dumpsys-meminfo-interpretation/image-6.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/12/06/2024-12-05-memory-dumpsys-meminfo-interpretation/image-7.png">
+<meta property="og:image" content="https://shenweikun.github.io/2024/12/06/2024-12-05-memory-dumpsys-meminfo-interpretation/image-8.png">
+<meta property="article:published_time" content="2024-12-05T17:08:55.000Z">
+<meta property="article:modified_time" content="2024-12-09T13:46:50.910Z">
+<meta property="article:author" content="空白">
+<meta property="article:tag" content="Android">
+<meta property="article:tag" content="内存">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://shenweikun.github.io/2024/12/06/2024-12-05-memory-dumpsys-meminfo-interpretation/image.png">
+
+
+<link rel="canonical" href="https://shenweikun.github.io/2024/12/06/2024-12-05-memory-dumpsys-meminfo-interpretation/">
+
+
+<script class="next-config" data-name="page" type="application/json">{"sidebar":"","isHome":false,"isPost":true,"lang":"zh-CN","comments":true,"permalink":"https://shenweikun.github.io/2024/12/06/2024-12-05-memory-dumpsys-meminfo-interpretation/","path":"2024/12/06/2024-12-05-memory-dumpsys-meminfo-interpretation/","title":"dumpsys meminfo 详解"}</script>
+
+<script class="next-config" data-name="calendar" type="application/json">""</script>
+<title>dumpsys meminfo 详解 | Weikun's Notes</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+    <link rel="stylesheet" href="/css/noscript.css">
+  </noscript>
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage">
+  <div class="headband"></div>
+
+  <main class="main">
+    <div class="column">
+      <header class="header" itemscope itemtype="http://schema.org/WPHeader"><div class="site-brand-container">
+  <div class="site-nav-toggle">
+    <div class="toggle" aria-label="切换导航栏" role="button">
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+        <span class="toggle-line"></span>
+    </div>
+  </div>
+
+  <div class="site-meta">
+
+    <a href="/" class="brand" rel="start">
+      <i class="logo-line"></i>
+      <p class="site-title">Weikun's Notes</p>
+      <i class="logo-line"></i>
+    </a>
+      <p class="site-subtitle" itemprop="description">怀揣代码中的唏嘘，记录生活中的点滴</p>
+  </div>
+
+  <div class="site-nav-right">
+    <div class="toggle popup-trigger" aria-label="搜索" role="button">
+        <i class="fa fa-search fa-fw fa-lg"></i>
+    </div>
+  </div>
+</div>
+
+
+
+<nav class="site-nav">
+  <ul class="main-menu menu"><li class="menu-item menu-item-home"><a href="/" rel="section"><i class="fa fa-home fa-fw"></i>首页</a></li><li class="menu-item menu-item-about"><a href="/about/" rel="section"><i class="fa fa-user fa-fw"></i>关于</a></li><li class="menu-item menu-item-categories"><a href="/categories/" rel="section"><i class="fa fa-th fa-fw"></i>分类</a></li><li class="menu-item menu-item-tags"><a href="/tags/" rel="section"><i class="fa fa-tags fa-fw"></i>标签</a></li><li class="menu-item menu-item-archives"><a href="/archives/" rel="section"><i class="fa fa-archive fa-fw"></i>归档</a></li>
+      <li class="menu-item menu-item-search">
+        <a role="button" class="popup-trigger"><i class="fa fa-search fa-fw"></i>搜索
+        </a>
+      </li>
+  </ul>
+</nav>
+
+
+
+  <div class="search-pop-overlay">
+    <div class="popup search-popup">
+      <div class="search-header">
+        <span class="search-icon">
+          <i class="fa fa-search"></i>
+        </span>
+        <div class="search-input-container">
+          <input autocomplete="off" autocapitalize="off" maxlength="80"
+                placeholder="搜索..." spellcheck="false"
+                type="search" class="search-input">
+        </div>
+        <span class="popup-btn-close" role="button">
+          <i class="fa fa-times-circle"></i>
+        </span>
+      </div>
+      <div class="search-result-container">
+        <div class="search-result-icon">
+          <i class="fa fa-spinner fa-pulse fa-5x"></i>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</header>
+        
+  
+  <aside class="sidebar">
+
+    <div class="sidebar-inner sidebar-nav-active sidebar-toc-active">
+      <ul class="sidebar-nav">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <div class="sidebar-panel-container">
+        <!--noindex-->
+        <div class="post-toc-wrap sidebar-panel">
+            <div class="post-toc animated"><ol class="nav"><li class="nav-item nav-level-2"><a class="nav-link" href="#%E6%A6%82%E8%BF%B0"><span class="nav-number">1.</span> <span class="nav-text">概述</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E4%BD%BF%E7%94%A8%E6%96%B9%E6%B3%95"><span class="nav-number">2.</span> <span class="nav-text">使用方法</span></a></li><li class="nav-item nav-level-2"><a class="nav-link" href="#%E5%AE%9E%E7%8E%B0%E5%8E%9F%E7%90%86"><span class="nav-number">3.</span> <span class="nav-text">实现原理</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#%E7%BB%9F%E8%AE%A1%E7%BB%84%E6%88%90"><span class="nav-number">3.1.</span> <span class="nav-text">统计组成</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#%E6%BA%90%E7%A0%81%E8%B7%9F%E8%B8%AA"><span class="nav-number">3.2.</span> <span class="nav-text">源码跟踪</span></a></li></ol></li><li class="nav-item nav-level-2"><a class="nav-link" href="#meminfo%E8%A7%A3%E6%9E%90"><span class="nav-number">4.</span> <span class="nav-text">meminfo解析</span></a><ol class="nav-child"><li class="nav-item nav-level-3"><a class="nav-link" href="#smap%E8%8E%B7%E5%8F%96%E7%9A%84%E6%95%B0%E6%8D%AE"><span class="nav-number">4.1.</span> <span class="nav-text">smap获取的数据</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#dumpsys-meminfo%E6%8F%8F%E8%BF%B0"><span class="nav-number">4.2.</span> <span class="nav-text">dumpsys meminfo描述</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Native-Heap-%E4%B8%8E-Dalvik-Heap-%E7%9A%84%E7%89%B9%E6%9C%89%E5%B1%9E%E6%80%A7"><span class="nav-number">4.3.</span> <span class="nav-text">Native Heap 与 Dalvik Heap 的特有属性</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#Graphics%E7%9B%B8%E5%85%B3%E7%9A%84%E7%BB%9F%E8%AE%A1"><span class="nav-number">4.4.</span> <span class="nav-text">Graphics相关的统计</span></a></li><li class="nav-item nav-level-3"><a class="nav-link" href="#App-Summary%E8%AE%A1%E7%AE%97"><span class="nav-number">4.5.</span> <span class="nav-text">App Summary计算</span></a></li></ol></li></ol></div>
+        </div>
+        <!--/noindex-->
+
+        <div class="site-overview-wrap sidebar-panel">
+          <div class="site-author animated" itemprop="author" itemscope itemtype="http://schema.org/Person">
+  <p class="site-author-name" itemprop="name">空白</p>
+  <div class="site-description" itemprop="description">记录生活与职业中的点滴</div>
+</div>
+<div class="site-state-wrap animated">
+  <nav class="site-state">
+      <div class="site-state-item site-state-posts">
+        <a href="/archives/">
+          <span class="site-state-item-count">48</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+      <div class="site-state-item site-state-categories">
+          <a href="/categories/">
+        <span class="site-state-item-count">7</span>
+        <span class="site-state-item-name">分类</span></a>
+      </div>
+      <div class="site-state-item site-state-tags">
+          <a href="/tags/">
+        <span class="site-state-item-count">11</span>
+        <span class="site-state-item-name">标签</span></a>
+      </div>
+  </nav>
+</div>
+
+        </div>
+      </div>
+    </div>
+
+    
+  </aside>
+
+
+    </div>
+
+    <div class="main-inner post posts-expand">
+
+
+  
+
+
+<div class="post-block">
+  
+  
+
+  <article itemscope itemtype="http://schema.org/Article" class="post-content" lang="zh-CN">
+    <link itemprop="mainEntityOfPage" href="https://shenweikun.github.io/2024/12/06/2024-12-05-memory-dumpsys-meminfo-interpretation/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="image" content="/images/avatar.gif">
+      <meta itemprop="name" content="空白">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="Weikun's Notes">
+      <meta itemprop="description" content="记录生活与职业中的点滴">
+    </span>
+
+    <span hidden itemprop="post" itemscope itemtype="http://schema.org/CreativeWork">
+      <meta itemprop="name" content="dumpsys meminfo 详解 | Weikun's Notes">
+      <meta itemprop="description" content="">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">
+          dumpsys meminfo 详解
+        </h1>
+
+        <div class="post-meta-container">
+          <div class="post-meta">
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar"></i>
+      </span>
+      <span class="post-meta-item-text">发表于</span>
+
+      <time title="创建时间：2024-12-06 01:08:55" itemprop="dateCreated datePublished" datetime="2024-12-06T01:08:55+08:00">2024-12-06</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-calendar-check"></i>
+      </span>
+      <span class="post-meta-item-text">更新于</span>
+      <time title="修改时间：2024-12-09 21:46:50" itemprop="dateModified" datetime="2024-12-09T21:46:50+08:00">2024-12-09</time>
+    </span>
+    <span class="post-meta-item">
+      <span class="post-meta-item-icon">
+        <i class="far fa-folder"></i>
+      </span>
+      <span class="post-meta-item-text">分类于</span>
+        <span itemprop="about" itemscope itemtype="http://schema.org/Thing">
+          <a href="/categories/5-Memory/" itemprop="url" rel="index"><span itemprop="name">5. Memory</span></a>
+        </span>
+    </span>
+
+  
+    <span class="post-meta-item" title="阅读次数" id="busuanzi_container_page_pv">
+      <span class="post-meta-item-icon">
+        <i class="far fa-eye"></i>
+      </span>
+      <span class="post-meta-item-text">阅读次数：</span>
+      <span id="busuanzi_value_page_pv"></span>
+    </span>
+    <span class="post-meta-item" title="本文字数">
+      <span class="post-meta-item-icon">
+        <i class="far fa-file-word"></i>
+      </span>
+      <span class="post-meta-item-text">本文字数：</span>
+      <span>11k</span>
+    </span>
+    <span class="post-meta-item" title="阅读时长">
+      <span class="post-meta-item-icon">
+        <i class="far fa-clock"></i>
+      </span>
+      <span class="post-meta-item-text">阅读时长 &asymp;</span>
+      <span>29 分钟</span>
+    </span>
+</div>
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody"><h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>dumpsys meminfo是 Android 系统中一个非常有用的命令行工具。它用于获取有关系统内存使用情况的详细信息。开发人员、测试人员和系统管理员可以使用这个工具来分析应用程序和系统服务的内存占用，以优化性能、检测内存泄漏等问题。</p>
+<span id="more"></span>
+
+<h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><p>通常可以通过在 Android 设备的终端或者通过 ADB（Android Debug Bridge）连接设备后在电脑的命令行中执行。例如，在连接设备后，在电脑的命令行中输入adb shell dumpsys meminfo可以获取整个系统的内存信息。如果想要查看某个特定应用的内存信息，可以使用adb shell dumpsys meminfo &lt;package_name&gt;，其中&lt;package_name&gt;是应用的包名，比如adb shell dumpsys meminfo com.example.app。</p>
+<p>例如：dump当前时刻app的内存占用情况：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">adb shell dumpsys meminfo package_name|pid [-d]</span><br></pre></td></tr></table></figure>
+<p>-d 参数会输出更多与 Dalvik 和 ART 内存占用情况相关的信息。<br>该命令执行前会自动执行一次强制GC，#System.gc/Runtime.getRuntime().gc()#，然后再计算内存。由于GC是异步，所以第一次执行得到的meminfo不一定是完成GC后的内存，最好是两次dump来获取GC的内存，以排除GC部分的干扰</p>
+<p>输出：</p>
+<figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br><span class="line">14</span><br><span class="line">15</span><br><span class="line">16</span><br><span class="line">17</span><br><span class="line">18</span><br><span class="line">19</span><br><span class="line">20</span><br><span class="line">21</span><br><span class="line">22</span><br><span class="line">23</span><br><span class="line">24</span><br><span class="line">25</span><br><span class="line">26</span><br><span class="line">27</span><br><span class="line">28</span><br><span class="line">29</span><br><span class="line">30</span><br><span class="line">31</span><br><span class="line">32</span><br><span class="line">33</span><br></pre></td><td class="code"><pre><span class="line">** MEMINFO in pid <span class="number">28083</span> [com.android.camera] **</span><br><span class="line">Pss  Private  Private  SwapPss      Rss     Heap     Heap     Heap</span><br><span class="line">Total    Dirty    Clean    Dirty    Total     Size    Alloc     Free</span><br><span class="line">------   ------   ------   ------   ------   ------   ------   ------</span><br><span class="line">Native Heap    <span class="number">15920</span>    <span class="number">15864</span>       <span class="number">12</span>     <span class="number">3974</span>    <span class="number">17000</span>    <span class="number">31060</span>    <span class="number">28418</span>     <span class="number">2641</span></span><br><span class="line">Dalvik Heap    <span class="number">10621</span>     <span class="number">5404</span>     <span class="number">4996</span>       <span class="number">57</span>    <span class="number">12240</span>     <span class="number">8397</span>     <span class="number">6298</span>     <span class="number">2099</span></span><br><span class="line">Dalvik Other     <span class="number">3739</span>     <span class="number">3528</span>       <span class="number">52</span>      <span class="number">133</span>     <span class="number">4348</span>                           </span><br><span class="line">Stack     <span class="number">1256</span>     <span class="number">1256</span>        <span class="number">0</span>      <span class="number">372</span>     <span class="number">1264</span>                           </span><br><span class="line">Ashmem      <span class="number">434</span>      <span class="number">396</span>        <span class="number">0</span>        <span class="number">0</span>      <span class="number">640</span>                           </span><br><span class="line">Other dev       <span class="number">48</span>        <span class="number">4</span>       <span class="number">28</span>        <span class="number">0</span>      <span class="number">480</span>                           </span><br><span class="line">.so mmap     <span class="number">4527</span>      <span class="number">372</span>     <span class="number">1504</span>      <span class="number">185</span>    <span class="number">25660</span>                           </span><br><span class="line">.jar mmap     <span class="number">2434</span>        <span class="number">0</span>      <span class="number">808</span>        <span class="number">0</span>    <span class="number">17736</span>                           </span><br><span class="line">.apk mmap    <span class="number">16618</span>        <span class="number">0</span>    <span class="number">16404</span>        <span class="number">0</span>    <span class="number">17096</span>                           </span><br><span class="line">.ttf mmap        <span class="number">8</span>        <span class="number">0</span>        <span class="number">0</span>        <span class="number">0</span>       <span class="number">16</span>                           </span><br><span class="line">.dex mmap      <span class="number">728</span>        <span class="number">4</span>      <span class="number">692</span>        <span class="number">4</span>     <span class="number">1180</span>                           </span><br><span class="line">.oat mmap      <span class="number">655</span>        <span class="number">0</span>      <span class="number">152</span>        <span class="number">0</span>    <span class="number">13672</span>                           </span><br><span class="line">.art mmap     <span class="number">4179</span>     <span class="number">2080</span>     <span class="number">1452</span>      <span class="number">146</span>    <span class="number">15348</span>                           </span><br><span class="line">Other mmap       <span class="number">56</span>       <span class="number">40</span>        <span class="number">0</span>        <span class="number">0</span>      <span class="number">696</span>                           </span><br><span class="line">GL mtrack    <span class="number">14652</span>    <span class="number">14652</span>        <span class="number">0</span>        <span class="number">0</span>    <span class="number">14652</span>                           </span><br><span class="line">Unknown      <span class="number">817</span>      <span class="number">752</span>       <span class="number">16</span>       <span class="number">61</span>     <span class="number">1096</span>                           </span><br><span class="line">TOTAL    <span class="number">81624</span>    <span class="number">44352</span>    <span class="number">26116</span>     <span class="number">4932</span>   <span class="number">143124</span>    <span class="number">39457</span>    <span class="number">34716</span>     <span class="number">4740</span></span><br><span class="line"><span class="function">App Summary</span></span><br><span class="line"><span class="function"><span class="title">Pss</span><span class="params">(KB)</span>                        <span class="title">Rss</span><span class="params">(KB)</span></span></span><br><span class="line"><span class="function">------                         ------</span></span><br><span class="line"><span class="function">Java Heap:     <span class="number">8936</span>                          <span class="number">27588</span></span></span><br><span class="line"><span class="function">Native Heap:    <span class="number">15864</span>                          <span class="number">17000</span></span></span><br><span class="line"><span class="function">Code:    <span class="number">19944</span>                          <span class="number">75716</span></span></span><br><span class="line"><span class="function">Stack:     <span class="number">1256</span>                           <span class="number">1264</span></span></span><br><span class="line"><span class="function">Graphics:    <span class="number">14652</span>                          <span class="number">14652</span></span></span><br><span class="line"><span class="function">Private Other:     <span class="number">9816</span></span></span><br><span class="line"><span class="function">System:    <span class="number">11156</span></span></span><br><span class="line"><span class="function">Unknown:                                    <span class="number">6904</span></span></span><br><span class="line"><span class="function">TOTAL PSS:    <span class="number">81624</span>            TOTAL RSS:   <span class="number">143124</span>       TOTAL SWAP PSS:     <span class="number">4932</span></span></span><br></pre></td></tr></table></figure>
+<h2 id="实现原理"><a href="#实现原理" class="headerlink" title="实现原理"></a>实现原理</h2><h3 id="统计组成"><a href="#统计组成" class="headerlink" title="统计组成"></a>统计组成</h3><p><img src="image.png" alt="alt text"></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">注：这里GL mtrack部分是GPU内存，MTK和高通有差异，这里主要是介绍高通平台的。</span><br><span class="line">MTK平台的GPU内存来源于节点：/sys/kernel/debug/mali0/gpu_memory</span><br></pre></td></tr></table></figure>
+<p>  • 绿色部分：通过读取/proc/pid/smaps获得<br>  • 蓝色部分：通过memtrack 从hal读取 /d/kgsl/proc/pid/mem获得<br>  • 红色部分：通过Debug#getNativeHeapSize()调用native方法通过mallinfo获得<br>  • 黄色部分：通过Runtime.getRuntime()获得当前Dalvik虚拟机内存占用</p>
+<p>数据的获取过程：<br><img src="image-1.png" alt="alt text"><br>  • 4个彩色字段中的数据由 android_os_Debug.cpp 获取，再将手机到的数据传入到 Debug.java 中；<br>  • Debug.java 中进行传入数据的统计工作，App Summary 中数据的统计计算工作主要在这部分完成；<br>  • dumpsys meminfo 完成数据的输出，对应代码为 ActivityThread.java</p>
+<table>
+<thead>
+<tr>
+<th>dumpsys meminfo输出属性名</th>
+<th>android_os_Debug.cpp中数据的名称和相关计算</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Pss Total</td>
+<td>Pss<br>实际使用的内存，这里考虑了与Zygote的共享。任何独占的内存页直接计算它的PSS值，而和其它进程共享的页则按照共享的比例计算PSS值。</td>
+<td>用于衡量考虑共享情况后实际占用的内存量。</td>
+</tr>
+<tr>
+<td>Private Dirty</td>
+<td>Private_Dirty<br>进程私有的，相对磁盘数据有改动的内存。</td>
+<td>体现进程中那些相对于磁盘数据有变更的私有内存部分。</td>
+</tr>
+<tr>
+<td>Private Clean</td>
+<td>Private_Clean<br>进程私有的，相对磁盘数据没有修改的内存。</td>
+<td>反映进程里相对磁盘数据未修改的私有内存情况。</td>
+</tr>
+<tr>
+<td>SwapPss Dirty</td>
+<td>SwapPss<br>Android 4.4的一个优化，swap to zRAM。牺牲CPU，减少内存。这两个值的区别在于内核是否是统计按比例分出的swap数据，是的输出为SwapPss Dirty。<br>官方解释：Whether the kernel reports proportional swap usage.</td>
+<td>与特定的内存优化机制相关，通过是否按比例统计swap数据来区分该属性值。</td>
+</tr>
+<tr>
+<td>Swap Dirty</td>
+<td>Swap</td>
+<td>-</td>
+</tr>
+</tbody></table>
+<p>  • Private Clean和Private Dirty的总和就是当前进程的独占内存，当进程销毁时系统会回收这部分内存</p>
+<h3 id="源码跟踪"><a href="#源码跟踪" class="headerlink" title="源码跟踪"></a>源码跟踪</h3><p><img src="image-2.png" alt="alt text"><br>大体流程如下：</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br><span class="line">11</span><br><span class="line">12</span><br><span class="line">13</span><br></pre></td><td class="code"><pre><span class="line">main() //type=Type::DUMP</span><br><span class="line">--|Dumpsys::main(int argc, char* const argv[]) </span><br><span class="line">----|Dumpsys::startDumpThread(Type type, const String16&amp; serviceName,const Vector&lt;String16&gt;&amp; args)</span><br><span class="line">------|service-&gt;dump(remote_end.get(), args) //meminfo对应远程服务dumpApplicationMemoryUsage</span><br><span class="line">--------| mActivityManagerService.dumpApplicationMemoryUsage(fd, pw, &quot;  &quot;, args, false, null,asProto)</span><br><span class="line">----------|dumpApplicationMemoryUsage(fd, pw, prefix, opts, innerArgs, brief, procs, categoryPw)</span><br><span class="line">------------|dumpApplicationMemoryUsageHeader(pw, uptime, realtime,opts.isCheckinRequest, opts.isCompact)</span><br><span class="line">------------|Debug.getMemoryInfo(pid, mi)//native,在cpp中实现</span><br><span class="line">--------------|android_os_Debug_getDirtyPagesPid(JNIEnv *env, jobject clazz,jint pid, jobject object)</span><br><span class="line">----------------|load_maps(pid, stats, &amp;foundSwapPss)</span><br><span class="line">----------------|read_memtrack_memory(pid, &amp;graphics_mem)</span><br><span class="line">------------|对获取的内存信息按照顺序和格式进行输出展示</span><br><span class="line">----|Dumpsys::stopDumpThread(dumpComplete);</span><br></pre></td></tr></table></figure>
+<p>具体源码：<br><a target="_blank" rel="noopener" href="https://xrefandroid.com/android-14.0.0_r21/xref/">https://xrefandroid.com/android-14.0.0_r21/xref/</a></p>
+<h2 id="meminfo解析"><a href="#meminfo解析" class="headerlink" title="meminfo解析"></a>meminfo解析</h2><h3 id="smap获取的数据"><a href="#smap获取的数据" class="headerlink" title="smap获取的数据"></a>smap获取的数据</h3><ul>
+<li>meminfo读取进程的smaps从上到下的调用关系图。<br><img src="image-3.png" alt="alt text"></li>
+<li>/proc/PID/smaps 中根据映射规则统计数据</li>
+<li>smaps文件格式：<br><img src="image-4.png" alt="alt text"><ul>
+<li>08048000-080bc000 地址范围 地址空间的开始地址 - 结束地址</li>
+<li>r-xp 权限标识。前三个是rwx（读、写、可执行）,如果不具有则为“-”。最后一个是p/s(私有/共享)</li>
+<li>00000000 映射文件偏移。如果这段内存是从文件里映射过来的，则偏移量为这段内容在文件中的偏移量。如果不是从文件里面映射过来的则为0.</li>
+<li>03:02 设备号 如果这段内存是从文件里映射过来的, 这是文件所在的主要和次要设备号（十六进制）。</li>
+<li>13130 inode 如果这段内存是从文件里映射过来的, 这是文件编号.</li>
+<li>/bin/bash 文件路径 如果这段内存是从文件里映射过来的,这是文件名.对于匿名映射区域，此字段为空白。还有一些特殊区域的名称如 [heap]、[stack] 或 [vdso]。 [vdso] 代表虚拟动态共享对象。系统调用使用它来切换到内核模式。<ul>
+<li>Size：表示该映射区域在虚拟内存空间中的大小。</li>
+<li>Rss：表示该映射区域当前在物理内存中占用了多少空间 </li>
+<li>Shared_Clean：和其他进程共享的未被改写的page的大小</li>
+<li>Shared_Dirty： 和其他进程共享的被改写的page的大小</li>
+<li>Private_Clean：未被改写的私有页面的大小。</li>
+<li>Private_Dirty： 已被改写的私有页面的大小。</li>
+<li>Swap：表示非mmap内存（也叫anonymous memory，比如malloc动态分配出来的内存）由于物理内存不足被swap到交换空间的大小。</li>
+<li>Pss：该虚拟内存区域平摊计算后使用的物理内存大小(有些内存会和其他进程共享，例如mmap进来的)。比如该区域所映射的物理内存部分同时也被另一个进程映射了，且该部分物理内存的大小为1000KB，那么该进程分摊其中一半的内存，即Pss=500KB。<br><img src="image-5.png" alt="alt text"></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="dumpsys-meminfo描述"><a href="#dumpsys-meminfo描述" class="headerlink" title="dumpsys meminfo描述"></a>dumpsys meminfo描述</h3><table>
+<thead>
+<tr>
+<th>App Detail</th>
+<th>描述</th>
+<th>映射匹配规则及说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Native Heap</td>
+<td>c/cpp中malloc出来的堆空间<br>Native代码分配的内存（比如so库中分配的内存）、虚拟机、Framework分配的内存</td>
+<td>[heap]<br>[anon:libc_malloc]<br>/dev/ashmem/libc malloc</td>
+</tr>
+<tr>
+<td>Dalvik Heap</td>
+<td>Java中new出来的Java堆空间，只占用虚拟内存空间<br>Dalvik虚拟机分配的空间，不包括它自身的开销（例如即时编译 (JIT) 和垃圾回收记录）。Dalvik堆中和Zygote进程共享的部分算是sharedDirty。</td>
+<td>/dev/ashmem/dalvik-alloc space <br>/dev/ashmem/dalvik-main space<br>/dev/ashmem/dalvik-large object space<br>/dev/ashmem/dalvik-free list large object space<br>/dev/ashmem/dalvik-non moving space<br>/dev/ashmem/dalvik-zygote space</td>
+</tr>
+<tr>
+<td>Dalvik Other</td>
+<td>类数据结构和索引占据内存<br>JIT和GC等占用的空间。</td>
+<td>/dev/ashmem/dalvik-LinearAlloc<br>/dev/ashmem/dalvik-indirect ref<br>/dev/ashmem/dalvik-jit-code-cache<br>/dev/ashmem/dalvik-data-code-cache<br>/dev/ashmem/dalvik-CompilerMetadata<br>/dev/ashmem/dalvik-*</td>
+</tr>
+<tr>
+<td>Stack</td>
+<td>应用中的原生堆栈（线程分配）和Java堆栈使用的内存。这通常和应用运行多少线程有关</td>
+<td>[stack*</td>
+</tr>
+<tr>
+<td>Cursor</td>
+<td>CursorWindow占用的空间，与SQL有关。</td>
+<td>/dev/ashmem/CursorWindow</td>
+</tr>
+<tr>
+<td>Ashmem</td>
+<td>匿名共享内存。</td>
+<td>/dev/ashmem*<br>不以dalvik-开头的内存区域，匿名共享内存用来提供共享内存通过分配一个多个进程可以共享的带名称的内存块。<br>且不满足Dalvik Heap、Dalvik Other、Cursor</td>
+</tr>
+<tr>
+<td>Gfx dev</td>
+<td>/dev/kgsl-3d0占用的空间。是进程通过kgsl分配的内存计数</td>
+<td>/dev/kgsl-3d0</td>
+</tr>
+<tr>
+<td>Other dev</td>
+<td></td>
+<td>/dev/*<br>且不满足Gfx dev、Cursor、Native Heap、Ashmem、Dalvik Other、Dalvik Heap</td>
+</tr>
+<tr>
+<td>.so mmap</td>
+<td>映射的.so（native）代码占用的RAM。具有较大的Private Dirty RAM，因为在加载到其最终地址时对native代码进行了修改。</td>
+<td>以.so结尾<br>若文件名为空，且上一个文件名满足.so mmap</td>
+</tr>
+<tr>
+<td>.jar mmap</td>
+<td>Java文件代码占用内存。</td>
+<td>以.jar结尾</td>
+</tr>
+<tr>
+<td>.apk mmap</td>
+<td>apk代码占用内存。简单来说就是class文件的字节码，也可以理解apk中类所占用的内存，Android中.dex文件将所有APK中的.class里边所包含的信息全部整合在一起，所以Class字节码信息存储在.dex文件中。</td>
+<td>以.apk结尾</td>
+</tr>
+<tr>
+<td>.ttf mmap</td>
+<td>ttf文件代码占用内存。</td>
+<td>以.ttf结尾</td>
+</tr>
+<tr>
+<td>.dex mmap</td>
+<td>映射的.dex（Dalvik或ART）代码占用内存。</td>
+<td>以.dex结尾<br>以.odex结尾<br>以.vdex结尾</td>
+</tr>
+<tr>
+<td>.oat mmap</td>
+<td>代码映像占用的内存。此映像在所有应用之间共享，不受特定应用影响。</td>
+<td>以.oat结尾</td>
+</tr>
+<tr>
+<td>.art mmap</td>
+<td>堆映像占用的内存。此映像在所有应用之间共享，不受特定应用影响。</td>
+<td>以.art结尾<br>尽管ART映像包含Object实例，它仍然不会计入您的堆大小。</td>
+</tr>
+<tr>
+<td>Other mmap</td>
+<td>其它文件占用的内存</td>
+<td>文件名不满足以上任一条件，但文件名不为空</td>
+</tr>
+<tr>
+<td>EGL mtrack</td>
+<td>ION内存</td>
+<td></td>
+</tr>
+<tr>
+<td>GL mtrack</td>
+<td>GPU内存</td>
+<td></td>
+</tr>
+<tr>
+<td>HEAP_UNKNOWN</td>
+<td></td>
+<td>[anon:*<br>或者文件名为空</td>
+</tr>
+</tbody></table>
+<h3 id="Native-Heap-与-Dalvik-Heap-的特有属性"><a href="#Native-Heap-与-Dalvik-Heap-的特有属性" class="headerlink" title="Native Heap 与 Dalvik Heap 的特有属性"></a>Native Heap 与 Dalvik Heap 的特有属性</h3><figure class="highlight c++"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">              Pss       Private   Private   SwapPss   Heap     Heap     Heap</span><br><span class="line">              Total     Dirty     Clean     Dirty     Size    Alloc     Free</span><br><span class="line">------   ------   ------   ------   ------   ------   ------</span><br><span class="line">Native Heap     <span class="number">2737</span>     <span class="number">2668</span>        <span class="number">0</span>        <span class="number">0</span>     <span class="number">9728</span>     <span class="number">8103</span>     <span class="number">1624</span></span><br><span class="line">Dalvik Heap      <span class="number">635</span>      <span class="number">576</span>        <span class="number">0</span>        <span class="number">0</span>     <span class="number">2736</span>     <span class="number">1200</span>     <span class="number">1536</span></span><br></pre></td></tr></table></figure>
+<ul>
+<li>Native Heap 的 Heap Size 、Heap Alloc 和 Heap Free 属性在 android_os_Debug.cpp 中调用 mallinfo() 完成对内存分配信息的获取。<ul>
+<li>Native Heap Size -&gt; getNativeHeapSize() -&gt; info.usmblks</li>
+<li>Native Heap Alloc -&gt; getNativeHeapAllocatedSize() -&gt; info.uordblks</li>
+<li>Native Heap Free -&gt; getNativeHeapFreeSize() -&gt; info.fordblks</li>
+</ul>
+</li>
+<li>Dalvik Heap 的 Heap Size 和 Heap Free 属性在 ActivityThread.java 中由 getRuntime() 完成对分配信息的获取。代码位置：rameworks/base/core/java/android/app/ActivityThread.java<ul>
+<li>runtime.maxMemory()：虚拟机能够从操作系统那里申请的最大的内存</li>
+<li>Dalvik Heap Size -&gt; runtime.totalMemory()：虚拟机这个进程当下所占用的所有内存</li>
+<li>Dalvik Heap Free -&gt; runtime.freeMemory()：当前释放的内存<br>Dalvik Heap Alloc -&gt; runtime.totalMemory() - runtime.freeMemory()<br><img src="image-6.png" alt="alt text"></li>
+</ul>
+</li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>属性</th>
+<th>Native Heap</th>
+<th>Dalvik Heap</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Heap Alloc</td>
+<td>堆中已分配的空间，包含了进程共享的分配部分。</td>
+<td>由虚拟机分配的所有应用实例的内存，包含了 zygote 共享的部分，所以Heap Alloc值总是比实际物理内存使用值要大。</td>
+</tr>
+<tr>
+<td>Heap Free</td>
+<td>当前进程堆剩余的空间。</td>
+<td>当前释放的内存，若调用 GC 会增大这个值。</td>
+</tr>
+<tr>
+<td>Heap Size</td>
+<td>当前进程堆总内存大小。</td>
+<td>当前所有可用内存</td>
+</tr>
+</tbody></table>
+<ul>
+<li>为什么Pss Total和Heap Alloc不一致？<ul>
+<li>答：Pss Total是指占用了真实的物理内存的空间；Heap Alloc只是占用的虚拟内存的空间。是分配了空间，没有使用的那部分内存</li>
+<li>例如：<ul>
+<li>Native Heap Pss Total列是2737 也就是native代码中分配了2737KB的物理空间被占用</li>
+<li>Heap Size列是9728，是指Native堆最大是9728KB</li>
+<li>Heap Alloc列是8103，是指在虚拟地址中分配了8103KB的空间</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+<h3 id="Graphics相关的统计"><a href="#Graphics相关的统计" class="headerlink" title="Graphics相关的统计"></a>Graphics相关的统计</h3><p>EGL mtrack 和 GL mtrack 描述的是 GPU 的占用数据，与他们相同的还有 Other mtrack 。<br>路径：Debug.java -&gt; android_os_debug.cpp -&gt; memtrack.cpp -&gt; kgsl.c<br>最终在hardware/qcom/display/libmemtrack/kgsl.c （GPU分析代码由高通提供）中读取d/kgsl/proc/&lt;pid&gt;/mem中的内容。</p>
+<ul>
+<li><p>google官方解释：</p>
+<ul>
+<li>EGL memtrack<br>You will see this column when display driver’s memtrack module is enabled Before Lollipop5.1, this column is named “Graphics”. EGL memtrack memory is the summary of all surface buffers(the surface buffer increases to triple buffer after Android 4.1) and the size of the Atlas buffer. However, Atlas buffer is actually a shared memory and shouldn’t be accounted into each UI process’ memory usage to overcount the memory usage. Both surface buffer and Atlas buffer’s memory quota is reserved in project’s memory estimation, thus the memory usage of these buffers should be separately accounted from process’ memory usage. So when you measure process’ memory usage, you can ignore this column. </li>
+<li>GL memtrack<br>You will see this column when display driver’s memtrack module is enabled Before Lollipop5.1, this column is named “GL”. HW acceleration memory is partially counted in process PSS. For example, for QCT platform the HW acceleration memory is partially counted in the PSS of /dev/kgsl-3d0 as we mentioned in the “Gfx dev” section. GL memtrack memory usage calculates the unaccounted /dev/kgsl-3d0 memory regions which PSS value equals 0. Please be noticed that the summation of GL memtrack and Gfx dev doesn’t reflect the complete HW acceleration memory since the full HW acceleration memory usage should be counted with the VSS of /dev/kgsl-3d0. So the “TOTAL” value of dumpsys meminfo is smaller than actual physical memory usage. </li>
+</ul>
+<table>
+<thead>
+<tr>
+<th>App Detail</th>
+<th>说明</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Gfx dev</td>
+<td>- 是指通过kgsl分配的内存，也即共享虚拟内存（svm memory）并且映射到进程地址空间的内存大小，通过解析/proc/<pid>/smaps (/dev/kgsl-3d0)。<br> - 比如一个进程通过kgsl分配了16KB的内存，但是map了4KB的内存，那么Gfx dev = 4KB。<br> - cat pid_smaps.txt | grep -i kgsl-3d0 -A 5 | grep Pss ，将pss求和得到Gfx dev。<br> - adb shell cat sys/class/kgsl/kgsl/proc/pid/gpumem_mapped，获取mapped内存。</td>
+</tr>
+<tr>
+<td>GL mtrack</td>
+<td>- 是指通过kgsl分配的内存，未映射到进程地址空间的内存大小。<br> - 如果一个进程分配了16Kb并且映射了4kb，然后GL mtrack将会是12KB。<br> - d/kgsl/proc/<PID>/mem中“mapsize”之和 = /sys/class/kgsl/kgsl/proc/<PID>/gpumem_mapped。<br> - gpumem_unmapped = total gpumem - gpumem_mapped。<br> - adb shell cat sys/class/kgsl/kgsl/proc/pid/gpumem_unmapped。<br> - 与/dev/kgsl-3d0和Gfx dev有关。这是/dev/mali和/dev/ump占用内存的总和。</td>
+</tr>
+<tr>
+<td>EGL mtrack</td>
+<td>- 统计EGL资源，gralloc分配的内存，主要是窗口系统，SurfaceView/TextureView和其他的由gralloc分配的GraphicBuffer总和。也包括了帧缓冲区，因此大小也会取决于framebuffers的尺寸。支持的屏幕分辨率越高，EGL mtrack的数目越高。<br> - EGL mtrack &lt;=&gt; /sys/class/kgsl/kgsl/proc/[pid]/imported_mem。<br> - cat d/kgsl/proc/[pid]/mem | grep -i ion | grep -i “0 0 1 “ | awk ‘{total+=$3}; END {print total}’。<br> - adb shell cat /sys/class/kgsl/kgsl/proc/pid/imported_mem。<br> - EGL mtrack是ion内存或者非共享虚拟内存。</td>
+</tr>
+<tr>
+<td>Other mtrack</td>
+<td>与MEMTRACK_TYPE_OTHER，MEMTRACK_TYPE_MULTIMEDIA，MEMTRACK_TYPE_CAMERA有关。</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+<p>GL mtrack 和Gfx dev是驱动反馈的GPU内存，主要是GL纹理大小的总和，GL命令缓冲区，固定的全局驱动RAM消耗以及Shader。需要指出，这些不会出现在旧的Android版本上。<br><strong>注意</strong>：客户空间驱动和内核空间驱动共享同一个内存空间。在某些Android版本上，这个部分会被重复计算两次，因此Gfx dev要比实际上使用的数值更大。 </p>
+<p>Graphics = gpumem + ion = Gfx dev + GL mtrack + EGL mtrack</p>
+<ul>
+<li><p>Graphics包含ion，gpumem两种类型</p>
+<ul>
+<li>gpumem – In this usage all the gl,texture, command buffer memory allocations are present（gpumem被用于gl，texture，command buffer）</li>
+<li>ion-This memory is used for eglsurface and egl images（ion被用于egl surface和egl image）<br><img src="image-7.png" alt="alt text"></li>
+</ul>
+</li>
+<li><p>kgsl是什么？</p>
+<ul>
+<li>kgsl是高通的gpu驱动，app通过标准的Open GLES接口进行图形相关操作，最终会导致和/dev/kgsl-3d0发生交互来操作gpu，给其发命令（ioctl）。</li>
+<li>除此之外，kgsl还负责下载gpu固件，上下电，管理app和gpu之间建立的context等。</li>
+<li>在创建egl context（libhwui.so）的时候就会open /dev/kgsl，此时/d/kgsl/proc中会出现对应pid的目录。相反在destroy这个context的时候，/d/kgsl/proc中对应pid的目录就消失了。<br><img src="image-8.png" alt="alt text"><h3 id="App-Summary计算"><a href="#App-Summary计算" class="headerlink" title="App Summary计算"></a>App Summary计算</h3><table>
+<thead>
+<tr>
+<th>属性</th>
+<th>计算方式</th>
+<th>对应代码方法</th>
+<th>描述</th>
+</tr>
+</thead>
+<tbody><tr>
+<td>Java Heap</td>
+<td>Dalvik Heap的Private Dirty +<br>.art mmap的Private Dirty + Private Clean</td>
+<td>dalvikPrivateDirty +<br>getOtherPrivate(OTHER_ART)</td>
+<td>通过libc_malloc库分配的大小，dalvik private dirty包含任何写过zygote分配的页面（app是从zygote fork出来的），和app本身分配的。<br>art mmap是app的bootimage，任何private页面也算在app上。</td>
+</tr>
+<tr>
+<td>Native Heap</td>
+<td>Native Heap的Private Dirty</td>
+<td>nativePrivateDirty</td>
+<td>通过libc_malloc库分配的大小</td>
+</tr>
+<tr>
+<td>Code</td>
+<td>.so mmap的Private Dirty + Private Clean +<br>.jar mmap的Private Dirty + Private Clean +<br>.apk mmap的Private Dirty + Private Clean +<br>.ttf mmap的Private Dirty + Private Clean +<br>.dex mmap的Private Dirty + Private Clean +<br>.oat mmap的Private Dirty + Private Clean</td>
+<td>getOtherPrivate(OTHER_SO) +<br>getOtherPrivate(OTHER_JAR) +<br>getOtherPrivate(OTHER_APK) +<br>getOtherPrivate(OTHER_TTF) +<br>getOtherPrivate(OTHER_DEX) +<br>getOtherPrivate(OTHER_OAT)</td>
+<td>所有私有静态资源求和</td>
+</tr>
+<tr>
+<td>Stack</td>
+<td>Stack的Private Dirty</td>
+<td>getOtherPrivateDirty(OTHER_STACK)</td>
+<td>进程运行中栈空间的使用（函数调用，局部变量等）</td>
+</tr>
+<tr>
+<td>Graphics</td>
+<td>Gfx dev的Private Dirty + Private Clean +<br>EGL mtrack的Private Dirty + Private Clean +<br>GL mtrack的Private Dirty + Private Clean</td>
+<td>getOtherPrivate(OTHER_GL_DEV) +<br>getOtherPrivate(OTHER_GRAPHICS) +<br>getOtherPrivate(OTHER_GL)</td>
+<td>进程在GPU上分配的内存</td>
+</tr>
+<tr>
+<td>Private Other</td>
+<td>Private Clean的TOTAL +<br>Private Dirty的TOTAL -<br>Java Heap的Pss -<br>Native Heap的Pss -<br>Code的Pss -<br>Stack的Pss -<br>Graphic的Pss</td>
+<td>-</td>
+<td>-</td>
+</tr>
+<tr>
+<td>System</td>
+<td>Total的Pss Total -<br>Private Clean的TOTAL -<br>Private Dirty的TOTAL</td>
+<td>-</td>
+<td>系统占用的内存，例如一些共享的字体、图像资源等。</td>
+</tr>
+<tr>
+<td>TOTAL</td>
+<td>Pss Total</td>
+<td>-</td>
+<td>-</td>
+</tr>
+</tbody></table>
+</li>
+</ul>
+</li>
+</ul>
+
+    </div>
+
+    
+    
+    
+
+    <footer class="post-footer">
+          
+
+<div class="post-copyright">
+<ul>
+  <li class="post-copyright-author">
+      <strong>本文作者： </strong>空白
+  </li>
+  <li class="post-copyright-link">
+      <strong>本文链接：</strong>
+      <a href="https://shenweikun.github.io/2024/12/06/2024-12-05-memory-dumpsys-meminfo-interpretation/" title="dumpsys meminfo 详解">https://shenweikun.github.io/2024/12/06/2024-12-05-memory-dumpsys-meminfo-interpretation/</a>
+  </li>
+  <li class="post-copyright-license">
+      <strong>版权声明： </strong>本博客所有文章除特别声明外，均采用 <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/" rel="noopener" target="_blank"><i class="fab fa-fw fa-creative-commons"></i>BY-NC-SA</a> 许可协议。转载请注明出处！
+  </li>
+</ul>
+</div>
+
+          <div class="post-tags">
+              <a href="/tags/Android/" rel="tag"><i class="fa fa-tag"></i> Android</a>
+              <a href="/tags/%E5%86%85%E5%AD%98/" rel="tag"><i class="fa fa-tag"></i> 内存</a>
+          </div>
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-item">
+                <a href="/2024/12/05/2024-12-04-memory-Classification-of-memory-problems/" rel="prev" title="相机内存优化">
+                  <i class="fa fa-angle-left"></i> 相机内存优化
+                </a>
+            </div>
+            <div class="post-nav-item">
+                <a href="/2024/12/06/2024-12-05-memory-showmap/" rel="next" title="showmap 详解">
+                  showmap 详解 <i class="fa fa-angle-right"></i>
+                </a>
+            </div>
+          </div>
+    </footer>
+  </article>
+</div>
+
+
+
+
+
+
+    <div class="comments utterances-container"></div>
+</div>
+  </main>
+
+  <footer class="footer">
+    <div class="footer-inner">
+
+  <div class="copyright">
+    &copy; 2021 – 
+    <span itemprop="copyrightYear">2024</span>
+    <span class="with-love">
+      <i class="fa fa-heart"></i>
+    </span>
+    <span class="author" itemprop="copyrightHolder">空白</span>
+  </div>
+<div class="wordcount">
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-chart-line"></i>
+    </span>
+    <span title="站点总字数">473k</span>
+  </span>
+  <span class="post-meta-item">
+    <span class="post-meta-item-icon">
+      <i class="fa fa-coffee"></i>
+    </span>
+    <span title="站点阅读时长">19:43</span>
+  </span>
+</div>
+<div class="busuanzi-count">
+    <span class="post-meta-item" id="busuanzi_container_site_uv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-user"></i>
+      </span>
+      <span class="site-uv" title="总访客量">
+        <span id="busuanzi_value_site_uv"></span>
+      </span>
+    </span>
+    <span class="post-meta-item" id="busuanzi_container_site_pv">
+      <span class="post-meta-item-icon">
+        <i class="fa fa-eye"></i>
+      </span>
+      <span class="site-pv" title="总访问量">
+        <span id="busuanzi_value_site_pv"></span>
+      </span>
+    </span>
+</div>
+
+    </div>
+  </footer>
+
+  
+  <div class="toggle sidebar-toggle" role="button">
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+    <span class="toggle-line"></span>
+  </div>
+  <div class="sidebar-dimmer"></div>
+  <div class="back-to-top" role="button" aria-label="返回顶部">
+    <i class="fa fa-arrow-up fa-lg"></i>
+    <span>0%</span>
+  </div>
+  <div class="reading-progress-bar"></div>
+
+<noscript>
+  <div class="noscript-warning">Theme NexT works best with JavaScript enabled</div>
+</noscript>
+
+
+  
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/3.2.1/anime.min.js" integrity="sha256-XL2inqUJaslATFnHdJOi9GfQ60on8Wx1C2H8DYiN1xY=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/next-theme-pjax/0.6.0/pjax.min.js" integrity="sha256-vxLn1tSKWD4dqbMRyv940UYw4sXgMtYcK6reefzZrao=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/fancyapps-ui/5.0.31/fancybox/fancybox.umd.js" integrity="sha256-a+H7FYzJv6oU2hfsfDGM2Ohw/cR9v+hPfxHCLdmCrE8=" crossorigin="anonymous"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pangu/4.0.7/pangu.min.js" integrity="sha256-j+yj56cdEY2CwkVtGyz18fNybFGpMGJ8JxG3GSyO2+I=" crossorigin="anonymous"></script>
+<script src="/js/comments.js"></script><script src="/js/utils.js"></script><script src="/js/sidebar.js"></script><script src="/js/next-boot.js"></script><script src="/js/pjax.js"></script>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/hexo-generator-searchdb/1.4.1/search.js" integrity="sha256-1kfA5uHPf65M5cphT2dvymhkuyHPQp5A53EGZOnOLmc=" crossorigin="anonymous"></script>
+<script src="/js/third-party/search/local-search.js"></script>
+
+
+
+
+  <script src="/js/third-party/fancybox.js"></script>
+
+
+
+  
+  <script data-pjax async src="https://busuanzi.ibruce.info/busuanzi/2.3/busuanzi.pure.mini.js"></script>
+
+
+
+
+<script class="next-config" data-name="utterances" type="application/json">{"enable":true,"repo":"shenweikun/helloworld","issue_term":"pathname","theme":"github-light"}</script>
+<script src="/js/third-party/comments/utterances.js"></script>
+
+</body>
+</html>
