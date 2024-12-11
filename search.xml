@@ -3488,8 +3488,57 @@ xxx.c文件<figure class="highlight c++"><table><tr><td class="code"><pre><span 
 <li><a href="https://shenweikun.github.io/2024/12/06/2024-12-05-memory-showmap/">showmap</a><br>……</li>
 </ul>
 <h2 id="内存统计"><a href="#内存统计" class="headerlink" title="内存统计"></a>内存统计</h2><p>待完成…</p>
-<h2 id="异常分析方向"><a href="#异常分析方向" class="headerlink" title="异常分析方向"></a>异常分析方向</h2><p>待完成</p>
-<h3 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h3><h3 id="Java-Heap"><a href="#Java-Heap" class="headerlink" title="Java Heap"></a>Java Heap</h3><h3 id="Native-Heap"><a href="#Native-Heap" class="headerlink" title="Native Heap"></a>Native Heap</h3><h3 id="Graphics"><a href="#Graphics" class="headerlink" title="Graphics"></a>Graphics</h3><h3 id="Objects"><a href="#Objects" class="headerlink" title="Objects"></a>Objects</h3><h3 id="常用命令"><a href="#常用命令" class="headerlink" title="常用命令"></a>常用命令</h3><h2 id="内存优化项"><a href="#内存优化项" class="headerlink" title="内存优化项"></a>内存优化项</h2><h3 id="开机剩余内存优化"><a href="#开机剩余内存优化" class="headerlink" title="开机剩余内存优化"></a>开机剩余内存优化</h3><p>安卓开机剩余可用内存是指安卓设备在完成开机启动过程后，系统和已经自动运行的应用程序占用一部分内存后，剩余的可以被其他应用程序或系统进程使用的内存空间。这部分内存对于设备的流畅运行非常关键，它决定了在开机后还能同时运行多少其他应用。</p>
+<h2 id="异常分析方向"><a href="#异常分析方向" class="headerlink" title="异常分析方向"></a>异常分析方向</h2><h3 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h3><ul>
+<li><strong>.so mmap</strong> 过高<ul>
+<li>使用showmap / smaps 查看进程跑起来后各库所占用内存情况和内存分配的映射记录，找到占用比较大的so库，分析是否为合理占用</li>
+</ul>
+</li>
+<li><strong>.apk mmap</strong> 过高<ul>
+<li>APK代码占用内存大，也就是类信息占用的内存很大，该部分内存属于方法区，类信息占用内存大，有可能是因为动态创建了很多类，导致这部分内存增加，检查代码中是否有使用了类似ApplicationInfo.loadLabel函数。</li>
+<li>参考：<a href="https://www.jianshu.com/p/7d8bb522d425?utm_campaign=haruki">Android性能优化-方法区导致内存问题实例分析</a></li>
+</ul>
+</li>
+</ul>
+<p>showmap 和 smaps 的关系：<br>实际上读取smaps中的数据然后规整分类，测试中showmap和cat/proc/pid/smaps抓取要连续，间隔久了内存会有变化 </p>
+<h3 id="Java-Heap"><a href="#Java-Heap" class="headerlink" title="Java Heap"></a>Java Heap</h3><ul>
+<li>dump hprof 排查 heap 分布<figure class="highlight plaintext"><table><tr><td class="code"><pre><span class="line">adb shell am dumpheap com.android.camera /data/local/tmp/test.hprof </span><br></pre></td></tr></table></figure></li>
+<li>MAT分析，常规java引用链那一套</li>
+<li>Dalvik Other，值异常变大的可能原因：<ul>
+<li>类及方法数目的增大（关注/dev/ashmem/dalvik-aux-structure项）；</li>
+<li>○ dalvik-heap 的增加（关注/dev/ashmem/delvik-bitmap项）；</li>
+<li>代码复杂度的增加变大（关注/dev/ashmem/dalvik-jit-code-cache项）</li>
+</ul>
+</li>
+</ul>
+<h3 id="Native-Heap"><a href="#Native-Heap" class="headerlink" title="Native Heap"></a>Native Heap</h3><ul>
+<li>malloc debug<ul>
+<li>  是android默认集成的native内存调试工具。设计思路是对lib.so库添加一层wrapper,在wrapper中添加一些记录数据的队列等。把每次申请的内存以指针为索引记录添加到队列中，释放时从队列中移除该记录。当出现可疑内存泄漏时，打印出该队列中的记录，然后结合代码检查这些记录是否存在内存泄漏。 </li>
+</ul>
+</li>
+<li>Perfetto<ul>
+<li>  malloc debug的开销较大，在调试中往往会比较卡顿，此时使用 Perfetto 是一个不错的选择，可以实现对native heap相关内存申请调用栈的抓取。</li>
+</ul>
+</li>
+<li>Profiler<ul>
+<li>  若是APP存在内存泄露，也可以直接使用Android Studio中内置的Memory Profiler工具，同样可以获取需要的调用栈。</li>
+</ul>
+</li>
+</ul>
+<h3 id="Graphics"><a href="#Graphics" class="headerlink" title="Graphics"></a>Graphics</h3><ul>
+<li><strong>EGL mtrack</strong><ul>
+<li>  使用 <a href="https://shenweikun.github.io/2024/12/06/2024-12-05-memory-dmabuf-dump/">dmabuf_dump</a> 确认DMA/ION的分布。</li>
+<li>  若是MTK平台，还有更方便的节点可供debug： all_heaps。</li>
+</ul>
+</li>
+<li><strong>Gfx dev/GL mtrack</strong><ul>
+<li>  GPU相关申请的内存一般于平台强相关，需要查看GPU相关的节点或者找平台协助，在高通平台中GPU使用kgsl，MTK平台使用mali，调试方式有差异。</li>
+</ul>
+</li>
+</ul>
+<h3 id="Objects"><a href="#Objects" class="headerlink" title="Objects"></a>Objects</h3><ul>
+<li>Objects是统计App内部组件对象个数，其中包括Views、ViewRootImpl以及Activities个数，在Activity onDestroy后应该都会回收清零，如果onDestroy调用后这几个对象个数没有清零，就可能发生了内存泄漏。</li>
+</ul>
+<h2 id="内存优化项"><a href="#内存优化项" class="headerlink" title="内存优化项"></a>内存优化项</h2><h3 id="开机剩余内存优化"><a href="#开机剩余内存优化" class="headerlink" title="开机剩余内存优化"></a>开机剩余内存优化</h3><p>安卓开机剩余可用内存是指安卓设备在完成开机启动过程后，系统和已经自动运行的应用程序占用一部分内存后，剩余的可以被其他应用程序或系统进程使用的内存空间。这部分内存对于设备的流畅运行非常关键，它决定了在开机后还能同时运行多少其他应用。</p>
 <p>相机相关的三个进程中，CameraServer和CameraProvider是守护进程，就像一个默默工作的 “守护者”，在系统启动后就自动运行，不需要用户手动开启，并且在系统运行期间一直处于活动状态，为系统和应用提供拍照、录像和扫码等服务。因此，它们不可避免的会在开机后占用一直内存。</p>
 <p>CameraServer占用内存较小，因为其主要包含了Google对相机的Native实现所必须的代码段和数据段。<br>CameraProvider占用内存较多，是相机进程的内存占用主要来源。CameraProvider主要负责管理相机设备的底层硬件资源，其包含了平台厂商对于硬件抽象层的实现，且很多手机厂商为了做影像能力开放，往往会将第三方算法集成在CameraProvider中，导致其占用的内存往往较大。</p>
 <h4 id="拆解方法："><a href="#拆解方法：" class="headerlink" title="拆解方法："></a>拆解方法：</h4><ol>
