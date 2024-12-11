@@ -3919,6 +3919,7 @@ xxx.c文件<figure class="highlight c++"><table><tr><td class="code"><pre><span 
     <title>showmap 详解</title>
     <url>/2024/12/06/2024-12-05-memory-showmap/</url>
     <content><![CDATA[<h2 id="概述"><a href="#概述" class="headerlink" title="概述"></a>概述</h2><p>showmap是安卓系统中查看内存常用的工具之一，实际上是读取/proc/pid/smap 文件，然后进行内容的整理。<strong>常用于确定进程中哪些库占用内存比较多</strong>，例如拆解 dumpsys meminfo中的 .so mmap 占用，</p>
+<span id="more"></span>
 <p>源码：<a href="https://xrefandroid.com/android-14.0.0_r21/xref/system/memory/libmeminfo/libsmapinfo/smapinfo.cpp">https://xrefandroid.com/android-14.0.0_r21/xref/system/memory/libmeminfo/libsmapinfo/smapinfo.cpp</a></p>
 <h2 id="使用方法"><a href="#使用方法" class="headerlink" title="使用方法"></a>使用方法</h2><ul>
 <li><p>指令：</p>
