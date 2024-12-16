@@ -3487,8 +3487,7 @@ xxx.c文件<figure class="highlight c++"><table><tr><td class="code"><pre><span 
 <li><a href="https://shenweikun.github.io/2024/12/06/2024-12-05-memory-dmabuf-dump/">dmabuf_dump</a></li>
 <li><a href="https://shenweikun.github.io/2024/12/06/2024-12-05-memory-showmap/">showmap</a><br>……</li>
 </ul>
-<h2 id="内存统计"><a href="#内存统计" class="headerlink" title="内存统计"></a>内存统计</h2><p>待完成…</p>
-<h2 id="异常分析方向"><a href="#异常分析方向" class="headerlink" title="异常分析方向"></a>异常分析方向</h2><h3 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h3><ul>
+<h2 id="异常分析方向概述"><a href="#异常分析方向概述" class="headerlink" title="异常分析方向概述"></a>异常分析方向概述</h2><h3 id="Code"><a href="#Code" class="headerlink" title="Code"></a>Code</h3><ul>
 <li><strong>.so mmap</strong> 过高<ul>
 <li>使用showmap / smaps 查看进程跑起来后各库所占用内存情况和内存分配的映射记录，找到占用比较大的so库，分析是否为合理占用</li>
 </ul>
@@ -3523,6 +3522,10 @@ xxx.c文件<figure class="highlight c++"><table><tr><td class="code"><pre><span 
 <li>  若是APP存在内存泄露，也可以直接使用Android Studio中内置的Memory Profiler工具，同样可以获取需要的调用栈。</li>
 </ul>
 </li>
+<li>LSAN<ul>
+<li>Lsan是集成在Asan中的内存泄露检测器</li>
+</ul>
+</li>
 </ul>
 <h3 id="Graphics"><a href="#Graphics" class="headerlink" title="Graphics"></a>Graphics</h3><ul>
 <li><strong>EGL mtrack</strong><ul>
@@ -3549,13 +3552,66 @@ xxx.c文件<figure class="highlight c++"><table><tr><td class="code"><pre><span 
 <h4 id="优化思路："><a href="#优化思路：" class="headerlink" title="优化思路："></a>优化思路：</h4><p><strong>主要优化思路，针对CameraServer和CameraProvider</strong>：</p>
 <ol>
 <li>减少开机阶段，CameraServer和CameraProvider不必要的自运行流程，降低堆栈内存和so map等</li>
-<li>尽量较少不必要的pin so操作</li>
+<li>尽量减少不必要的pin so操作</li>
 <li>尽量减少相机tuning bin和sensor bin的大小，去除不必要或者冗余部分</li>
 </ol>
-<h3 id="内存泄露"><a href="#内存泄露" class="headerlink" title="内存泄露"></a>内存泄露</h3><p>待完成…</p>
-<h4 id="heap泄露"><a href="#heap泄露" class="headerlink" title="heap泄露"></a>heap泄露</h4><h4 id="DMA泄露"><a href="#DMA泄露" class="headerlink" title="DMA泄露"></a>DMA泄露</h4><h3 id="内存峰值超标"><a href="#内存峰值超标" class="headerlink" title="内存峰值超标"></a>内存峰值超标</h3><p>为了应对用户对相机体验要求的日益提升，相机功能堆叠越来越多，也越来越复杂，<br>待完成…</p>
-<h4 id="heap"><a href="#heap" class="headerlink" title="heap"></a>heap</h4><h4 id="DMA"><a href="#DMA" class="headerlink" title="DMA"></a>DMA</h4><h3 id="内存驻留优化"><a href="#内存驻留优化" class="headerlink" title="内存驻留优化"></a>内存驻留优化</h3><p>待完成…</p>
-<h3 id="相机场景，后台任务驻留优化"><a href="#相机场景，后台任务驻留优化" class="headerlink" title="相机场景，后台任务驻留优化"></a>相机场景，后台任务驻留优化</h3><p>待完成…</p>
+<h3 id="内存泄露"><a href="#内存泄露" class="headerlink" title="内存泄露"></a>内存泄露</h3><p>相机内存泄露是指相机应用程序在使用过程中，CameraAPP，cameraServer，CameraHal三个进程，一些不再被使用的内存空间没有被正确地释放，导致这些内存被 “占用”，但是却无法被有效地利用。</p>
+<p>产生的原因大体可以分成两种，一是程序中的对象引用管理不当。在相机软件中，可能存在一些对象（如存储图像帧数据的对象），当这些对象的生命周期结束后，如果程序仍然持有对它们的引用，系统无法将其占用的内存释放。常见的是ImageBuffer使用完毕之后，仍然持有对其的引用。二是资源分配和释放的不匹配。常见的是使用像malloc()或new这样的函数进行动态内存分配时，没有正确地使用对应的free()或delete函数来释放内存。</p>
+<p>在相机运行的过程中，用户申请的内存主要是heap和DMA，因此泄露问题也一般集中于此。</p>
+<p>随着内存泄露的积累，系统可用的内存越来越少，这会导致系统运行速度变慢。当内存泄露严重到一定程度，甚至可能引起死机重启。</p>
+<h4 id="heap泄露"><a href="#heap泄露" class="headerlink" title="heap泄露"></a>heap泄露</h4><p>heap主要分为Java Heap和Native Heap，这主要介绍Native Heap。</p>
+<h5 id="拆解方法"><a href="#拆解方法" class="headerlink" title="拆解方法"></a>拆解方法</h5><ul>
+<li><p><strong>Malloc Debug分析内存泄露</strong><br>“Malloc Debug” 是一种用于调试原生内存问题的方法。它有助于检测内存损坏、内存泄漏以及释放后使用等问题。<br>当启用 “Malloc Debug” 时，其工作原理是添加一个垫片层，该垫片层会替换常规的内存分配调用。被替换的调用包括：<br>・malloc（动态内存分配函数）<br>・free（释放内存函数）<br>・calloc（分配并初始化内存函数）<br>・realloc（重新分配内存函数）<br>・posix_memalign（按指定对齐方式分配内存函数）<br>・memalign（按字节边界对齐分配内存函数）<br>・aligned_alloc（分配对齐的内存块函数）<br>・malloc_usable_size（获取可实际使用的内存大小函数）<br>该库检测到的任何错误都会在日志中进行报告。<br>有关本地内存问题可用调试选项的完整说明，请参阅 <a href="https://android.googlesource.com/platform/bionic/+/master/libc/malloc_debug/README.md">Malloc Debug</a>和<a href="https://android.googlesource.com/platform/bionic/+/master/libc/malloc_debug/README_api.md">使用 libc 回调跟踪本地内存</a>。</p>
+</li>
+<li><p><strong>libmemunreachable+Lsan分析内存泄露(推荐)</strong><br>之前native内存泄露的问题我们一般是使用malloc debug分析，但是malloc debug开销太大，会造成明显的卡顿甚至卡死，通过限制backtrace frame或者限制size可以改善，但是总体上体验仍较差。内存泄露这块目前完全可以使用lsan和libmemunreachable替代来分析。<br>Android 的 <a href="http://localhost:4000/2024/11/20/2024-11-20-memory-libmemunreachable/">libmemunreachable</a> 是一个零开销的本地内存泄漏检测器。它会使用不精确的“标记-清除”垃圾回收器遍历所有本机内存，同时将任何不可访问的块报告为泄漏。因其零开销的特性，可被用在相机Native内存泄漏的<strong>检测</strong>当中，用其来报告有无泄露及泄露多少。<br>当libmemunreachable检测到内存泄露之后，便需要使用Lsan对其进行<strong>分析和修复</strong>。Lsan是集成在Asan中的内存泄露检测器，具体参考<a href="https://github.com/google/sanitizers/wiki/AddressSanitizerLeakSanitizer">AddressSanitizerLeakSanitizer</a>。不直接使用Lsan检测是因为Lsan往往需要编译Asan版本或者hook相关的so，并且需要在程序退出时检查所有未释放的内存，适合在开发和测试阶段使用，不适合日常监控。</p>
+</li>
+</ul>
+<h5 id="优化思路"><a href="#优化思路" class="headerlink" title="优化思路"></a>优化思路</h5><p>先使用 libmemunreachable 检测是否有泄露，确认泄露存在后使用 Lsan 定位泄露位置，并结合代码修复。</p>
+<p><strong>举个栗子：</strong><br>当前已经使用 libmemunreachable 检测到有leak存在<br><img src="image.png" alt="alt text"></p>
+<p>有时候lsan报告直接解callstack不能直接定位到原因，需要结合代码流程逻辑来分析。<br>这里举一例，顺便说明下lsan打印的direct link和indirect leak. </p>
+<ul>
+<li>Direct leak: not reachable from anywhere </li>
+<li>Indirect leak:reachable from other leaked blocks </li>
+</ul>
+<p>一般来说indirect leak是由于direct leak导致的，如果direct leak修复了，那么indirect leak也会消失。<br><img src="image-1.png" alt="alt text"><br><img src="image-2.png" alt="alt text"><br>比如这里libfeature.stereo.provider.so相关的leak，indirect leak相当多，如果我们去解析indriect leak的callstack，会发现这里报告的leak看起来都有正确的释放：<br><img src="image-3.png" alt="alt text"><br>正确的方法是先去处理direct leak的问题，添加log析构有执行到，看起来也有正确的释放资源：<br><img src="image-4.png" alt="alt text"><br>最后分析发现是初始化资源调用两次，导致析构时只释放了最后一次构造的资源，<br>第一次new的对象全部leak：<br><img src="image-5.png" alt="alt text"><br>当然，也需要从流程上检查为何会初始化两次。 </p>
+<p><strong>另外提一嘴：</strong><br>有些情况，leak的位置很容易确定，但是后面有很多的if else return，如果使用delete的方式，恐怕要在各处return的地方都要考虑资源释放的问题，这时我们可以使用RAII封装资源的方式简洁处理。比如这里，使用资源之前中间有很多的异常处理return，我们使用C++智能指针来处理就方便的多： </p>
+<figure class="highlight c++"><table><tr><td class="code"><pre><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;iostream&gt;</span></span></span><br><span class="line"><span class="meta">#<span class="meta-keyword">include</span> <span class="meta-string">&lt;memory&gt;</span></span></span><br><span class="line"></span><br><span class="line"><span class="comment">// 定义一个简单的类，模拟资源管理情况</span></span><br><span class="line"><span class="class"><span class="keyword">class</span> <span class="title">Resource</span> &#123;</span></span><br><span class="line"><span class="keyword">public</span>:</span><br><span class="line">    <span class="built_in">Resource</span>() &#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;Resource created.&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">    &#125;</span><br><span class="line">    ~<span class="built_in">Resource</span>() &#123;</span><br><span class="line">        std::cout &lt;&lt; <span class="string">&quot;Resource destroyed.&quot;</span> &lt;&lt; std::endl;</span><br><span class="line">    &#125;</span><br><span class="line">&#125;;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 不使用智能指针，容易出现内存泄露的情况示例函数</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">functionWithoutSmartPointer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    Resource* ptr = <span class="keyword">new</span> <span class="built_in">Resource</span>();  <span class="comment">// 手动分配内存创建对象</span></span><br><span class="line">    <span class="comment">// 这里假设后续发生了异常或者提前返回等情况，没有执行delete操作</span></span><br><span class="line">    <span class="comment">// 那么这块内存就无法被正确释放，导致内存泄露</span></span><br><span class="line">    <span class="comment">// 例如下面简单模拟一个提前返回的情况</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="keyword">delete</span> ptr;  <span class="comment">// 正常情况下应该在这里释放内存，但由于提前返回就执行不到了</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="comment">// 使用智能指针（shared_ptr）避免内存泄露的示例函数</span></span><br><span class="line"><span class="function"><span class="keyword">void</span> <span class="title">functionWithSmartPointer</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    std::shared_ptr&lt;Resource&gt; ptr = std::make_shared&lt;Resource&gt;();  <span class="comment">// 使用shared_ptr管理资源</span></span><br><span class="line">    <span class="comment">// 这里即使后续发生异常或者提前返回等情况，shared_ptr会自动管理资源的生命周期</span></span><br><span class="line">    <span class="comment">// 当ptr离开其作用域时（比如函数结束），其所指向的Resource对象会被自动析构，内存被正确释放</span></span><br><span class="line">    <span class="keyword">if</span> (<span class="literal">true</span>) &#123;</span><br><span class="line">        <span class="keyword">return</span>;</span><br><span class="line">    &#125;</span><br><span class="line">    <span class="comment">// 不需要手动调用delete，智能指针会自动处理</span></span><br><span class="line">&#125;</span><br><span class="line"></span><br><span class="line"><span class="function"><span class="keyword">int</span> <span class="title">main</span><span class="params">()</span> </span>&#123;</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;Testing function without smart pointer: &quot;</span> &lt;&lt; std::endl;</span><br><span class="line">    <span class="built_in">functionWithoutSmartPointer</span>();</span><br><span class="line">    std::cout &lt;&lt; <span class="string">&quot;Testing function with smart pointer: &quot;</span> &lt;&lt; std::endl;</span><br><span class="line">    <span class="built_in">functionWithSmartPointer</span>();</span><br><span class="line">    <span class="keyword">return</span> <span class="number">0</span>;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+<p>总的来说，智能指针是 C++ 中一种非常有效的避免内存泄露的机制，尤其是在复杂的程序结构、涉及多线程或者对象间复杂引用关系等场景下，能极大地减轻程序员手动管理内存释放的负担，提高程序的稳定性和可靠性。</p>
+<h4 id="DMA泄露"><a href="#DMA泄露" class="headerlink" title="DMA泄露"></a>DMA泄露</h4><p>在 Android Camera 中，几乎所有图像相关的 Buffer 都是来源于 DMA-buf。例如预览 / 拍照时，从上层传下来的装载图像数据的 Gralloc Buffer；MTK/Qcom hal 层中，缓存 sensor 图像数据的 ImageBuffer，各个算法节点之间的中转 ImageBuffer。因此DMA泄露在相机场景中也较为常见。</p>
+<h5 id="拆解方法-1"><a href="#拆解方法-1" class="headerlink" title="拆解方法"></a>拆解方法</h5><p>拆解方法主要使用：<a href="https://shenweikun.github.io/2024/12/06/2024-12-05-memory-dmabuf-dump/">dmabuf_dump</a></p>
+<h5 id="优化思路-1"><a href="#优化思路-1" class="headerlink" title="优化思路"></a>优化思路</h5><p>按照以往经验DMA Buffer的泄露往往是流程上出现异常，只要确认到leak的位置，便可以快速知道leak的原因，常见的原因有：</p>
+<ol>
+<li>算法库leak，调用init之后，退出相机调用匹配的uninit</li>
+<li>采用智能指针管理Buffer，但是退出相机后，引用没有销毁，引用计数未归零（常见于常驻进程Camerahal中，未将智能指针置空，导致某个类一直持有）。</li>
+</ol>
+<p>然而，需要注意的是，并不是所有的内存泄漏都能被及时发现并修复。内存泄漏问题的发现与修复工作，高度依赖于开发人员对代码的深度理解以及严谨优良的编程习惯。在软件开发过程中，开发人员需要对代码的逻辑结构、数据流向、资源分配与释放机制等方面具备清晰而深刻的认知，同时在日常编程实践中遵循规范、注重细节，养成诸如及时释放不再使用的内存资源、谨慎处理对象生命周期、精准管理资源引用等良好习惯。</p>
+<p>唯有如此，我们方能在应用程序的开发与维护进程中，高效且有力地预防内存泄漏问题的发生，并在问题出现时迅速精准地予以解决。这不仅有助于提升应用程序的整体稳定性，使其能够在长时间运行过程中保持可靠的工作状态，减少因内存泄漏引发的崩溃、卡顿等异常情况，而且还能够显著优化应用程序的性能表现，确保系统资源得以合理利用，为用户提供更加流畅、高效的使用体验，增强应用程序在市场上的竞争力与生命力。</p>
+<h3 id="内存峰值超标"><a href="#内存峰值超标" class="headerlink" title="内存峰值超标"></a>内存峰值超标</h3><p>当下，用户对相机画质体验的期望水涨船高，这促使相机功能不断丰富拓展，复杂度也随之攀升。像 sensor 尺寸持续增大以获取更高的解析力，拍照帧数接连提升来确保降噪效果，诸如此类的升级层出不穷。但这种发展也带来了新的困扰，运行相机时的峰值内存随之逐步增加，不可避免地造成了诸多使用问题。</p>
+<p>过高的峰值内存常常引发相机卡顿，致使画面丢帧、操作延迟，还会频繁出现杀后台的情况，严重破坏了用户的拍摄体验，亟待通过相机峰值优化加以解决。</p>
+<p>在实际工作中，我们会为不同内存配置的机器制定不同的内存峰值标准，如运行内存为8G的机器标准为xG, 运行内存为12G的机器标准为yG。在实际测试过程中，每隔一定时间便获取相机的内存状态，若超过制定的保准，便认为已经发生内存超标。</p>
+<p>在相机运行的过程中，申请的内存主要是heap和DMA，因此优化也大部分集中于此。</p>
+<h4 id="拆解方法-2"><a href="#拆解方法-2" class="headerlink" title="拆解方法"></a>拆解方法</h4><p>峰值超标问题可以在修复完内存泄露问题之后进行。</p>
+<p>于相机应用场景而言，精准定位当前内存超标的状况，需凭借对日志（log）信息的细致剖析以及对直接内存访问缓冲区（dmabuf）分布情形的精准把握，以此明确内存使用超出预期标准的具体场景。在此基础上，结合所确定的特定场景实施具有针对性的优化策略，而这一系列操作都建立在对相机整体运行流程深入且全面熟悉的前提之下。</p>
+<h4 id="优化思路-2"><a href="#优化思路-2" class="headerlink" title="优化思路"></a>优化思路</h4><ol>
+<li><strong>裁剪featureGraph，去掉不需要的stream与featureGraph映射关系</strong>。高通平台中，在config_stream的时候会将stream与featureGraph进行映射，一旦映射完成就意味着内存的预申请。</li>
+<li><strong>裁剪pipeline，去掉不要的荣誉的pipeline或者node</strong>。高通平台中，pipeline由node与node相连接而成，在node与node之间需要Buffer作为数据流转的桥梁，因此pipeline越精简，意味着内存的分配越少。</li>
+<li><strong>错峰处理</strong>，即将内存开销大的阶段串行化，不要在同一时间执行。</li>
+<li><strong>降低并行数</strong>，减少后处理中拍照任务的并行数</li>
+<li><strong>关闭高通offlinelog和3ADebug</strong>，按照经验这部分占用几百兆的heap。</li>
+</ol>
+<h3 id="内存驻留优化"><a href="#内存驻留优化" class="headerlink" title="内存驻留优化"></a>内存驻留优化</h3><p>相机内存驻留，是指在完成相机的常规操作，如录像、拍照等，并退出相机应用程序后，相机进程在内存中依然留存且未被系统销毁的那部分内存空间。其中，部分内存可能是相机正常运行所必需申请的内存区域，然而，也存在因内存泄露问题而导致的不必要的内存驻留情况。</p>
+<p>其测试方法如下：<strong>在启动相机应用之前，采集与相机相关进程的内存数据，并将其标记为 “before”；在使用完相机并退出后，再次获取相机进程的内存数据，记为 “after”。若 “after” 减去 “before” 所得的差值超出特定的标准数值，那么便可判定发生了相机内存驻留异常现象</strong>。</p>
+<p>当相机出现过多的内存驻留情况时，会使得系统中其他应用程序可使用的内存容量相应减少，进而可能影响其他应用的正常运行，如导致它们运行卡顿、响应迟缓甚至出现闪退等问题，对整个系统的性能和稳定性产生不利影响。</p>
+<h4 id="拆解方法-3"><a href="#拆解方法-3" class="headerlink" title="拆解方法"></a>拆解方法</h4><p>待完成…</p>
+<h4 id="优化思路-3"><a href="#优化思路-3" class="headerlink" title="优化思路"></a>优化思路</h4><h3 id="相机场景，后台任务驻留优化"><a href="#相机场景，后台任务驻留优化" class="headerlink" title="相机场景，后台任务驻留优化"></a>相机场景，后台任务驻留优化</h3><p>安卓相机应用通常会占用大量的内存资源，在其运行过程中，一旦系统内存出现不足的情况，便极有可能导致后台正在运行的其他应用程序被强制关闭，也就是所谓的 “后台应用程序被杀” 问题。</p>
+<p>这是因为相机在启动时，会加载诸多功能模块和资源，如复杂的图像处理算法、高分辨率图像缓存、各种拍摄模式和滤镜效果的支持组件等，这些都需要占用可观的内存空间。当系统内存紧张时，为了保证相机这一前台应用的正常运行，系统往往会优先回收后台应用程序所占用的内存，从而使得这些后台应用被终止运行，这可能会给用户带来不便，例如正在后台下载文件的应用突然停止，或者正在运行的音乐播放应用被关闭等。</p>
+<p>而相机场景，后台任务驻留优化的任务便是尽可能端好这碗水，既保证相机的内存使用，又尽量让用户察觉不到后台任务被杀。</p>
+<h4 id="拆解方法-4"><a href="#拆解方法-4" class="headerlink" title="拆解方法"></a>拆解方法</h4><p>待完成…</p>
+<h4 id="优化思路-4"><a href="#优化思路-4" class="headerlink" title="优化思路"></a>优化思路</h4><ol>
+<li>降低相机场景的峰值内存，缓解系统内存的紧张情况。</li>
+<li>优化LMK查杀策略。</li>
+<li>启动相机时，先进行一轮内存查杀，干掉长时间不用且不可感知的后台任务，尽可能释放出足够的内存给相机使用。</li>
+</ol>
 ]]></content>
       <categories>
         <category>5. Memory</category>
