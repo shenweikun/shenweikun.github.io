@@ -4141,4 +4141,40 @@ Rss：是当前段实际加载到物理内存中的大小。<br>Pss：进程按�
         <tag>内存</tag>
       </tags>
   </entry>
+  <entry>
+    <title>Android perfetto memory工具详解</title>
+    <url>/2024/12/17/2024-12-16-memory-Android-perfetto/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>5. Memory</category>
+      </categories>
+      <tags>
+        <tag>Android</tag>
+        <tag>内存</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Android Asan/Lsan详解</title>
+    <url>/2024/12/17/2024-12-16-memory-Asan-lsan/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>5. Memory</category>
+      </categories>
+      <tags>
+        <tag>Android</tag>
+        <tag>内存</tag>
+      </tags>
+  </entry>
+  <entry>
+    <title>Android malloc_debug详解</title>
+    <url>/2024/12/17/2024-12-16-memory-malloc-debug/</url>
+    <content><![CDATA[]]></content>
+      <categories>
+        <category>5. Memory</category>
+      </categories>
+      <tags>
+        <tag>Android</tag>
+        <tag>内存</tag>
+      </tags>
+  </entry>
 </search>
